@@ -27,13 +27,13 @@ def cal_schaffer(x):
 def find_max_min():
   current_min = 1000
   current_max = 0
-  for i in range(100):
+  for i in range(1000):
     temp = cal_schaffer(generate_x())	
     if temp > current_max:
       current_max = temp
     if temp < current_min:
       current_min = temp
-  # print current_max, current_min
+  print current_max, current_min
   return current_min, current_max    
 
 def energy(x, min, max):
@@ -42,7 +42,8 @@ def energy(x, min, max):
   return e
 
 def P(old, new, t):
-  x = math.e**(-1*(old - new )/t)
+  x = math.e**((old - new )/t)
+#   print x
   return x
 
 def say(mark):
@@ -52,6 +53,9 @@ def say(mark):
 
 def my_main():
   min, max = find_max_min()
+#   print min, max
+  min = 2
+  max = 20402
   s = generate_x()
   e = energy(s, min, max)
   sb = s
@@ -60,7 +64,8 @@ def my_main():
   kmax = 1000
   # emax = 0.0001
   while k < kmax:
-    sn = neighbor(s)
+#     sn = neighbor(s)
+    sn = generate_x()
     en = energy(sn, min, max)
     if en < eb:
       sb = sn
@@ -70,7 +75,7 @@ def my_main():
       s = sn
       e = en
       say('+')
-    elif P(e, en, k/kmax)> random.random(): 
+    elif P(e, en, k/kmax)< random.random(): 
       s = sn
       e = en
       say('?')
