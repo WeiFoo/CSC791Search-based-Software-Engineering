@@ -111,8 +111,16 @@ def say(mark):
   sys.stdout.flush()
       
 def sa():
-#   model = raw_input("Type fonseca or kursawe:")
-  model = kursawe()
+  model_str = raw_input("Type 1 for fonseca and 2 for kursawe:")
+  if (model_str) == '1':
+    model = fonseca()
+  elif (model_str) == '2':
+	model = kursawe()
+  else:
+    print "please type 1 or 2!"
+    exit()
+#   model = ()
+#   model = kursawe()
 #   x = generate(model.lo, model.hi, model.n)
   generator = model.gen()
   min, max = find_max_min(model, generator)
