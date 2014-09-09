@@ -6,7 +6,7 @@ sys.dont_write_bytecode = True
 
 
 
-random.seed(1)
+random.seed(10)
 
 class generate:
   def __init__(i, lo, hi, n):
@@ -84,15 +84,15 @@ def optimal_neighbor(solution, model, min, max):
   
 def maxwalksat():
   max_tries = 50
-  max_changes = 2000
+  max_changes = 100
   model = fonseca()
   generator = model.gen()
   min, max = find_max_min(model, generator)
-  threshold = 0.01
+  threshold = 1
   total_changes = 0
   total_tries = 0
   final_score = 0
-  p = 0.1
+  p = 0.75
 #   print threshold
 #   
 #   print solution
@@ -102,7 +102,7 @@ def maxwalksat():
 #     print 'try {0} time(s) with solution {1}'.format( total_tries, solution)
     for _ in range(max_changes):
       final_score=score(model.f1_plus_f2(solution),min, max)
-      if final_score < threshold:
+      if final_score >= threshold:
         print "min_energy:{0}, max_energy:{1}".format(min, max)
         print "total_changes : %s" % total_changes
         print "total_tries : %s" % total_tries
