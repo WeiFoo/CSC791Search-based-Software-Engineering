@@ -88,8 +88,8 @@ def maxwalksat():
   model = fonseca()
   generator = model.gen()
   min, max = find_max_min(model, generator)
-  threshold = 0.1
-  total_loop = 0
+  threshold = 0.01
+  total_changes = 0
   total_tries = 0
   final_score = 0
   p = 0.1
@@ -104,7 +104,8 @@ def maxwalksat():
       final_score=score(model.f1_plus_f2(solution),min, max)
       if final_score < threshold:
         print "min_energy:{0}, max_energy:{1}".format(min, max)
-        print "total_loop : %s" % total_loop
+        print "total_changes : %s" % total_changes
+        print "total_tries : %s" % total_tries
         print "best solution : %s" % solution
         print "score: %s" % final_score
         print "final energy: %s" % model.f1_plus_f2(solution)
@@ -113,7 +114,7 @@ def maxwalksat():
         solution[random.randint(0,2)] = generator.generate_x()[random.randint(0,2)]
       else:
         solution = optimal_neighbor(solution, model, min, max)
-      total_loop +=1  
+      total_changes +=1  
     
 #        c =  generator.generate_x() 
        
