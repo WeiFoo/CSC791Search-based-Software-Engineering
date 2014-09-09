@@ -6,7 +6,7 @@ sys.dont_write_bytecode = True
 
 
 
-random.seed(10)
+random.seed(1)
 
 class generate:
   def __init__(i, lo, hi, n):
@@ -54,7 +54,7 @@ def find_max_min(model, gen):
   # model = eval(model+"()")
   min = 10**(5)
   max = -10**(5)
-  for i in range(10000):
+  for i in range(100000):
     temp = model.f1_plus_f2(gen.generate_x())
     if temp > max:
       max = temp
@@ -67,13 +67,13 @@ def find_max_min(model, gen):
 def optimal_neighbor(solution, model, min, max):  
   optimized_index = random.randint(0, len(solution)-1)
   increment = (model.hi - model.lo)/10
-  max = -10*(5)
+  temp_min = 10*(5)
 #   print "old solution : %s" % solution
   for _ in range(10):
     solution[optimized_index] = model.lo+increment
     temp = score(model.f1_plus_f2(solution), min, max)
-    if temp > max:
-       max = temp
+    if temp < temp_min:
+       temp_min = temp
 #   print "new solution : %s" % solution
   return solution
     
@@ -84,15 +84,15 @@ def optimal_neighbor(solution, model, min, max):
   
 def maxwalksat():
   max_tries = 50
-  max_changes = 100
+  max_changes = 2000
   model = fonseca()
   generator = model.gen()
   min, max = find_max_min(model, generator)
-  threshold = 1
-  total_changes = 0
+  threshold = 0.1
+  total_loop = 0
   total_tries = 0
   final_score = 0
-  p = 0.75
+  p = 0.25
 #   print threshold
 #   
 #   print solution
@@ -102,19 +102,22 @@ def maxwalksat():
 #     print 'try {0} time(s) with solution {1}'.format( total_tries, solution)
     for _ in range(max_changes):
       final_score=score(model.f1_plus_f2(solution),min, max)
-      if final_score >= threshold:
+#       print "final score: %s" % final_score
+      if final_score <= threshold:
+        print "p : %s" % p
+        print "threshold : %s" %threshold
+        print "total tries: %s" % total_tries
+        print "total changes: %s" % total_loop
         print "min_energy:{0}, max_energy:{1}".format(min, max)
-        print "total_changes : %s" % total_changes
-        print "total_tries : %s" % total_tries
-        print "best solution : %s" % solution
+        print "min_energy_obtained: %s" % model.f1_plus_f2(solution)
+        print "solution : %s" % solution
         print "score: %s" % final_score
-        print "final energy: %s" % model.f1_plus_f2(solution)
         return solution
       if p < random.random():
         solution[random.randint(0,2)] = generator.generate_x()[random.randint(0,2)]
       else:
         solution = optimal_neighbor(solution, model, min, max)
-      total_changes +=1  
+      total_loop +=1  
     
 #        c =  generator.generate_x() 
        

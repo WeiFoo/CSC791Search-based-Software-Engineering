@@ -5,7 +5,7 @@ import numpy as np
 sys.dont_write_bytecode = True
 
 
-random.seed(40)
+random.seed(1)
 
 class generate:
   def __init__(i, lo, hi, n):
@@ -82,7 +82,7 @@ def find_max_min(model, gen):
   # model = eval(model+"()")
   min = 10**(5)
   max = -10**(5)
-  for i in range(10000):
+  for i in range(100000):
     temp = model.f1_plus_f2(gen.generate_x())
     if temp > max:
       max = temp
@@ -98,7 +98,7 @@ def energy(x, min, max):
 
 def neighbor(old, generator):  # can put in to generator
   for i in range(len(old)):
-    if random.random() <=0.3:
+    if random.random() <=0.33:
       old[i] = generator.generate_x()[i] 
   return old
       
@@ -124,12 +124,12 @@ def sa():
 #   x = generate(model.lo, model.hi, model.n)
   generator = model.gen()
   min, max = find_max_min(model, generator)
-  print min, max
+#   print min, max
 #   min, max = 0.98, 2.0
   s = generator.generate_x()
-  print s
+#   print s
   e = energy(model.f1_plus_f2(s), min, max)
-  print e
+#   print e
   sb = s
   eb = e
   k = 1
@@ -151,9 +151,11 @@ def sa():
       say('?')
     say('.')
     k = k+1
-    if k % 50 == 0: 
+    if k % 40 == 0: 
       print "\n"
-      say(str(eb))
+      say(str(round(eb,3)))
+#   print "\n"    
+#   say(str(sb))
   return sb
 #   
 

@@ -1,0 +1,40 @@
+
+#========================experiment 1=========================================
+
+p : 0.25
+threshold : 0.1
+total tries: 4
+total changes: 7444
+min_energy:0.98516179182, max_energy:2.0
+min_energy_obtained: 1.06356696583
+solution : [0.6219060794448481, 0.6048121141877392, 0.2708728258004989]
+score: 0.0772587919733
+
+#========================experiment 2=========================================
+
+p : 0.5
+threshold : 0.1
+total tries: 4
+total changes: 6484
+min_energy:0.98516179182, max_energy:2.0
+min_energy_obtained: 1.04467426371
+solution : [-0.4844270550441525, -0.34626814383535365, -0.3654653426669592]
+score: 0.0586423248635
+
+#========================experiment 3=========================================
+p : 0.75
+threshold : 0.1
+total tries: 6
+total changes: 10157
+min_energy:0.98516179182, max_energy:2.0
+min_energy_obtained: 1.08458753824
+solution : [0.20948483978895016, 0.4859757044184825, 0.49765892744329854]
+score: 0.0979720172304
+
+#========================conclusion=========================================
+
+Based on the results from my experiments with different p's, I can conclude
+that p = 0.5 is a better probability for maxwalksat than other values in 
+terms of total changes used in the algorithm. The change times is 6484 for
+p = 0.5, which is less than the other two, 7444 and 10157. Probably because
+p = 0.5 will give the equal chance for both random jump or local search.
