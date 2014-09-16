@@ -3,11 +3,6 @@ import sys, random, math, datetime, time,re
 sys.dont_write_bytecode = True
 
 class Model:
-  
-  # def __init__(i, lo, hi, n):
-  #   i.lo = lo
-  #   i.hi = hi
-  #   i.n = n
 
   def name(i):
     return i.__class__.__name__
@@ -73,13 +68,9 @@ class Fonseca(Model):
     i.lo = -4
     i.hi = 4
     i.n = 3
-    
-  # def gen(i):
-  #   return generate(i.lo, i.hi,i.n)
-    
+  
   def f1_plus_f2(i, x_list):
     n = i.n
-#     print x_list
     def f1_sum(x_list, n):
       value = []
       for item in x_list:
@@ -94,7 +85,6 @@ class Fonseca(Model):
 
     f1 = 1 - math.e ** (-1* f1_sum(x_list, n))
     f2 = 1 - math.e ** (-1* f2_sum(x_list, n))
-#     print f1+f2
     return f1+f2
     
 '''kusarvs'''
@@ -103,9 +93,6 @@ class Kursawe(Model):
     i.lo = -5
     i.hi = 5
     i.n = 3
-    
-  # def gen(i):
-  #   return generate(i.lo, i.hi, i.n)
     
   def f1_plus_f2(i, x_list):
     n = i.n  
@@ -124,7 +111,6 @@ class Kursawe(Model):
       return value
     f1 = sum(f1_inner(x_list, n))
     f2 = sum(f2_inner(x_list, n))
-  #   print f1+f2
     return f1+f2
 
 class ZDT1(Model):

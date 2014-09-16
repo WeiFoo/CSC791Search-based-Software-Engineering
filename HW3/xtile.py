@@ -37,34 +37,6 @@ def xtile(lst,lo=0,hi=0.001, width = 50,
   showMarks[find_index(ordered_list[int(len(lst)*0.5)])] = "*"  
   return " ".join(showMarks) + " ".join([str(round(i,3)) for i in showNumbers])  
 
-
-
-
-
-
-
-  # def pos(p)   : return ordered[int(len(lst)*p)]
-  # def place(x) : 
-  #   return int(width*float((x - lo))/(hi - lo))
-  # def pretty(lst) : 
-  #   return ', '.join([str(round(x,3))for x in lst])
-  # ordered = sorted(lst)
-  # lo      = min(lo,ordered[0])
-  # hi      = max(hi,ordered[-1])
-  # what    = [pos(p)   for p in chops]
-  # print ordered
-  # where   = [place(n) for n in  what]
-  # out     = [" "] * width
-  # for one,two in pairs(where):
-  #   for i in range(one,two): 
-  #     out[i] = marks[0]
-  #   marks = marks[1:]
-  # out[int(width/2)]    = bar
-  # #out[place((lo+hi)/2)] = bar
-  # out[place(pos(0.5))] = star 
-  # print out
-  # return ''.join(out) +  "," +  pretty(what)
-
 def Demo() :
   import random
   random.seed(1)
