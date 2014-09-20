@@ -14,13 +14,13 @@ def sa(model):
     return prob 
   min_energy, max_energy = model.baseline()
   s = model.generate_x()
-  e = model.norm(model.f1_plus_f2(s))
+  e = model.norm(model.score(s))
   sb = s
   eb = e
   k = 1
   while k < Settings.sa.kmax:
     sn = model.sa_neighbor(s)
-    en = model.norm(model.f1_plus_f2(s))
+    en = model.norm(model.score(sn))
     if en < eb:
 	  sb = sn
 	  eb = en 
@@ -36,9 +36,10 @@ def sa(model):
     say('.')
     k = k+1
     if k % 40 == 0: 
+      print "\n"  
       say(str(round(eb,3)))
-  print "\n"    
-  say(str(sb))
+        
+  # say(str(sb))
   print "\n------\n:e",str(round(eb,3)),"\n:solution",sn
   return eb
 #   
@@ -56,12 +57,12 @@ def mws(model):
     total_tries += 1
     solution = model.generate_x()
     for _ in range(Settings.mws.max_changes):
-      norm_energy = model.norm(model.f1_plus_f2(solution))
+      norm_energy = model.norm(model.score(solution))
       if norm_energy <= Settings.mws.threshold:
         print "total tries: %s" % total_tries
         print "total changes: %s" % total_changes
         print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
-        print "min_energy_obtained: %s" % model.f1_plus_f2(solution)
+        print "min_energy_obtained: %s" % model.score(solution)
         print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution
         return norm_energy
       if Settings.mws.prob < random.random():
