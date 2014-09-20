@@ -6,11 +6,13 @@ class Options: #"Thanks for Peter Norvig's trick"
   def __init__(i, **d): i.__dict__.update(d)
 
 Settings = Options(sa = Options(kmax = 1000, 
-	                            baseline = 1000),
+	                              baseline = 1000,
+                                score = {}),
                    mws= Options(threshold = 0.1,
                                 max_tries = 50, 
                                 max_changes = 1000,
                                 prob = 0.25,
+                                score = {}
                                 ) )
 
 def reseed():

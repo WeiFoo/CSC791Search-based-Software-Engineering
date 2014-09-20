@@ -46,6 +46,7 @@ def sa(model):
   sb = s
   eb = e
   k = 1
+  eraScore = []
   while k < Settings.sa.kmax:
     sn = model.sa_neighbor(s)
     en = model.norm(model.getDepen(sn))
@@ -63,30 +64,35 @@ def sa(model):
       say('?')
     say('.')
     k = k+1
-    if k % 40 == 0: 
+    eraScore += [eb] # keep score for xtile
+    if k % 50 == 0:
+      Settings.sa.score[int(k/50-1)] = eraScore
+      eraScore = []
       print "\n"  
       say(str(round(eb,3)))
-        
+  print "\n"
+  for key, scorelist in Settings.sa.score.items():
+    print xtile(scorelist,lo=0, hi=1.0,width = 25)      
   # say(str(sb))
   print "\n------\n:e",str(round(eb,3)),"\n:solution",sn
   return eb
 #   
 @printlook
 def mws(model):
-  max_tries = 50
-  max_changes = 2000
   min_energy, max_energy = model.baseline()
-  threshold = 0.01
   total_changes = 0
   total_tries = 0
   norm_energy = 0
-  p = 0.25
+  eraScore = []
   for _ in range(Settings.mws.max_tries):
     total_tries += 1
     solution = model.generate_x()
     for _ in range(Settings.mws.max_changes):
       norm_energy = model.norm(model.getDepen(solution))
       if norm_energy <= Settings.mws.threshold:
+        say("\n")
+        say(str(round(model.norm(model.getDepen(solution)), 3))) 
+        print "\n"
         print "total tries: %s" % total_tries
         print "total changes: %s" % total_changes
         print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
@@ -95,9 +101,15 @@ def mws(model):
         return norm_energy
       if Settings.mws.prob < random.random():
         solution[random.randint(0,model.n-1)] = model.generate_x()[random.randint(0,model.n-1)]
+        say("+")
       else:
         # solution = optimal_neighbor(solution, model, min, max)
         solution = model.mws_neighbor(solution)
+        say("!")
+      say(".")
+      if total_changes % 50 == 0:
+        print "\n"
+        say(str(round(model.norm(model.getDepen(solution)), 3))) 
       total_changes +=1     
 @demo    
 def StartSearcher():

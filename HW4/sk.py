@@ -260,11 +260,11 @@ def testStatistic(y,z):
     tmp1 = tmp2 = 0
     for y1 in y.all: tmp1 += (y1 - y.mu)**2 
     for z1 in z.all: tmp2 += (z1 - z.mu)**2
-    s1    = (float(tmp1)/(y.n - 1))**0.5
+    s1    = (float(tmp1)/(y.n - 1))**0.5 # std
     s2    = (float(tmp2)/(z.n - 1))**0.5
     delta = z.mu - y.mu
     if s1+s2:
-      delta =  delta/((s1/y.n + s2/z.n)**0.5)
+      delta =  delta/((s1/y.n + s2/z.n)**0.5)#?
     return delta
 """
 
@@ -300,6 +300,7 @@ def bootstrap(y0,z0,conf=0.01,b=1000):
     if testStatistic(total(sampleWithReplacement(yhat)),
                      total(sampleWithReplacement(zhat))) > tobs:
       bigger += 1
+  print bigger/b
   return bigger / b < conf
 """
 
@@ -317,7 +318,7 @@ def _bootstraped():
         'different' if bootstrap(x,y) else 'same'
   # very different means, same std
   print worker(mu1=10, sigma1=10, 
-               mu2=100, sigma2=10)
+               mu2=10, sigma2=10)
   # similar means and std
   print worker(mu1= 10.1, sigma1=1, 
                mu2= 10.2, sigma2=1)
@@ -638,4 +639,5 @@ def _rdivs():
   rdiv0();  rdiv1(); rdiv2(); rdiv3(); 
   rdiv4(); rdiv5(); rdiv6(); rdiv7()
 
-_rdivs()
+#_rdivs()
+#_bootstraped()
