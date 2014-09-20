@@ -2,6 +2,7 @@ from __future__ import division
 import sys, random, math, datetime, time,re
 sys.dont_write_bytecode = True
 
+
 exp = math.e
 sqrt = math.sqrt
 
@@ -52,7 +53,7 @@ class Model:
   	e = (x - i.min)/(i.max - i.min)
   	return max(0, min(e,1)) #avoid values <0 or >1
 
-
+'''Schaffer'''
 class Schaffer(Model):
   def __init__(i):
     i.lo = -2
@@ -63,6 +64,7 @@ class Schaffer(Model):
   def f2(i, x):
     return (x[0]-2) ** 2
 
+'''Fonseca'''
 class Fonseca(Model):
   def __init__(i):
     i.lo = -4
@@ -73,7 +75,7 @@ class Fonseca(Model):
   def f2(i, xlst):
     return (1 - exp**(-1 * sum([(xlst[k] + 1/sqrt(i.n))**2 for k in xrange(i.n)])))
     
-'''kusarvs'''
+'''Kusarvs'''
 class Kursawe(Model):
   def __init__(i):
     i.lo = -5
@@ -86,6 +88,7 @@ class Kursawe(Model):
     b = 3
     return sum([abs(x)**a + 5*math.sin(x)**b for x in xlst]) 
 
+'''ZDT1'''
 class ZDT1(Model):
   def __init__(i):
     i.lo = 0
