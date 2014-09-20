@@ -1,7 +1,7 @@
 from __future__ import division
 import sys, random, math, datetime, time,re
 sys.dont_write_bytecode = True
-
+''' I need to repalce all f1_plus_f2 function to be more specific'''
 class Model:
 
   def name(i):
