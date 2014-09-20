@@ -67,14 +67,12 @@ class Schaffer(Model):
     return x[0] * x[0]
   def f2(i, x):
     return (x[0]-2) ** 2
-
   def f1_plus_f2(i, x_list):
     # x = i.generate_x()
     for item in x_list:
       f1 = item ** 2
       f2 = (item-2) **2
     return f1 + f2
-
 
 class Fonseca(Model):
   def __init__(i):
@@ -85,25 +83,6 @@ class Fonseca(Model):
     return (1 - exp**(-1 * sum([(xlst[k] - 1/sqrt(i.n))**2 for k in xrange(i.n)])))
   def f2(i, xlst):
     return (1 - exp**(-1 * sum([(xlst[k] + 1/sqrt(i.n))**2 for k in xrange(i.n)])))
-
-  
-  # def f1_plus_f2(i, x_list):
-  #   n = i.n
-  #   def f1_sum(x_list, n):
-  #     value = []
-  #     for item in x_list:
-  #       value.append((item - 1/math.sqrt(n))**2)
-  #     return sum(value)
-
-  #   def f2_sum(x_list, n):
-  #     value = []
-  #     for item in x_list:
-  #       value.append((item + 1/math.sqrt(n))**2)
-  #     return sum(value)  
-
-  #   f1 = 1 - math.e ** (-1* f1_sum(x_list, n))
-  #   f2 = 1 - math.e ** (-1* f2_sum(x_list, n))
-  #   return f1+f2
     
 '''kusarvs'''
 class Kursawe(Model):
@@ -117,24 +96,6 @@ class Kursawe(Model):
     a = 0.8
     b = 3
     return sum([abs(x)**a + 5*math.sin(x)**b for x in xlst]) 
-  # def f1_plus_f2(i, x_list):
-  #   n = i.n  
-  #   def f1_inner(x_list, n):
-  #     value = []
-  #     for i in range(n-1):
-  #       value.append(-10 * math.e **(-0.2 * math.sqrt(x_list[i]**2 + x_list[i+1]**2)))
-  #     return value
-    
-  #   def f2_inner(x_list, n):
-  #     value = []
-  #     a = 0.8
-  #     b = 3
-  #     for item in x_list:
-  #       value.append(abs(item)**a + 5 * math.sin(item)**b )
-  #     return value
-  #   f1 = sum(f1_inner(x_list, n))
-  #   f2 = sum(f2_inner(x_list, n))
-  #   return f1+f2
 
 class ZDT1(Model):
   def __init__(i):
@@ -148,19 +109,4 @@ class ZDT1(Model):
   def f2(i,xlst):
     g1 = i.g(xlst)
     return g1*(1-sqrt(xlst[0]/g1))
-
-  # def f1_plus_f2(i, x_list):
-  #   def f1(x_list):
-  #     return x_list[0]
-  #   def g(x_list):
-  #     val = 0
-  #     for item in x_list[1:]:
-  #       val += item
-  #     return 1+ 9*(val)/(i.n-1)
-  #   def f2(x_list):
-  #     g1 = g(x_list)
-  #     return  g1* (1 - math.sqrt(x_list[0]/g1))  
-  #   return f1(x_list)+f2(x_list)
-
-
 
