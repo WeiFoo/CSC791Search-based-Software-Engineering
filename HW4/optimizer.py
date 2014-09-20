@@ -71,6 +71,8 @@ def sa(model):
       print "\n"  
       say(str(round(eb,3)))
   print "\n"
+  line = ' '*26+'='*31
+  print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
   for key, scorelist in Settings.sa.score.items():
     print xtile(scorelist,lo=0, hi=1.0,width = 25)      
   # say(str(sb))
@@ -84,6 +86,7 @@ def mws(model):
   total_tries = 0
   norm_energy = 0
   eraScore = []
+  k = 0
   for _ in range(Settings.mws.max_tries):
     total_tries += 1
     solution = model.generate_x()
@@ -97,22 +100,31 @@ def mws(model):
         print "total changes: %s" % total_changes
         print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
         print "min_energy_obtained: %s" % model.getDepen(solution)
-        print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution
+        print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution, "\n"
+        line = ' '*26+'='*31
+        print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
+        for key, scorelist in Settings.sa.score.items():
+          print xtile(scorelist,lo=0, hi=1.0,width = 25)      
         return norm_energy
       if Settings.mws.prob < random.random():
         solution[random.randint(0,model.n-1)] = model.generate_x()[random.randint(0,model.n-1)]
         say("+")
+        eraScore += [str(round(model.norm(model.getDepen(solution)), 3))]
       else:
         # solution = optimal_neighbor(solution, model, min, max)
         solution = model.mws_neighbor(solution)
         say("!")
+        eraScore += [str(round(model.norm(model.getDepen(solution)), 3))]
       say(".")
       if total_changes % 50 == 0:
+        Settings.mws.score[k] = eraScore
+        k +=1
+        eraScore = []
         print "\n"
         say(str(round(model.norm(model.getDepen(solution)), 3))) 
       total_changes +=1     
 @demo    
-def StartSearcher():
+def start():
   r = 2
   for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
     print "\n !!!!", klass.__name__

@@ -6,6 +6,34 @@ import numpy as np
 from xtile import *
 sys.dont_write_bytecode = True
 
+def atom(x):
+  try : return int(x)
+  except ValueError:
+    try : return float(x)
+    except ValueError : return x
+
+def cmd(com="demo('-h')"):
+  "Convert command line to a function call."
+  if len(sys.argv) < 2: return com
+  def strp(x): return isinstance(x,basestring)
+  def wrap(x): return "'%s'"%x if strp(x) else str(x)  
+  words = map(wrap,map(atom,sys.argv[2:]))
+  return sys.argv[1] + '(' + ','.join(words) + ')'
+
+def demo(f=None,cache=[]):   
+  def doc(d):
+    return '# '+d.__doc__ if d.__doc__ else ""  
+  if f == '-h':
+    print '# sample demos'
+    for n,d in enumerate(cache): 
+      print '%3s) ' %(n+1),d.func_name,doc(d)
+  elif f: 
+    cache.append(f); 
+  else:
+    s='|'+'='*40 +'\n'
+    for d in cache: 
+      print '\n==|',d.func_name,s,doc(d),d()
+  return f
 
 @printlook      
 def sa(model):
@@ -67,12 +95,15 @@ def mws(model):
         return norm_energy
       if Settings.mws.prob < random.random():
         solution[random.randint(0,model.n-1)] = model.generate_x()[random.randint(0,model.n-1)]
+        say.("+")
       else:
         # solution = optimal_neighbor(solution, model, min, max)
         solution = model.mws_neighbor(solution)
+        say.("!")
+      say.(".")
       total_changes +=1     
-    
-def Demo():
+@demo    
+def StartSearcher():
   r = 2
   for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
     print "\n !!!!", klass.__name__
@@ -87,5 +118,21 @@ def Demo():
         scorelist +=[float(x)]
       print xtile(scorelist,lo=0, hi=1.0,width = 25)
       print "# {0}:{1}".format(name, n/r)
+@demo
+def testmodel():
+  # model = ZDT3()
+  model = Viennet3()
+  depen = model.getDepen(model.generate_x())
+  print depen
 
-if __name__ == "__main__": Demo()
+if __name__ == "__main__": eval(cmd())
+
+
+
+
+
+
+
+
+
+

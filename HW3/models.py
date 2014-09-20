@@ -5,6 +5,8 @@ sys.dont_write_bytecode = True
 
 exp = math.e
 sqrt = math.sqrt
+sin = math.sin
+pi = math.pi
 
 class Model:
 
@@ -51,7 +53,7 @@ class Model:
     return i.min, i.max
   def norm(i, x):
   	e = (x - i.min)/(i.max - i.min)
-  	return max(0, min(e,1)) #avoid values <0 or >1
+  	return e #avoid values <0 or >1
 
 '''Schaffer'''
 class Schaffer(Model):
@@ -86,7 +88,7 @@ class Kursawe(Model):
   def f2(i, xlst):
     a = 0.8
     b = 3
-    return sum([abs(x)**a + 5*math.sin(x)**b for x in xlst]) 
+    return sum([abs(x)**a + 5*sin(x)**b for x in xlst]) 
 
 '''ZDT1'''
 class ZDT1(Model):
@@ -101,4 +103,36 @@ class ZDT1(Model):
   def f2(i,xlst):
     g1 = i.g(xlst)
     return g1*(1-sqrt(xlst[0]/g1))
+
+'''ZDT3'''
+class ZDT3(Model):
+  def __init__(i):
+    i.lo = 0
+    i.hi = 1
+    i.n = 30
+  def f1(i, xlst):
+    return xlst[0]
+  def g(i, xlst):
+    return (1 +  (9/(i.n-1)) * sum(xlst[1:]))
+  def h(i,f1,g):
+    return (1 - sqrt(f1/g) - f1/g) * sin(10 * pi * f1)
+  def f2(i, xlst):
+    return i.g(xlst) * i.h(i.f1(xlst),i.g(xlst)) 
+
+'''Viennet3'''
+class Viennet3(Model):
+  def __init__(i):
+    i.lo = -3
+    i.hi = 3
+    i.n = 2
+  def f1(i, xlst):
+    xy2 = xlst[0]**2 + xlst[1]**2
+    return 0.5* (xy2) + sin(xy2)
+  def f2(i, xlst):
+    x = xlst[0]
+    y = xlst[1]
+    return ((3*x -2*y +4)**2/8 + (x-y+1)**2/27 + 15)
+  def f3(i, xlst):
+    xy2 = xlst[0]**2 + xlst[1]**2
+    return (1/(xy2+1) - 1.1* exp**(-xy2))
 
