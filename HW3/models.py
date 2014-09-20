@@ -13,10 +13,9 @@ class Model:
   def generate_x(i):  
     x= [i.lo + (i.hi-i.lo)*random.random() for _ in range(i.n)]  
     return x
-  # def genDepen(i):
-  #   return [ for x in i.]
-  def score(i,xlst):
-    return (i.f1(xlst) + i.f2(xlst))
+  def getDepen(i, xlst):
+    y = [i.f1, i.f2]
+    return sum([f(xlst) for f in y])
   def sa_neighbor(i, old):  
     p = 1/i.n
     new = old
@@ -26,7 +25,6 @@ class Model:
         old[j] = new_gen[0] 
     # print old    
     return old
-
   def mws_neighbor(i,solution):  
     optimized_index = random.randint(0, len(solution)-1)
     increment = (i.hi - i.lo)/10
@@ -34,25 +32,22 @@ class Model:
 #   print "old solution : %s" % solution
     for _ in range(10):
       solution[optimized_index] = i.lo + increment
-      temp = i.norm(i.score(solution))
+      temp = i.norm(i.getDepen(solution))
       if temp < temp_min:
         temp_min = temp
 #   print "new solution : %s" % solution
     return solution
-    
-
   def baseline(i):
   # model = eval(model+"()")
     i.min = 10**(5)
     i.max = -10**(5)
     for _ in xrange(100000):
-      temp = i.score(i.generate_x())
+      temp = i.getDepen(i.generate_x())
       if temp > i.max:
         i.max = temp
       if temp < i.min:
 	    i.min = temp
     return i.min, i.max
-  
   def norm(i, x):
   	e = (x - i.min)/(i.max - i.min)
   	return max(0, min(e,1)) #avoid values <0 or >1
@@ -67,12 +62,6 @@ class Schaffer(Model):
     return x[0] * x[0]
   def f2(i, x):
     return (x[0]-2) ** 2
-  def f1_plus_f2(i, x_list):
-    # x = i.generate_x()
-    for item in x_list:
-      f1 = item ** 2
-      f2 = (item-2) **2
-    return f1 + f2
 
 class Fonseca(Model):
   def __init__(i):
