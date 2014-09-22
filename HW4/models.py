@@ -1,6 +1,6 @@
 from __future__ import division
 from log import *
-import sys, random, math, datetime, time,re
+import sys, random, math, datetime, time,re, pdb
 sys.dont_write_bytecode = True
 
 
@@ -16,15 +16,33 @@ class Model:
   def setup(i):
     i.xy = Options(x = [i.generate_x()], y = [i.f1, i.f2])
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(2)]) # hardcode 2
+    i.history = {} # hold all logs for eras
   def generate_x(i):  
     x= [i.lo + (i.hi-i.lo)*random.random() for _ in range(i.n)]  
     return x
   def getDepen(i, xlst):
     # y = [i.f1, i.f2]
     return sum([f(xlst) for f in i.xy.y])
-  def savelog(i, xy):
-    for val, log in zip(xy.x, i.log.x): log+= val
-    for val, log in zip(xy.y, i.log.x): log+= val
+  def getDepenlst(i, xlst):
+    return [f(xlst) for f in i.xy.y]
+  def cloneModel(i):
+    return i.__class__()
+  def logxy(i, x):
+    for val, log in zip(x, i.log.x): log += val
+    y = i.getDepenlst(x)
+    for val, log in zip(y, i.log.y): log += val
+  def better(news,olds):
+    def worsed():
+      return  ((same     and not betterIqr) or 
+               (not same and not betterMed))
+    def bettered():
+      return not same and betterMed
+    out = False
+    for new,old in zip(news.log.y, olds.log.y):
+      betterMed, same, betterIqr = new.better(old)
+      if worsed()  : return False # never any worsed
+      if bettered(): out= out or True # at least one bettered
+    return out
   def sa_neighbor(i, old):  
     p = 1/i.n
     new = old
@@ -60,6 +78,45 @@ class Model:
   def norm(i, x):
   	e = (x - i.min)/(i.max - i.min)
   	return max(0, min(e,1)) #avoid values <0 or >1
+
+class Control(object):
+  def __init__(i, model):
+    i.kmax = Settings.sa.kmax
+    i.era = Settings.others.era
+    i.lives = Settings.others.lives
+    i.logAll = {}
+    i.model = model
+  def __call__(i, k):
+    i.next(k)
+  def logxy(i, results):
+    both = [i.model.history, i.logAll]
+    for log in both:
+      if not i.era in i.logAll:
+        log[i.era] = i.model.cloneModel()
+    for log in both:
+      log[i.era].logxy(results)
+  def checkimprove(i):
+      pdb.set_trace()
+      if len(i.logAll) >= 2:
+        current = i.era
+        before = i.era - Settings.others.era
+        currentLog = i.logAll[current]
+        beforeLog = i.logAll[before]
+        if not currentLog.better(beforeLog):
+          pass
+        else:
+          i.lives += 1
+  def next(i, k):  
+    if k >= i.era:
+      i.lives -=1
+      i.checkimprove()
+      i.era +=Settings.others.era
+      if i.lives == 0:
+        return True
+      else:
+        return False
+
+
 
 '''Schaffer'''
 class Schaffer(Model):

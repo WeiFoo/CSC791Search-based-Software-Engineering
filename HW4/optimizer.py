@@ -19,10 +19,14 @@ def sa(model):
   eb = e
   k = 1
   eraScore = []
+  icontrol = Control(model)
   while k < Settings.sa.kmax:
+    stopsign = icontrol.next(k) #true ---stop
+    if stopsign:
+      break
     sn = model.sa_neighbor(s)
     en = model.norm(model.getDepen(sn))
-    model.log
+    icontrol.logxy(sn)
     if en < eb:
 	  sb = sn
 	  eb = en 
@@ -98,7 +102,7 @@ def mws(model):
       total_changes +=1     
 @demo    
 def start():
-  r = 2
+  r = 1
   for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:

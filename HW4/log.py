@@ -1,6 +1,7 @@
 from __future__ import division
 import sys, random, math
 from base import * 
+from a12 import *
 sys.dont_write_bytecode = True
 
 
@@ -45,6 +46,18 @@ class Num(Log):
     q = p +1
     q = max(0, min(q,n))
     return (i._cache[p] + i._cache[q])/2
+  def better(new,old):
+    "better if (1)less median or (2)same and less iqr"
+    t = Settings.others.a12
+    betterIqr = new.has().iqr < old.has().iqr
+    new.lessp = True
+    if new.lessp:
+      betterMed = new.has().median >= old.has().median
+      same      = a12(old._cache, new._cache)  <= t
+    else:
+      betterMed = new.has().median <= old.has().median 
+      same      = a12(new._cache, old._cache) <= t
+    return betterMed, same, betterIqr
   def report(i):
     sortedCache = sorted(i._cache)
     n = len (sortedCache)
