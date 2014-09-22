@@ -1,4 +1,5 @@
 from __future__ import division
+from log import *
 import sys, random, math, datetime, time,re
 sys.dont_write_bytecode = True
 
@@ -12,13 +13,18 @@ class Model:
 
   def name(i):
     return i.__class__.__name__
-  
+  def setup(i):
+    i.xy = Options(x = [i.generate_x()], y = [i.f1, i.f2])
+    i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(2)]) # hardcode 2
   def generate_x(i):  
     x= [i.lo + (i.hi-i.lo)*random.random() for _ in range(i.n)]  
     return x
   def getDepen(i, xlst):
-    y = [i.f1, i.f2]
-    return sum([f(xlst) for f in y])
+    # y = [i.f1, i.f2]
+    return sum([f(xlst) for f in i.xy.y])
+  def savelog(i, xy):
+    for val, log in zip(xy.x, i.log.x): log+= val
+    for val, log in zip(xy.y, i.log.x): log+= val
   def sa_neighbor(i, old):  
     p = 1/i.n
     new = old
@@ -61,6 +67,7 @@ class Schaffer(Model):
     i.lo = -2
     i.hi = 2
     i.n = 1
+    i.setup()
   def f1(i, x):
     return x[0] * x[0]
   def f2(i, x):
@@ -72,6 +79,7 @@ class Fonseca(Model):
     i.lo = -4
     i.hi = 4
     i.n = 3
+    i.setup()
   def f1(i, xlst):
     return (1 - exp**(-1 * sum([(xlst[k] - 1/sqrt(i.n))**2 for k in xrange(i.n)])))
   def f2(i, xlst):
@@ -83,6 +91,7 @@ class Kursawe(Model):
     i.lo = -5
     i.hi = 5
     i.n = 3
+    i.setup()
   def f1(i, xlst):
     return sum([-10*exp**(-0.2 * sqrt(xlst[k]**2 + xlst[k+1]**2)) for k in xrange(i.n -1)])
   def f2(i, xlst):
@@ -96,6 +105,7 @@ class ZDT1(Model):
     i.lo = 0
     i.hi = 1
     i.n = 30
+    i.setup()
   def f1(i, xlst):
     return xlst[0]
   def g(i, xlst):
@@ -110,6 +120,7 @@ class ZDT3(Model):
     i.lo = 0
     i.hi = 1
     i.n = 30
+    i.setup()
   def f1(i, xlst):
     return xlst[0]
   def g(i, xlst):
@@ -125,6 +136,7 @@ class Viennet3(Model):
     i.lo = -3
     i.hi = 3
     i.n = 2
+    i.setup()
   def f1(i, xlst):
     xy2 = xlst[0]**2 + xlst[1]**2
     return 0.5* (xy2) + sin(xy2)

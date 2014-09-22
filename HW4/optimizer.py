@@ -22,6 +22,7 @@ def sa(model):
   while k < Settings.sa.kmax:
     sn = model.sa_neighbor(s)
     en = model.norm(model.getDepen(sn))
+    model.log
     if en < eb:
 	  sb = sn
 	  eb = en 
@@ -114,7 +115,7 @@ def start():
 @demo
 def testmodel():
   # model = ZDT3()
-  model = Viennet3()
+  model = Schaffer()
   depen = model.getDepen(model.generate_x())
   print depen
 
