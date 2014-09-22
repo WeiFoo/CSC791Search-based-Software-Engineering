@@ -17,7 +17,7 @@ Settings = Options(sa = Options(kmax = 1000,
                                 prob = 0.25,
                                 score = {}
                                 ), 
-                   others = Options(keep = 128, era = 100, lives = 4, a12 = 0.64))
+                   others = Options(keep = 128, era = 100, lives = 2, a12 = [0.56, 0.64, 0.71][0]))
 def atom(x):
   try : return int(x)
   except ValueError:

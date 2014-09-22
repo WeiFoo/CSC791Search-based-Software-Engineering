@@ -25,21 +25,23 @@ class Model:
     return sum([f(xlst) for f in i.xy.y])
   def getDepenlst(i, xlst):
     return [f(xlst) for f in i.xy.y]
-  def cloneModel(i):
+  def cloneModel(i): # from Dr.Menzies'
     return i.__class__()
   def logxy(i, x):
     for val, log in zip(x, i.log.x): log += val
     y = i.getDepenlst(x)
     for val, log in zip(y, i.log.y): log += val
-  def better(news,olds):
+  def better(news,olds): # from Dr.Menzies'
     def worsed():
       return  ((same     and not betterIqr) or 
                (not same and not betterMed))
     def bettered():
-      return not same and betterMed
+      return same and betterMed
     out = False
     for new,old in zip(news.log.y, olds.log.y):
       betterMed, same, betterIqr = new.better(old)
+      print betterMed, same, betterIqr
+      # pdb.set_trace()
       if worsed()  : return False # never any worsed
       if bettered(): out= out or True # at least one bettered
     return out
@@ -47,10 +49,9 @@ class Model:
     p = 1/i.n
     new = old
     for j in range(len(old)):
-      if random.random() <=p:
+      if random.random() < p:
       	new_gen = i.generate_x()
-        old[j] = new_gen[0] 
-    # print old    
+        old[j] = new_gen[random.randint(0, i.n-1)]   
     return old
   def mws_neighbor(i,solution):  
     optimized_index = random.randint(0, len(solution)-1)
@@ -79,7 +80,7 @@ class Model:
   	e = (x - i.min)/(i.max - i.min)
   	return max(0, min(e,1)) #avoid values <0 or >1
 
-class Control(object):
+class Control(object): # based on Dr.Menzies' codes
   def __init__(i, model):
     i.kmax = Settings.sa.kmax
     i.era = Settings.others.era
@@ -96,24 +97,24 @@ class Control(object):
     for log in both:
       log[i.era].logxy(results)
   def checkimprove(i):
-      pdb.set_trace()
       if len(i.logAll) >= 2:
         current = i.era
         before = i.era - Settings.others.era
         currentLog = i.logAll[current]
         beforeLog = i.logAll[before]
+        # pdb.set_trace()
         if not currentLog.better(beforeLog):
           pass
         else:
           i.lives += 1
   def next(i, k):  
     if k >= i.era:
-      i.lives -=1
       i.checkimprove()
       i.era +=Settings.others.era
       if i.lives == 0:
         return True
       else:
+        i.lives -=1
         return False
 
 

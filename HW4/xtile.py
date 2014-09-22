@@ -40,7 +40,7 @@ def xtile(lst,lo=0,hi=0.001, width = 50,
   def place(x) : 
     return int(width*float((x - lo))/(hi - lo+0.00001))
   def pretty(lst) : 
-    return ', '.join([show % str(round(x,3)) for x in lst])
+    return ', '.join([show % x for x in lst])
   ordered = sorted(lst)
   lo      = min(lo,ordered[0])
   hi      = max(hi,ordered[-1])

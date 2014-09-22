@@ -50,7 +50,7 @@ class Num(Log):
     "better if (1)less median or (2)same and less iqr"
     t = Settings.others.a12
     betterIqr = new.has().iqr < old.has().iqr
-    new.lessp = True
+    new.lessp = False
     if new.lessp:
       betterMed = new.has().median >= old.has().median
       same      = a12(old._cache, new._cache)  <= t
@@ -63,7 +63,7 @@ class Num(Log):
     n = len (sortedCache)
     return Options(
            median = i.median(),
-           iqr = sortedCache[int(n*0.75)- int(n*0.25)],
+           iqr = sortedCache[int(n*0.75)- int(n*0.5)],
            lo = i.lo,
            hi = i.hi)
 

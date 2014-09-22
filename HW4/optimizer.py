@@ -48,11 +48,12 @@ def sa(model):
       print "\n"  
       say(str(round(eb,3)))
   print "\n"
-  line = ' '*26+'='*31
-  print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
-  for key, scorelist in Settings.sa.score.items():
-    print xtile(scorelist,lo=0, hi=1.0,width = 25)      
+  # line = ' '*26+'='*31
+  # print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
+  # for key, scorelist in Settings.sa.score.items():
+  #   print xtile(scorelist,lo=0, hi=1.0,width = 25)      
   # say(str(sb))
+  printReport(model)
   print "\n------\n:e",str(round(eb,3)),"\n:solution",sn
   return eb
 #   
@@ -78,10 +79,10 @@ def mws(model):
         print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
         print "min_energy_obtained: %s" % model.getDepen(solution)
         print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution, "\n"
-        line = ' '*26+'='*31
-        print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
-        for key, scorelist in Settings.sa.score.items():
-          print xtile(scorelist,lo=0, hi=1.0,width = 25)      
+        # line = ' '*26+'='*31
+        # print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
+        # for key, scorelist in Settings.sa.score.items():
+        #   print xtile(scorelist,lo=0, hi=1.0,width = 25)      
         return norm_energy
       if Settings.mws.prob < random.random():
         solution[random.randint(0,model.n-1)] = model.generate_x()[random.randint(0,model.n-1)]
@@ -100,9 +101,19 @@ def mws(model):
         print "\n"
         say(str(round(model.norm(model.getDepen(solution)), 3))) 
       total_changes +=1     
+
+def printReport(m):
+  for i, f in enumerate(m.log.y):
+    print "\n <f %s" %i
+    for era in sorted(m.history.keys()):
+      # pdb.set_trace()
+      log = m.history[era].log.y[i]
+      print str(era).rjust(7), xtile(log._cache, width = 33, show = "%5.2f", lo = 0, hi = 1)
+
 @demo    
 def start():
   r = 1
+  #for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
   for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:
