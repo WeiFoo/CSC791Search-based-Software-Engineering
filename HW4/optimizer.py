@@ -27,6 +27,7 @@ def sa(model):
     sn = model.sa_neighbor(s)
     en = model.norm(model.getDepen(sn))
     icontrol.logxy(sn)
+    temp = (k/Settings.sa.kmax)*Settings.sa.cooling
     if en < eb:
 	  sb = sn
 	  eb = en 
@@ -35,16 +36,16 @@ def sa(model):
       s = sn
       e = en
       say('+')
-    elif P(e, en, (k/Settings.sa.kmax)) < random.random():
+    elif P(e, en, temp) < random.random():
       s = sn
       e = en
       say('?')
     say('.')
-    k = k+1
+    k = k + 1
     eraScore += [eb] # keep score for xtile
     if k % 50 == 0:
-      Settings.sa.score[int(k/50-1)] = eraScore
-      eraScore = []
+      # Settings.sa.score[int(k/50-1)] = eraScore
+      # eraScore = []
       print "\n"  
       say(str(round(eb,3)))
   print "\n"
@@ -114,7 +115,7 @@ def printReport(m):
 def start():
   r = 1
   #for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
-  for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
+  for klass in [Schaffer]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:
       name = searcher.__name__

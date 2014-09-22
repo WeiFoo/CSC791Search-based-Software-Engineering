@@ -10,14 +10,15 @@ class Options: #"Thanks for Peter Norvig's trick"
 
 Settings = Options(sa = Options(kmax = 1000, 
 	                              baseline = 1000,
-                                score = {}),
+                                score = {},
+                                cooling = 0.5),
                    mws = Options(threshold = 0.05,
                                 max_tries = 50, 
                                 max_changes = 1000,
                                 prob = 0.25,
                                 score = {}
                                 ), 
-                   others = Options(keep = 128, era = 100, lives = 2, a12 = [0.56, 0.64, 0.71][0]))
+                   others = Options(keep = 128, era = 100, lives = 1, a12 = [0.56, 0.64, 0.71][0]))
 def atom(x):
   try : return int(x)
   except ValueError:
