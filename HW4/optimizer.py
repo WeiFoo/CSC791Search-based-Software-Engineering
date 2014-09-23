@@ -46,7 +46,7 @@ def sa(model):
       say(str(round(eb,3)))
   print "\n"
   printReport(model)
-  print "\n------\n:Normalized Sum of Objectives: ",str(round(eb,3)),"\n:Solution",sn
+  print "\n------\n:Normalized Sum of Objectives : ",str(round(eb,3)),"\n:Solution",sn
   lohi=printRange(model)
   return eb,lohi
 #   
@@ -132,27 +132,39 @@ def start():
   f1hi = []
   f0lo = []
   f0hi =[]
+  f2lo =[]
+  f2hi =[]
   r = 2
   # for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
   for klass in [ZDT3, Viennet3]:
   #for klass in [ZDT1]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:
-      name = searcher.__name__
+      name = klass.__name__
       n = 0.0
       reseed()
       scorelist = []
       for _ in range(r):
         x, lohi=searcher(klass())
       #========part 5==========
-      #   rlohi.append(lohi)
-      # for i in range(0, r):
-      #   f0lo.append(rlohi[i][0])
-      #   f0hi.append(rlohi[i][1])
-      #   f1lo.append(rlohi[i][2])
-      #   f1hi.append(rlohi[i][3]) 
-      # print "\n # The range of f0 during %s repeats is from %s to %s " % (r, str(sorted(f0lo)[0]), str(sorted(f0hi)[-1]))
-      # print "\n # The range of f1 during %s repeats is from %s to %s " % (r, str(sorted(f1lo)[0]), str(sorted(f1hi)[-1]))
+        rlohi.append(lohi)
+
+      for i in range(0, r):
+        f0lo.append(rlohi[i][0])
+        f0hi.append(rlohi[i][1])
+        f1lo.append(rlohi[i][2])
+        f1hi.append(rlohi[i][3])
+        if name == "Viennet3": # f1, f2, f3
+          f2lo.append(rlohi[i][4])
+          f2hi.append(rlohi[i][5])
+      print "\n # The range of f0 during %s repeats is from %s to %s " \
+             % (r, str(round(sorted(f0lo)[0], 3)), str( round(sorted(f0hi)[-1])))
+      print "\n # The range of f1 during %s repeats is from %s to %s " \
+             % (r, str(round(sorted(f1lo)[0],3)), str(round(sorted(f1hi)[-1])))
+      if name =="Viennet3":
+        print "\n # The range of f1 during %s repeats is from %s to %s "\
+             % (r, str(round(sorted(f2lo)[0],3)), str(round(sorted(f2hi)[-1])))
+      rlohi = []
       #=====part 5 ends===========
 
       #the following codes for hw3
