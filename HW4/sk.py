@@ -300,7 +300,7 @@ def bootstrap(y0,z0,conf=0.01,b=1000):
     if testStatistic(total(sampleWithReplacement(yhat)),
                      total(sampleWithReplacement(zhat))) > tobs:
       bigger += 1
-  print bigger/b
+  # print bigger/b
   return bigger / b < conf
 """
 
