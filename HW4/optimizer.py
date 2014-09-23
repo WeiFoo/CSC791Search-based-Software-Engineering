@@ -46,7 +46,7 @@ def sa(model):
       say(str(round(eb,3)))
   print "\n"
   printReport(model)
-  print "\n------\n:Normalized f1+f2: ",str(round(eb,3)),"\n:Solution",sn
+  print "\n------\n:Normalized Sum of Objectives: ",str(round(eb,3)),"\n:Solution",sn
   lohi=printRange(model)
   return eb,lohi
 #   
@@ -94,7 +94,7 @@ def mws(model):
       print "min_energy_obtained: %s" % model.getDepen(solution)
       printReport(model)
       lohi =printRange(model)
-      print "\n------\n:Normalized f1+f2: ",str(round(norm_energy,3)),"\n:Solution",solution, "\n"    
+      print "\n------\n:Normalized Sum of Objectives: ",str(round(norm_energy,3)),"\n:Solution",solution, "\n"    
       return norm_energy, lohi
 
 
@@ -133,7 +133,8 @@ def start():
   f0lo = []
   f0hi =[]
   r = 2
-  for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
+  # for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
+  for klass in [ZDT3, Viennet3]:
   #for klass in [ZDT1]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:
@@ -143,14 +144,17 @@ def start():
       scorelist = []
       for _ in range(r):
         x, lohi=searcher(klass())
-        rlohi.append(lohi)
-      for i in range(0, r):
-        f0lo.append(rlohi[i][0])
-        f0hi.append(rlohi[i][1])
-        f1lo.append(rlohi[i][2])
-        f1hi.append(rlohi[i][3]) 
-      print "\n # The range of f0 during %s repeats is from %s to %s " % (r, str(sorted(f0lo)[0]), str(sorted(f0hi)[-1]))
-      print "\n # The range of f1 during %s repeats is from %s to %s " % (r, str(sorted(f1lo)[0]), str(sorted(f1hi)[-1]))
+      #========part 5==========
+      #   rlohi.append(lohi)
+      # for i in range(0, r):
+      #   f0lo.append(rlohi[i][0])
+      #   f0hi.append(rlohi[i][1])
+      #   f1lo.append(rlohi[i][2])
+      #   f1hi.append(rlohi[i][3]) 
+      # print "\n # The range of f0 during %s repeats is from %s to %s " % (r, str(sorted(f0lo)[0]), str(sorted(f0hi)[-1]))
+      # print "\n # The range of f1 during %s repeats is from %s to %s " % (r, str(sorted(f1lo)[0]), str(sorted(f1hi)[-1]))
+      #=====part 5 ends===========
+
       #the following codes for hw3
       # n += float(x)
       # scorelist +=[float(x)]
