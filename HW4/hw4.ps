@@ -1,0 +1,1408 @@
+%!PS-Adobe-3.0
+%%Title: part1.txt, part2.txt, part5.txt
+%%For: Wei Fu
+%%Creator: a2ps version 4.14
+%%CreationDate: Tue Sep 23 02:07:18 2014
+%%BoundingBox: 24 24 588 768
+%%DocumentData: Clean7Bit
+%%Orientation: Landscape
+%%Pages: 5
+%%PageOrder: Ascend
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: font Courier
+%%+ font Courier-Bold
+%%+ font Courier-BoldOblique
+%%+ font Courier-Oblique
+%%+ font Helvetica
+%%+ font Helvetica-Bold
+%%+ font Symbol
+%%+ font Times-Bold
+%%+ font Times-Roman
+%%DocumentProcessColors: Black 
+%%DocumentSuppliedResources: procset a2ps-a2ps-hdr
+%%+ procset a2ps-black+white-Prolog
+%%+ encoding ISO-8859-1Encoding
+%%EndComments
+/a2psdict 200 dict def
+a2psdict begin
+%%BeginProlog
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+
+% EPSF import as in the Red Book
+/BeginInclude {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack 
+  userdict begin
+    0 setgray 0 setlinecap
+    1 setlinewidth 0 setlinejoin
+    10 setmiterlimit [ ] 0 setdash newpath
+    gs_languagelevel 1 ne {
+      false setstrokeadjust false setoverprint 
+    } if
+} bind def
+
+/EndInclude {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+/BeginEPSF {
+  BeginInclude
+  /showpage { } def
+} bind def
+
+/EndEPSF {
+  EndInclude
+} bind def
+
+% Page prefeed
+/page_prefeed {         % bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} bind def
+
+/deffont {
+  findfont exch scalefont def
+} bind def
+
+/reencode_font {
+  findfont reencode 2 copy definefont pop def
+} bind def
+
+% Function c-show (str => -)
+% centers text only according to x axis.
+/c-show { 
+  dup stringwidth pop
+  2 div neg 0 rmoveto
+  show
+} bind def
+
+% Function l-show (str => -)
+% prints texts so that it ends at currentpoint
+/l-show {
+  dup stringwidth pop neg 
+  0 
+  rmoveto show
+} bind def
+
+% center-fit show (str w => -)
+% show centered, and scale currentfont so that the width is less than w
+/cfshow {
+  exch dup stringwidth pop
+  % If the title is too big, try to make it smaller
+  3 2 roll 2 copy
+  gt
+  { % if, i.e. too big
+    exch div
+    currentfont exch scalefont setfont
+  } { % ifelse
+    pop pop 
+  }
+  ifelse
+  c-show			% center title
+} bind def
+
+% Return the y size of the current font
+% - => fontsize
+/currentfontsize {
+  currentfont /FontType get 0 eq {
+    currentfont /FontMatrix get 3 get
+  }{
+    currentfont /FontMatrix get 3 get 1000 mul
+  } ifelse
+} bind def
+
+% reencode the font
+% <encoding-vector> <fontdict> -> <newfontdict>
+/reencode { %def
+  dup length 5 add dict begin
+    { %forall
+      % <vector> <key> <val>
+      1 index /FID ne 
+      { def }{ pop pop } ifelse
+    } forall
+    /Encoding exch def % -
+
+    % Use the font's bounding box to determine the ascent, descent,
+    % and overall height; don't forget that these values have to be
+    % transformed using the font's matrix.
+    % We use `load' because sometimes BBox is executable, sometimes not.
+    % Since we need 4 numbers an not an array avoid BBox from being executed
+    /FontBBox load aload pop
+    FontMatrix transform /Ascent exch def pop
+    FontMatrix transform /Descent exch def pop
+    /FontHeight Ascent Descent sub def
+
+    % Get the underline position and thickness if they're defined.
+    % Use 1 if they are not defined.
+    currentdict /FontInfo 2 copy known
+    { get
+      /UnderlinePosition 2 copy % <FontInfo> /UP <FontInfo> /UP
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+
+      /UnderlineThickness 2 copy % <FontInfo> /UT <FontInfo> /UT
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+      pop % -
+    }{ pop pop
+    } ifelse
+
+    currentdict
+  end 
+} bind def
+
+% composite fonts for ASCII-EUC mixed strings
+% Version 1.2 1/31/1990
+% Original Ken'ichi HANDA (handa@etl.go.jp)
+% Modified Norio Katayama (katayama@rd.nacsis.ac.jp),1998
+% Extend & Fix Koji Nakamaru (maru@on.cs.keio.ac.jp), 1999
+% Anyone can freely copy, modify, distribute this program.
+
+/copyfont {	% font-dic extra-entry-count  copyfont  font-dic
+	1 index maxlength add dict begin
+	{	1 index /FID ne 2 index /UniqueID ne and
+		{def} {pop pop} ifelse
+	} forall
+	currentdict
+	end
+} bind def
+
+/compositefont { % ASCIIFontName EUCFontName RomanScale RomanOffset Rot(T/F) compositefont font
+    /RomanRotation exch def
+    /RomanOffset exch def
+    /RomanScale exch def
+    userdict /fixeucfont_dict known not {
+	userdict begin
+	    /fixeucfont_dict 2 dict begin
+		/UpperByteEncoding [
+		    16#00 1 16#20 { pop 0 } for
+		    16#21 1 16#28 { 16#20 sub } for
+		    16#29 1 16#2F { pop 0 } for
+		    16#30 1 16#74 { 16#27 sub } for
+		    16#75 1 16#FF { pop 0 } for
+		] def
+	        /LowerByteEncoding [
+		    16#00 1 16#A0 { pop /.notdef } for
+		    16#A1 1 16#FE { 16#80 sub 16 2 string cvrs
+				    (cXX) dup 1 4 -1 roll
+				    putinterval cvn } for
+		    /.notdef
+		] def
+		currentdict
+	    end def
+	end
+    } if
+    findfont dup /FontType get 0 eq {
+	14 dict begin
+	    %
+	    % 7+8 bit EUC font
+	    %
+	    12 dict begin
+		/EUCFont exch def
+		/FontInfo (7+8 bit EUC font) readonly def
+		/PaintType 0 def
+		/FontType 0 def
+		/FontMatrix matrix def
+		% /FontName
+		/Encoding fixeucfont_dict /UpperByteEncoding get def
+		/FMapType 2 def
+		EUCFont /WMode known
+		{ EUCFont /WMode get /WMode exch def }
+		{ /WMode 0 def } ifelse
+		/FDepVector [
+		    EUCFont /FDepVector get 0 get
+		    [ 16#21 1 16#28 {} for 16#30 1 16#74 {} for ]
+		    {
+			13 dict begin
+			    /EUCFont EUCFont def
+			    /UpperByte exch 16#80 add def	
+			    % /FontName
+			    /FontInfo (EUC lower byte font) readonly def
+			    /PaintType 0 def
+			    /FontType 3 def
+			    /FontMatrix matrix def
+			    /FontBBox {0 0 0 0} def
+			    /Encoding
+				fixeucfont_dict /LowerByteEncoding get def
+			    % /UniqueID
+			    % /WMode
+			    /BuildChar {
+				gsave
+				exch dup /EUCFont get setfont
+				/UpperByte get
+				2 string
+				dup 0 4 -1 roll put
+				dup 1 4 -1 roll put
+				dup stringwidth setcharwidth
+				0 0 moveto show
+				grestore
+			    } bind def
+			    currentdict
+			end
+			/lowerbytefont exch definefont
+		    } forall
+		] def
+		currentdict
+	    end
+	    /eucfont exch definefont
+	    exch
+	    findfont 1 copyfont dup begin
+		RomanRotation {
+			/FontMatrix FontMatrix
+			[ 0 RomanScale neg RomanScale 0 RomanOffset neg 0 ]
+			matrix concatmatrix def
+		}{
+			/FontMatrix FontMatrix
+			[ RomanScale 0 0 RomanScale 0 RomanOffset ] matrix concatmatrix
+			def
+			/CDevProc
+			    {pop pop pop pop 0 exch -1000 exch 2 div 880} def
+		} ifelse
+	    end
+	    /asciifont exch definefont
+	    exch
+	    /FDepVector [ 4 2 roll ] def
+	    /FontType 0 def
+	    /WMode 0 def
+	    /FMapType 4 def
+	    /FontMatrix matrix def
+	    /Encoding [0 1] def
+	    /FontBBox {0 0 0 0} def
+%	    /FontHeight 1.0 def % XXXX
+	    /FontHeight RomanScale 1.0 ge { RomanScale }{ 1.0 } ifelse def
+	    /Descent -0.3 def   % XXXX
+	    currentdict
+	end
+	/tmpfont exch definefont
+	pop
+	/tmpfont findfont
+    }{
+	pop findfont 0 copyfont
+    } ifelse
+} def	
+
+/slantfont {	% FontName slant-degree  slantfont  font'
+    exch findfont 1 copyfont begin
+    [ 1 0 4 -1 roll 1 0 0 ] FontMatrix exch matrix concatmatrix
+    /FontMatrix exch def
+    currentdict
+    end
+} def
+
+% Function print line number (<string> # -)
+/# {
+  gsave
+    sx cw mul neg 2 div 0 rmoveto
+    f# setfont
+    c-show
+  grestore
+} bind def
+
+% -------- Some routines to enlight plain b/w printings ---------
+
+% Underline
+% width --
+/dounderline {
+  currentpoint
+  gsave
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    0 rlineto
+    stroke
+  grestore
+} bind def
+
+% Underline a string
+% string --
+/dounderlinestring {
+  stringwidth pop
+  dounderline
+} bind def
+
+/UL {
+  /ul exch store
+} bind def
+
+% Draw a box of WIDTH wrt current font
+% width --
+/dobox {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    stroke
+  grestore
+} bind def
+
+/BX {
+  /bx exch store
+} bind def
+
+% Box a string
+% string --
+/doboxstring {
+  stringwidth pop
+  dobox
+} bind def
+
+%
+% ------------- Color routines ---------------
+%
+/FG /setrgbcolor load def
+
+% Draw the background
+% width --
+/dobackground {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    bgcolor aload pop setrgbcolor
+    fill
+  grestore
+} bind def
+
+% Draw bg for a string
+% string --
+/dobackgroundstring {
+  stringwidth pop
+  dobackground
+} bind def
+
+
+/BG {
+  dup /bg exch store
+  { mark 4 1 roll ] /bgcolor exch store } if
+} bind def
+
+
+/Show {
+  bg { dup dobackgroundstring } if
+  ul { dup dounderlinestring } if
+  bx { dup doboxstring } if
+  show
+} bind def
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T {
+  cw mul x0 add
+  bg { dup currentpoint pop sub dobackground } if
+  ul { dup currentpoint pop sub dounderline } if
+  bx { dup currentpoint pop sub dobox } if
+  y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n {
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+/S {
+  Show
+} bind def
+
+%%BeginResource: procset a2ps-a2ps-hdr 2.0 2
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Function title: prints page header.
+% <ct> <rt> <lt> are passed as argument
+/title { 
+  % 1. Draw the background
+  x v get y v get moveto
+  gsave
+    0 th 2 div neg rmoveto 
+    th setlinewidth
+    0.95 setgray
+    pw 0 rlineto stroke
+  grestore
+  % 2. Border it
+  gsave
+    0.7 setlinewidth
+    pw 0 rlineto
+    0 th neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+  % stk: ct rt lt
+  x v get y v get th sub 1 add moveto
+%%IncludeResource: font Helvetica
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  % 3. The left title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    fnfs 0.8 mul hm rmoveto
+    show			% left title
+  grestore
+  exch
+  % stk: ct ltw rt
+  % 4. the right title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    dup
+    pw exch stringwidth pop fnfs 0.8 mul add sub
+    hm
+    rmoveto
+    show			% right title
+  grestore
+  % stk: ct ltw rtw
+  % 5. the center title
+  gsave
+    pw 3 1 roll
+    % stk: ct pw ltw rtw
+    3 copy 
+    % Move to the center of the left room
+    sub add 2 div hm rmoveto
+    % What is the available space in here?
+    add sub fnfs 0.8 mul sub fnfs 0.8 mul sub
+    % stk: ct space_left
+%%IncludeResource: font Helvetica-Bold
+  fHelvetica-Bold fnfs scalefont setfont
+    cfshow
+  grestore
+} bind def
+
+% Function border: prints virtual page border
+/border { %def
+  gsave				% print four sides
+    0 setgray
+    x v get y v get moveto
+    0.7 setlinewidth		% of the square
+    pw 0 rlineto
+    0 ph neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+} bind def
+
+% Function water: prints a water mark in background
+/water { %def
+  gsave
+    scx scy moveto rotate
+%%IncludeResource: font Times-Bold
+  fTimes-Bold 100 scalefont setfont
+    .97 setgray
+    dup stringwidth pop 2 div neg -50 rmoveto
+    show
+  grestore
+} bind def
+
+% Function rhead: prints the right header
+/rhead {  %def
+  lx ly moveto
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  l-show
+} bind def
+
+% Function footer (cf rf lf -> -)
+/footer {
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  dx dy moveto
+  show
+
+  snx sny moveto
+  l-show
+  
+  fnx fny moveto
+  c-show
+} bind def
+%%EndResource
+%%BeginResource: procset a2ps-black+white-Prolog 2.0 1
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T { 
+  cw mul x0 add y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n { %def
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+}  bind def
+
+/S {
+  Show
+} bind def
+
+/p {
+  false UL
+  false BX
+  fCourier bfs scalefont setfont
+  Show
+} bind def
+
+/sy {
+  false UL
+  false BX
+  fSymbol bfs scalefont setfont
+  Show
+} bind def
+
+/k {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/K {
+  false UL
+  false BX
+  fCourier-Bold bfs scalefont setfont
+  Show
+} bind def
+
+/c {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/C {
+  false UL
+  false BX
+  fCourier-BoldOblique bfs scalefont setfont
+  Show 
+} bind def
+
+/l {
+  false UL
+  false BX
+  fHelvetica bfs scalefont setfont
+  Show
+} bind def
+
+/L {
+  false UL
+  false BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show 
+} bind def
+
+/str{
+  false UL
+  false BX
+  fTimes-Roman bfs scalefont setfont
+  Show
+} bind def
+
+/e{
+  false UL
+  true BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show
+} bind def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier
+%%IncludeResource: font Courier-Oblique
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Times-Roman
+%%IncludeResource: font Symbol
+%%IncludeResource: font Courier-BoldOblique
+%%BeginResource: encoding ISO-8859-1Encoding
+/ISO-8859-1Encoding [
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quoteright 
+/parenleft /parenright /asterisk /plus /comma /minus /period /slash 
+/zero /one /two /three /four /five /six /seven 
+/eight /nine /colon /semicolon /less /equal /greater /question 
+/at /A /B /C /D /E /F /G 
+/H /I /J /K /L /M /N /O 
+/P /Q /R /S /T /U /V /W 
+/X /Y /Z /bracketleft /backslash /bracketright /asciicircum /underscore 
+/quoteleft /a /b /c /d /e /f /g 
+/h /i /j /k /l /m /n /o 
+/p /q /r /s /t /u /v /w 
+/x /y /z /braceleft /bar /braceright /asciitilde /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclamdown /cent /sterling /currency /yen /brokenbar /section 
+/dieresis /copyright /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron 
+/degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph /bullet 
+/cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf /threequarters /questiondown 
+/Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla 
+/Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis 
+/Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply 
+/Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls 
+/agrave /aacute /acircumflex /atilde /adieresis /aring /ae /ccedilla 
+/egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis 
+/eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide 
+/oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis 
+] def
+%%EndResource
+% Initialize page description variables.
+/sh 612 def
+/sw 792 def
+/llx 24 def
+/urx 768 def
+/ury 588 def
+/lly 24 def
+/#copies 1 def
+/th 15.000000 def
+/fnfs 11 def
+/bfs 7.060185 def
+/cw 4.236111 def
+
+% Dictionary for ISO-8859-1 support
+/iso1dict 8 dict begin
+  /fCourier ISO-8859-1Encoding /Courier reencode_font
+  /fCourier-Bold ISO-8859-1Encoding /Courier-Bold reencode_font
+  /fCourier-BoldOblique ISO-8859-1Encoding /Courier-BoldOblique reencode_font
+  /fCourier-Oblique ISO-8859-1Encoding /Courier-Oblique reencode_font
+  /fHelvetica ISO-8859-1Encoding /Helvetica reencode_font
+  /fHelvetica-Bold ISO-8859-1Encoding /Helvetica-Bold reencode_font
+  /fTimes-Bold ISO-8859-1Encoding /Times-Bold reencode_font
+  /fTimes-Roman ISO-8859-1Encoding /Times-Roman reencode_font
+currentdict end def
+/bgcolor [ 0 0 0 ] def
+/bg false def
+/ul false def
+/bx false def
+% The font for line numbering
+/f# /Helvetica findfont bfs .6 mul scalefont def
+/fSymbol /Symbol findfont def
+/hm fnfs 0.25 mul def
+/pw
+   cw 86.400000 mul
+def
+/ph
+   520.335631 th add
+def
+/pmw urx llx sub pw 2 mul sub 1 div def
+/pmh 0 def
+/v 0 def
+/x [
+  0
+  dup pmw add pw add
+] def
+/y [
+  pmh ph add 0 mul ph add
+  dup
+] def
+/scx sw 2 div def
+/scy sh 2 div def
+/snx urx def
+/sny lly 2 add def
+/dx llx def
+/dy sny def
+/fnx scx def
+/fny dy def
+/lx snx def
+/ly ury fnfs 0.8 mul sub def
+/sx 5 def
+/tab 8 def
+/x0 0 def
+/y0 0 def
+%%EndSetup
+
+%%Page: (1-2) 1
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T ( Note: Here the early termination for MWS is to stop local changes if no improve) p n
+0 T (ments after specific lives.For max_tries = 20, lives = 3, it will have at least ) N
+0 T (23 tries.it also means 23 eras.) N
+0 T () N
+0 T ( !!!! ZDT3) N
+0 T () N
+(5) # (### sa ##################################################) N
+0 T (# 2014-09-22 23:53:24) N
+0 T (?.....+.+.!+........?..?.+..+..!+...!+.!+...!+.?..!+..!+.!+.!+...?..?..+......) N
+0 T () N
+0 T (0.053?.....?.?....?..+.+..+.+..+.+......+..+....+.+..+.+.+.+.+..+...+....+.+.+.) N
+(10) # () N
+0 T (0.053......+.+....+....+...?.+.+.....?.?.+......+..+....?..+.+...?.+.+..+.) N
+0 T () N
+0 T (0.053.+....+...?...+...........?...+.+......+.....+.+....?.+.+.+....?.) N
+0 T () N
+(15) # (0.053) N
+0 T () N
+0 T () N
+0 T ( <f0) N
+0 T (     50      *          |                , 0.15,  0.15,  0.15,  0.15,  0.15) N
+(20) # (    100  *   -----------|--------------  , 0.06,  0.06,  0.06,  0.15,  0.94) N
+0 T (    150             *   |                , 0.35,  0.35,  0.37,  0.94,  0.94) N
+0 T (    200            *    |                , 0.35,  0.35,  0.35,  0.35,  0.35) N
+0 T () N
+0 T ( <f1) N
+(25) # (     50  - *-           |                ,-4.97, -4.65, -4.42, -4.41, -4.17) N
+0 T (    100         --------|----------   *  ,-1.79,  3.70,  4.62,  4.76,  5.06) N
+0 T (    150   -     *     - |                ,-3.89, -3.68, -2.80, -1.99, -1.79) N
+0 T (    200  -*             |                ,-4.48, -4.34, -4.30, -4.22, -4.10) N
+0 T () N
+(30) # (------) N
+0 T (:Normalized Sum of Objectives:  0.053 ) N
+0 T (:Solution [0.350081764338782, 0.47599078213512, 0.798628928786069, 0.99413574764) N
+0 T (60165, 0.5113308577843823, 0.8295500983753414, 0.4060855234729429, 0.17388702418) N
+0 T (2665, 0.7356884964954677, 0.8975555542411283, 0.9954425875601113, 0.598490988915) N
+0 T (6257, 0.17793046342746544, 0.7604320003766825, 0.5526090172827489, 0.58446310866) N
+0 T (98548, 0.19342985951295855, 0.7945262302109171, 0.04627402784824297, 0.520658264) N
+0 T (4565186, 0.6981257332693616, 0.9442301810629807, 0.4205651952096384, 0.867083682) N
+0 T (9845676, 0.15418800058963378, 0.9615023622016912, 0.5808843287771821, 0.28739614) N
+0 T (2993544, 0.5829473181762983, 0.7858211986748432]) N
+0 T () N
+0 T (------------------------------------------------------------) N
+(35) # () N
+0 T ( :other options) N
+0 T (  a12 :0.56  era :50  keep :128  lives :3  repeats :1) N
+0 T ( :sa options) N
+0 T (  baseline :1000  cooling :0.5  kmax :1000) N
+(40) # () N
+0 T (# Runtime: 1.311 secs) N
+0 T () N
+0 T (### mws ##################################################) N
+0 T (# 2014-09-22 23:53:25) N
+(45) # (+.) N
+0 T () N
+0 T (0.124+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.644+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+) N
+0 T (.+.!.+.+.!.+.+.+.+.+.+.+.) N
+(50) # () N
+0 T (0.637!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.!.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.652+.+.+.+.+.!.+.!.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.!.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+(55) # (0.411+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.!.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.404+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+(csc791sbse:hw4:Fu) (Page 1/6) (Sep 23, 14 2:07) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (0.468+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+) p n
+0 T (.+.+.+.!.!.+.+.+.+.+.+.+.) N
+(60) # () N
+0 T (0.476+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.!.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.766+.+.!.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+) N
+0 T (.+.+.+.+.!.+.+.+.+.+.+.+.) N
+0 T () N
+(65) # (0.333+.+.+.+.+.+.!.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.!.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.334+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.!.+.+.+.!.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.478+.!.+.+.+.+.+.+.+.+.+.+.+.+.!.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.!.+.+.) N
+(70) # () N
+0 T (0.34+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T (+.+.+.+.+.+.+.+.+.+.!.+.) N
+0 T () N
+0 T (0.522+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.!.+.!.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.!.!.+.+.+.+.+.+.!.+.+.) N
+0 T () N
+(75) # (0.309+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.447+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.!.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.!.+.+.+.) N
+0 T () N
+0 T (0.493+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.!.+.+.) N
+(80) # () N
+0 T (0.712+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+) N
+0 T (.!.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.301+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+(85) # (0.685+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+) N
+0 T (.+.+.!.+.+.+.+.!.+.+.+.+.) N
+0 T () N
+0 T (0.702!.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.!.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.349+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.!.+.+.+.+.+.+.+.+.+.+.+.) N
+(90) # () N
+0 T (0.719+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.!.+.+.+.+.) N
+0 T () N
+0 T (0.679+.+.!.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.!.+.+.!.+.+.+.+.+.+) N
+0 T (.+.+.+.!.+.+.+.+.+.+.+.) N
+0 T (0.696) N
+(95) # () N
+0 T (total tries: 20) N
+0 T (total changes: 1200) N
+0 T (min_energy:-5.64337176597, max_energy:6.38192899339) N
+0 T (min_energy_obtained: 2.72629855595) N
+(100) # () N
+0 T ( <f0) N
+0 T (     50 -----*          |                , 0.01,  0.15,  0.15,  0.15,  0.15) N
+0 T (    100 ---------------*|                , 0.01,  0.48,  0.48,  0.48,  0.48) N
+0 T (    150                *|                , 0.48,  0.48,  0.48,  0.48,  0.48) N
+(105) # (    200             *   |                , 0.39,  0.39,  0.39,  0.48,  0.48) N
+0 T (    250             *   |                , 0.39,  0.39,  0.39,  0.39,  0.39) N
+0 T (    300             *   |                , 0.39,  0.39,  0.39,  0.39,  0.39) N
+0 T (    350          -------|------*         , 0.29,  0.71,  0.71,  0.71,  0.71) N
+0 T (    400                 |      *         , 0.65,  0.65,  0.71,  0.71,  0.71) N
+(110) # (    450                 |    *           , 0.51,  0.51,  0.65,  0.65,  0.65) N
+0 T (    500       *-------- |                , 0.12,  0.12,  0.18,  0.18,  0.47) N
+0 T (    550    ---*         |                , 0.10,  0.18,  0.18,  0.49,  0.49) N
+0 T (    600    ------------*|                , 0.10,  0.47,  0.47,  0.47,  0.47) N
+(csc791sbse:hw4:Fu) (Page 2/6) (Sep 23, 14 2:07) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(part1.txt) (1/5) (Tuesday September 23, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3-4) 2
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (    650                 |  *             , 0.38,  0.38,  0.60,  0.88,  0.88) p n
+(115) # (    700           *     |                , 0.32,  0.32,  0.32,  0.32,  0.32) N
+0 T (    750                 |               *, 0.32,  0.32,  0.99,  0.99,  0.99) N
+0 T (    800                 |               *, 0.99,  0.99,  0.99,  0.99,  0.99) N
+0 T (    850                 |          *     , 0.83,  0.83,  0.83,  0.83,  0.83) N
+0 T (    900                 | ------*        , 0.57,  0.76,  0.76,  0.83,  0.83) N
+(120) # (    950   *             |                , 0.08,  0.08,  0.08,  0.08,  0.08) N
+0 T (   1000   --------------|*---------      , 0.08,  0.52,  0.52,  0.52,  0.83) N
+0 T (   1050                 |       *        , 0.75,  0.75,  0.75,  0.83,  0.83) N
+0 T (   1100                 |    *           , 0.65,  0.65,  0.65,  0.65,  0.65) N
+0 T (   1150                 |    -------   * , 0.65,  0.87,  0.95,  0.95,  0.95) N
+(125) # (   1200                 |           *    , 0.87,  0.87,  0.87,  0.87,  0.87) N
+0 T () N
+0 T ( <f1) N
+0 T (     50 - *-------------|--------------  ,-4.55, -4.36, -4.17, -3.96,  2.11) N
+0 T (    100                 |    ---*---     , 1.38,  1.52,  1.57,  1.63,  1.83) N
+(130) # (    150                 |        -  * -- , 1.57,  1.66,  1.76,  1.85,  1.98) N
+0 T (    200             - * |              - ,-1.14, -1.02, -0.94,  1.59,  1.74) N
+0 T (    250 --*-            |                ,-1.29, -1.20, -1.16, -1.11, -1.05) N
+0 T (    300    *-           |                ,-1.04, -1.00, -0.96, -0.93, -0.80) N
+0 T (    350 - *-------------|---------       ,-0.90, -0.83, -0.77, -0.71,  0.59) N
+(135) # (    400 -- *            |            -   ,-0.98, -0.75, -0.61,  2.82,  3.01) N
+0 T (    450     -           |        * ----  ,-1.15, -1.08,  1.86,  2.11,  2.65) N
+0 T (    500 -*--------------|--------------- ,-1.94, -1.86, -1.79, -1.71,  2.30) N
+0 T (    550 --------------- | *              ,-1.76,  0.00,  0.40,  0.44,  0.48) N
+0 T (    600  ---------------|------------ *- ,-1.83,  2.11,  2.19,  2.35,  2.49) N
+(140) # (    650  ---            |     *      --  ,-1.87, -1.58,  0.03,  0.65,  0.82) N
+0 T (    700 -   *--         |                ,-2.14, -1.99, -1.78, -1.70, -1.48) N
+0 T (    750  --       * -   |                ,-2.05, -1.94, -1.20, -1.03, -0.94) N
+0 T (    800 -  * -          |                ,-1.23, -1.12, -0.99, -0.90, -0.83) N
+0 T (    850                 |         -- *   , 1.65,  1.81,  1.89,  2.01,  2.07) N
+(145) # (    900  - *            |              - ,-2.69, -2.57, -2.42,  1.81,  1.99) N
+0 T (    950                 |              * , 2.23,  2.31,  2.40,  2.47,  2.60) N
+0 T (   1000  *              |            --- ,-2.24, -2.17, -2.07,  2.13,  2.57) N
+0 T (   1050  - *            |             -  ,-2.35, -2.20, -2.07,  1.69,  1.82) N
+0 T (   1100                 |          -*--  , 2.31,  2.46,  2.58,  2.73,  3.10) N
+(150) # (   1150  -  *           |          ----  ,-2.22, -2.06, -1.78,  1.73,  2.36) N
+0 T (   1200                 |         - *--  , 1.60,  1.64,  1.69,  1.77,  1.86) N
+0 T () N
+0 T (------) N
+0 T (:Normalized Sum of Objectives:  0.119 ) N
+(155) # (:Solution [0.869451337390562, 0.9185004067519045, 0.3521510257746805, 0.90714770) N
+0 T (52477379, 0.8304120014049401, 0.9021794138156, 0.1685192371084291, 0.24354244284) N
+0 T (891946, 0.2920008081890182, 0.20593929988463344, 0.7540750732662473, 0.756131138) N
+0 T (2010337, 0.9925553964138558, 0.8432252860640439, 0.18386795759757069, 0.94427308) N
+0 T (54371619, 0.4744177368925593, 0.22832204324610628, 0.12446222948919061, 0.1, 0.1) N
+0 T (6519571747140227, 0.13562643103451244, 0.6400144208700761, 0.921973571553721, 0.) N
+0 T (3844987418771616, 0.2715584468685964, 0.24707560287101693, 0.5657222988051216, 0) N
+0 T (.04161560070640369, 0.19279177767832922] ) N
+0 T () N
+0 T () N
+0 T (------------------------------------------------------------) N
+0 T () N
+(160) # ( :mws options) N
+0 T (  max_changes :1000  max_tries :20  prob :0.95  threshold :0.01) N
+0 T ( :other options) N
+0 T (  a12 :0.56  era :50  keep :128  lives :3  repeats :1) N
+0 T () N
+(165) # (# Runtime: 1.640 secs) N
+0 T () N
+0 T ( !!!! Viennet3) N
+0 T () N
+0 T (### sa ##################################################) N
+(170) # (# 2014-09-22 23:53:27) N
+0 T (?.!+.?.+.!+..?.?.+.!+.!+.?.?.?.+.!+..?..?.?..?.?.+.+.?.?..?.+..+..+..?..+.?.+.?.) N
+0 T (..+.?..?.+.) N
+0 T () N
+0 T (0.011+.?.+..?.+.?.+..+.?.+.?.?.+..+..+.+..?.?..+.+.?....+.+.+.+.?.+.?..+.?.!+.?.) N
+0 T (.+..+..+...) N
+0 T () N
+(175) # (0.009?.?.?.+.?.+.+...?.?.+.?..+.+.+.!+...?.!+...?.+.+..+.?..+.+....?.?.+...+.+.?) N
+0 T (.+..+...?.) N
+0 T () N
+(csc791sbse:hw4:Fu) (Page 3/6) (Sep 23, 14 2:07) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (0.0+...?.+...+.?.+..+.?.?..+...?.+..+...+.+...?.+.+....?....?.+.+...?.?.+.?..?.+) p n
+0 T (.) N
+0 T () N
+0 T (0.0) N
+(180) # () N
+0 T () N
+0 T ( <f0) N
+0 T (     50       --        | * -----        , 1.48,  2.06,  4.47,  4.96,  6.34) N
+0 T (    100       --    *   |            --  , 1.03,  1.30,  1.86,  4.49,  4.76) N
+(185) # (    150    --   *       |---             , 0.97,  1.39,  2.21,  4.43,  4.97) N
+0 T (    200      --        *|  ---           , 1.27,  1.88,  3.81,  4.73,  5.56) N
+0 T () N
+0 T ( <f1) N
+0 T (     50          -     *|------          ,15.40, 16.55, 24.60, 29.03, 38.54) N
+(190) # (    100            -  * |     ----       ,15.25, 16.43, 19.60, 30.32, 35.03) N
+0 T (    150             * --|--------        ,15.16, 15.85, 18.34, 21.59, 37.65) N
+0 T (    200                 * ----           ,15.04, 15.50, 18.01, 20.82, 25.48) N
+0 T () N
+0 T ( <f2) N
+(195) # (     50     - *-        |                , 0.07,  0.09,  0.11,  0.15,  0.19) N
+0 T (    100     - *         |                , 0.05,  0.10,  0.12,  0.18,  0.20) N
+0 T (    150    -- *-        |                , 0.04,  0.10,  0.12,  0.15,  0.19) N
+0 T (    200     - *         |                , 0.08,  0.10,  0.13,  0.17,  0.18) N
+0 T () N
+(200) # (------) N
+0 T (:Normalized Sum of Objectives:  0.0 ) N
+0 T (:Solution [-2.7334904870213643, 2.120063925203743]) N
+0 T () N
+0 T (------------------------------------------------------------) N
+(205) # () N
+0 T ( :other options) N
+0 T (  a12 :0.56  era :50  keep :128  lives :3  repeats :1) N
+0 T ( :sa options) N
+0 T (  baseline :1000  cooling :0.5  kmax :1000) N
+(210) # () N
+0 T (# Runtime: 0.396 secs) N
+0 T () N
+0 T (### mws ##################################################) N
+0 T (# 2014-09-22 23:53:27) N
+(215) # (+.) N
+0 T () N
+0 T (0.089!.+.!.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.138+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+(220) # () N
+0 T (0.297+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.!.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.215+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+(225) # (0.135+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.!.+.+.+.+.+.) N
+0 T () N
+0 T (0.149+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.!.+.+.!.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.034+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.!.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+(230) # () N
+0 T (0.049+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.!.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.165+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.!) N
+0 T (.+.+.+.+.+.+.+.+.+.!.+.+.) N
+0 T () N
+(235) # (0.061+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.059+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+(csc791sbse:hw4:Fu) (Page 4/6) (Sep 23, 14 2:07) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(part1.txt) (2/5) (Tuesday September 23, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (5-6) 3
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T () p n
+0 T (0.08+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T (+.+.+.+.+.+.+.+.+.+.+.+.) N
+(240) # () N
+0 T (0.143+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.!.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.02+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T (+.+.+.+.+.+.+.+.+.+.!.+.) N
+0 T () N
+(245) # (0.386+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.023+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.!.+.+.+.+.+.+.+.!.!.+.+.) N
+0 T () N
+0 T (0.582+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.!.+.+.+.+.+.+.+.) N
+(250) # () N
+0 T (0.079+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.53+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T (+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+(255) # (0.138+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.19+.+.+.+.+.+.+.!.+.+.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.!.+.+.+.+.+.+.+.+.!.+.+.+.) N
+0 T (+.+.+.+.+.+.+.+.+.+.+.+.) N
+0 T () N
+0 T (0.663+.!.+.+.+.!.+.!.+.+.+.!.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.+.+.+.+.+.+.) N
+(260) # () N
+0 T (0.785+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+.+) N
+0 T (.+.+.+.+.+.+.!.+.+.+.+.) N
+0 T (0.163) N
+0 T () N
+0 T (total tries: 20) N
+(265) # (total changes: 1150) N
+0 T (min_energy:15.9149336516, max_energy:69.7298732156) N
+0 T (min_energy_obtained: 24.6972349493) N
+0 T () N
+0 T ( <f0) N
+(270) # (     50       -         |*---            , 1.48,  1.85,  4.23,  4.53,  5.21) N
+0 T (    100      --      *  |   -            , 1.25,  1.70,  3.23,  4.88,  5.05) N
+0 T (    150      --    *    |---             , 1.29,  1.86,  2.81,  4.40,  4.99) N
+0 T (    200      -------    | * ----------   , 1.41,  3.14,  4.56,  4.97,  7.50) N
+0 T (    250      ---------  |  *    -------  , 1.34,  3.49,  4.93,  6.18,  7.76) N
+(275) # (    300      ----       |*  ---          , 1.27,  2.30,  4.45,  5.03,  5.92) N
+0 T (    350     --   *      |--------        , 1.23,  1.50,  2.28,  4.44,  6.36) N
+0 T (    400       --        |  *--           , 1.42,  1.90,  4.39,  4.70,  5.05) N
+0 T (    450      --       * | ---            , 1.25,  1.90,  3.38,  4.50,  5.04) N
+0 T (    500       ----      |  *------------ , 1.58,  2.67,  4.75,  4.98,  7.96) N
+(280) # (    550     -- *        |---             , 1.23,  1.53,  1.82,  4.00,  5.05) N
+0 T (    600         -   *   |   ------------ , 1.28,  1.49,  1.90,  3.13,  5.04) N
+0 T (    650      ------     |  *------       , 1.33,  2.81,  4.57,  4.87,  6.23) N
+0 T (    700     ---*        | ---            , 1.24,  1.78,  1.91,  4.70,  5.26) N
+0 T (    750      --  *      |---             , 1.25,  1.72,  2.39,  4.37,  5.00) N
+(285) # (    800       ---      *|    ----        , 1.32,  1.83,  3.04,  4.25,  4.95) N
+0 T (    850      -      *   |  -----         , 1.25,  1.69,  2.99,  4.82,  6.10) N
+0 T (    900       --   *    |   -            , 1.45,  1.90,  2.60,  4.68,  5.05) N
+0 T (    950      --         *   -------      , 1.32,  1.89,  3.95,  4.88,  6.55) N
+0 T (   1000    --- *      --|------          , 0.96,  1.50,  1.86,  3.45,  5.85) N
+(290) # (   1050      -        * | ---            , 1.23,  1.58,  3.24,  4.16,  4.97) N
+0 T (   1100      --*        |---             , 1.26,  1.74,  1.91,  4.38,  5.05) N
+0 T (   1150      - *     ---|---             , 1.28,  1.68,  1.86,  3.23,  5.00) N
+0 T () N
+0 T ( <f1) N
+(295) # (     50          - *    |------------    ,15.03, 15.65, 17.25, 26.74, 45.61) N
+0 T (    100           -- *  |--------        ,15.44, 18.66, 21.21, 25.44, 38.77) N
+0 T (    150           - *   |--------        ,15.06, 16.27, 18.39, 24.71, 36.89) N
+0 T (    200          -  * --|                ,15.05, 15.86, 18.55, 22.14, 26.64) N
+(csc791sbse:hw4:Fu) (Page 5/6) (Sep 23, 14 2:07) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (    250         -  *  --|-----------     ,15.11, 16.39, 20.24, 24.94, 48.74) p n
+(300) # (    300          - *  --|-----           ,15.16, 16.16, 18.19, 23.33, 36.11) N
+0 T (    350          - * ---|--              ,15.12, 16.62, 18.50, 22.69, 32.84) N
+0 T (    400            -  * |--              ,15.17, 16.32, 18.77, 22.17, 26.54) N
+0 T (    450             *   |------          ,15.18, 15.85, 18.96, 25.28, 36.07) N
+0 T (    500            * ---|-----           ,15.14, 15.76, 18.04, 21.44, 35.98) N
+(305) # (    550          --   * |---------       ,15.25, 17.99, 21.89, 26.86, 40.87) N
+0 T (    600             -  *| -----          ,15.14, 15.74, 18.52, 21.34, 27.89) N
+0 T (    650             * --|-               ,15.33, 16.00, 18.36, 21.37, 27.97) N
+0 T (    700          -  * --|----            ,15.28, 16.25, 20.92, 24.10, 34.18) N
+0 T (    750            * ---|---             ,15.05, 16.60, 19.61, 21.71, 33.32) N
+(310) # (    800          -  *  -|------          ,15.19, 15.92, 19.27, 23.43, 36.65) N
+0 T (    850          -  *  -|-----           ,15.32, 16.70, 19.32, 23.57, 34.77) N
+0 T (    900          - *  --|--------        ,15.12, 16.50, 18.74, 22.79, 39.69) N
+0 T (    950          -   *  |------          ,15.07, 16.50, 20.26, 25.21, 34.97) N
+0 T (   1000             *---|---             ,15.06, 15.25, 18.48, 21.33, 32.05) N
+(315) # (   1050           -  *  |  ---------     ,15.14, 16.74, 20.92, 29.44, 43.04) N
+0 T (   1100           - *  -|------          ,15.06, 15.74, 17.10, 21.91, 33.19) N
+0 T (   1150           -   * |-----           ,15.47, 17.38, 21.81, 26.56, 35.13) N
+0 T () N
+0 T ( <f2) N
+(320) # (     50     *-          |                , 0.08,  0.10,  0.12,  0.15,  0.19) N
+0 T (    100     -*          |                , 0.07,  0.10,  0.12,  0.16,  0.19) N
+0 T (    150      -*-        |                , 0.07,  0.11,  0.13,  0.14,  0.19) N
+0 T (    200    -*-          |                , 0.07,  0.08,  0.10,  0.12,  0.16) N
+0 T (    250     *---        |                , 0.07,  0.07,  0.09,  0.11,  0.19) N
+(325) # (    300   -* -          |                , 0.08,  0.10,  0.11,  0.15,  0.19) N
+0 T (    350     - *-        |                , 0.06,  0.09,  0.13,  0.16,  0.19) N
+0 T (    400   -*--          |                , 0.09,  0.09,  0.11,  0.15,  0.19) N
+0 T (    450     *-          |                , 0.08,  0.10,  0.13,  0.14,  0.19) N
+0 T (    500    *--          |                , 0.07,  0.09,  0.11,  0.14,  0.19) N
+(330) # (    550    - *-         |                , 0.06,  0.10,  0.14,  0.17,  0.19) N
+0 T (    600      - *        |                , 0.09,  0.11,  0.15,  0.19,  0.19) N
+0 T (    650   -*--          |                , 0.07,  0.10,  0.11,  0.14,  0.18) N
+0 T (    700     - *-        |                , 0.07,  0.10,  0.13,  0.17,  0.19) N
+0 T (    750     - *-        |                , 0.07,  0.11,  0.13,  0.15,  0.18) N
+(335) # (    800    - *          |                , 0.09,  0.12,  0.14,  0.16,  0.19) N
+0 T (    850   -* -          |                , 0.06,  0.10,  0.11,  0.15,  0.19) N
+0 T (    900     -*-         |                , 0.10,  0.12,  0.14,  0.15,  0.18) N
+0 T (    950   - *-          |                , 0.08,  0.10,  0.12,  0.16,  0.19) N
+0 T (   1000   -- *          |                , 0.04,  0.08,  0.12,  0.16,  0.20) N
+(340) # (   1050     --*-        |                , 0.07,  0.12,  0.13,  0.14,  0.18) N
+0 T (   1100     -- *        |                , 0.07,  0.11,  0.14,  0.17,  0.19) N
+0 T (   1150      - *        |                , 0.09,  0.13,  0.15,  0.17,  0.19) N
+0 T () N
+0 T (------) N
+(345) # (:Normalized Sum of Objectives:  0.693 ) N
+0 T (:Solution [1.2959921555903149, 0.06858843175680196] ) N
+0 T () N
+0 T () N
+0 T (------------------------------------------------------------) N
+(350) # () N
+0 T ( :mws options) N
+0 T (  max_changes :1000  max_tries :20  prob :0.95  threshold :0.01) N
+0 T ( :other options) N
+0 T (  a12 :0.56  era :50  keep :128  lives :3  repeats :1) N
+(355) # () N
+0 T (# Runtime: 0.511 secs) N
+(csc791sbse:hw4:Fu) (Page 6/6) (Sep 23, 14 2:07) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(part1.txt) (3/5) (Tuesday September 23, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1) 4
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (rank ,         name ,    med   ,  iqr ) p n
+0 T (----------------------------------------------------) N
+0 T (   1 ,   strawberry ,      33  ,     3 \(*              |              \), 0.30,  ) N
+0 T (0.31,  0.33,  0.34,  0.36) N
+0 T (   2 ,        pears ,     440  ,    50 \(              -|*------------ \), 3.90,  ) N
+0 T (4.40,  4.50,  4.70,  8.00) N
+(5) # (   2 ,       orange ,     490  ,    50 \(               | *---         \), 4.60,  ) N
+0 T (4.60,  4.90,  5.10,  5.70) N
+0 T (   2 ,        apple ,     520  ,    50 \(               |   *          \), 4.70,  ) N
+0 T (4.80,  5.20,  5.30,  5.60) N
+(csc791sbse:hw4:Fu) (Page 1/1) (Sep 23, 14 0:42) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(part2.txt) (4/5) (Tuesday September 23, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 5
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T () p n
+0 T ( !!!! Schaffer) N
+0 T () N
+0 T (### sa ##################################################) N
+(5) # (# 2014-09-23 01:41:11) N
+0 T () N
+0 T ( # The range of f0 during 30 repeats is from 0.0 to 4.0 ) N
+0 T () N
+0 T ( # The range of f1 during 30 repeats is from 0.0 to 16.0 ) N
+(10) # () N
+0 T (### mws ##################################################) N
+0 T (# 2014-09-23 01:41:25) N
+0 T () N
+0 T ( # The range of f0 during 30 repeats is from 0.0 to 4.0 ) N
+(15) # () N
+0 T ( # The range of f1 during 30 repeats is from 0.0 to 16.0 ) N
+0 T () N
+0 T ( !!!! Fonseca) N
+0 T () N
+(20) # (### sa ##################################################) N
+0 T (# 2014-09-23 01:41:43) N
+0 T () N
+0 T ( # The range of f0 during 30 repeats is from 0.0 to 1.0 ) N
+0 T () N
+(25) # ( # The range of f1 during 30 repeats is from 0.031 to 1.0 ) N
+0 T () N
+0 T (### mws ##################################################) N
+0 T (# 2014-09-23 01:42:03) N
+0 T () N
+(30) # ( # The range of f0 during 30 repeats is from 0.0 to 1.0 ) N
+0 T () N
+0 T ( # The range of f1 during 30 repeats is from 0.27 to 1.0 ) N
+0 T () N
+0 T ( !!!! Kursawe) N
+(35) # () N
+0 T (### sa ##################################################) N
+0 T (# 2014-09-23 01:42:23) N
+0 T () N
+0 T ( # The range of f0 during 30 repeats is from -19.143 to -5.0 ) N
+(40) # () N
+0 T ( # The range of f1 during 30 repeats is from -10.22 to 21.0 ) N
+0 T () N
+0 T (### mws ##################################################) N
+0 T (# 2014-09-23 01:42:48) N
+(45) # () N
+0 T ( # The range of f0 during 30 repeats is from -19.406 to -5.0 ) N
+0 T () N
+0 T ( # The range of f1 during 30 repeats is from -6.823 to 21.0 ) N
+0 T () N
+(50) # ( !!!! ZDT1) N
+0 T () N
+0 T (### sa ##################################################) N
+0 T (# 2014-09-23 01:43:26) N
+0 T () N
+(55) # ( # The range of f0 during 30 repeats is from -19.406 to 1.0 ) N
+0 T () N
+0 T ( # The range of f1 during 30 repeats is from 2.066 to 6.0 ) N
+0 T () N
+0 T (### mws ##################################################) N
+(60) # (# 2014-09-23 01:44:10) N
+0 T () N
+0 T ( # The range of f0 during 30 repeats is from -19.406 to 1.0 ) N
+0 T () N
+0 T ( # The range of f1 during 30 repeats is from 0.602 to 3.0 ) N
+(65) # () N
+0 T ( !!!! ZDT3) N
+0 T () N
+0 T (### sa ##################################################) N
+0 T (# 2014-09-23 01:44:54) N
+(70) # () N
+0 T ( # The range of f0 during 30 repeats is from -19.406 to 1.0 ) N
+0 T () N
+0 T ( # The range of f1 during 30 repeats is from -5.163 to 5.0 ) N
+(csc791sbse:hw4:Fu) (Page 1/2) (Sep 23, 14 1:54) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T () p n
+(75) # (### mws ##################################################) N
+0 T (# 2014-09-23 01:45:45) N
+0 T () N
+0 T ( # The range of f0 during 30 repeats is from -19.406 to 1.0 ) N
+0 T () N
+(80) # ( # The range of f1 during 30 repeats is from -4.303 to 3.0 ) N
+0 T () N
+0 T ( !!!! Viennet3) N
+0 T () N
+0 T (### sa ##################################################) N
+(85) # (# 2014-09-23 01:45:59) N
+0 T () N
+0 T ( # The range of f0 during 30 repeats is from -19.406 to 8.0 ) N
+0 T () N
+0 T ( # The range of f1 during 30 repeats is from 15.0 to 62.0 ) N
+(90) # () N
+0 T ( # The range of f1 during 30 repeats is from -0.1 to 0.0 ) N
+0 T () N
+0 T (### mws ##################################################) N
+0 T (# 2014-09-23 01:46:14) N
+(95) # () N
+0 T ( # The range of f0 during 30 repeats is from -19.406 to 8.0 ) N
+0 T () N
+0 T ( # The range of f1 during 30 repeats is from 15.001 to 56.0 ) N
+0 T () N
+(100) # ( # The range of f1 during 30 repeats is from -0.1 to 0.0 ) N
+(csc791sbse:hw4:Fu) (Page 2/2) (Sep 23, 14 1:54) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(part5.txt) (5/5) (Tuesday September 23, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+
+%%Trailer
+end
+%%EOF

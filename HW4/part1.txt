@@ -1,5 +1,4 @@
- Note: Here the early termination for MWS is to stop local changes if no improvements after specific lives.
-       For max_changes = 20, lives = 3, it will have at least 60 changes
+ Note: Here the early termination for MWS is to stop local changes if no improvements after specific lives.For max_tries = 20, lives = 3, it will have at least 23 tries.it also means 23 eras.
 
  !!!! ZDT3
 
