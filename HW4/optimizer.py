@@ -6,8 +6,6 @@ from base import *
 import numpy as np
 from xtile import *
 sys.dont_write_bytecode = True
-
-
 @printlook      
 def sa(model):
   def P(old, new, t):
@@ -126,7 +124,7 @@ def printRange(m):
     # print "\n the range of f%s is %s to %s " % (i, str(tlo), str(thi))
 
 @demo    
-def start():
+def start(): #part 5 with part 3 and part4 
   r = Settings.other.repeats
   rlohi=[] # stupid codes here, to be fixed
   f1lo = []
@@ -135,20 +133,17 @@ def start():
   f0hi =[]
   f2lo =[]
   f2hi =[]
-  # for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
-  for klass in [ZDT3, Viennet3]:
-  #for klass in [ZDT1]:
+  for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:
       name = klass.__name__
       n = 0.0
       reseed()
-      scorelist = []
+      # scorelist = []
       for _ in range(r):
-        x, lohi=searcher(klass())
-      #========part 5==========
+        x, lohi=searcher(klass()) # lohi is a list containing [lo,hi] paris of f1&f2 
+       #========part 5==========
         rlohi.append(lohi)
-
       for i in range(0, r):
         f0lo.append(rlohi[i][0])
         f0hi.append(rlohi[i][1])
@@ -174,12 +169,10 @@ def start():
       # print "# {0}:{1}".format(name, n/r)
 @demo 
 def part6():
-  r = 3
+  r = 5
   lastera = []
-  optcount = 0
-  # for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
+  searchcount = 0
   for klass in [ZDT1]:
-  #for klass in [ZDT1]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:
       reseed()
@@ -191,16 +184,15 @@ def part6():
         x, lohi = searcher(model)
         for i, f in enumerate(model.log.y):
           temp = []
-          searchername = "mws" if optcount else "sa"
+          searchername = "mws" if searchcount else "sa"
           label = searchername + str(k) +"f%s" %i
           temp = (model.history[sorted(model.history.keys())[-1]].log.y[i]._cache)
           temp = [ float(i) for i in temp]
           temp.insert(0,str(label))
           lastera.append(temp) 
-        rdivDemo(lastera) 
-      optcount +=1  
+      rdivDemo(lastera) 
+      searchcount +=1  
       lastera = []     
-
 @demo
 def testmodel():
   # model = ZDT3()

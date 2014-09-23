@@ -5,7 +5,7 @@ from a12 import *
 sys.dont_write_bytecode = True
 
 
-'''All these are based on Dr.Menzies' tricks'''
+'''All these are based on Dr.Menzies' tricks and sample codes'''
 
 class Log():
   def __init__(i, tolog = []):
