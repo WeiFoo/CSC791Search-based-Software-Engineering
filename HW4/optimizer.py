@@ -1,6 +1,7 @@
 from __future__ import division
 import sys, random, math
 from models import *
+from sk import *
 from base import *
 import numpy as np
 from xtile import *
@@ -134,7 +135,6 @@ def start():
   f0hi =[]
   f2lo =[]
   f2hi =[]
-  r = 2
   # for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
   for klass in [ZDT3, Viennet3]:
   #for klass in [ZDT1]:
@@ -172,6 +172,35 @@ def start():
       # scorelist +=[float(x)]
       # print xtile(scorelist,lo=0, hi=1.0,width = 25)
       # print "# {0}:{1}".format(name, n/r)
+@demo 
+def part6():
+  r = 3
+  lastera = []
+  optcount = 0
+  # for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
+  for klass in [ZDT1]:
+  #for klass in [ZDT1]:
+    print "\n !!!!", klass.__name__
+    for searcher in [sa, mws]:
+      reseed()
+      for k in range(r):
+        Settings.sa.cooling = rand() # get variants of sa, mws
+        Settings.mws.prob = rand()
+        Settings.mws.max_changes = int(1000*rand())
+        model = klass()
+        x, lohi = searcher(model)
+        for i, f in enumerate(model.log.y):
+          temp = []
+          searchername = "mws" if optcount else "sa"
+          label = searchername + str(k) +"f%s" %i
+          temp = (model.history[sorted(model.history.keys())[-1]].log.y[i]._cache)
+          temp = [ float(i) for i in temp]
+          temp.insert(0,str(label))
+          lastera.append(temp) 
+        rdivDemo(lastera) 
+      optcount +=1  
+      lastera = []     
+
 @demo
 def testmodel():
   # model = ZDT3()
