@@ -32,9 +32,9 @@ class Model:
     y = i.getDepenlst(x)
     for val, log in zip(y, i.log.y): log += val
   def better(news,olds): # from Dr.Menzies'
-    # def worsed():
-    #   return  ((same     and not betterIqr) or 
-    #            (not same and not betterMed))
+    def worsed():
+      return  ((same     and not betterIqr) or 
+               (not same and not betterMed))
     def bettered():
       return  not same and betterMed
     out = False
@@ -42,7 +42,7 @@ class Model:
       betterMed, same, betterIqr = new.better(old)
       print betterMed, same, betterIqr
       # pdb.set_trace()
-      # if worsed()  : return False # never any worsed
+      if worsed()  : return False # never any worsed
       if bettered(): out= out or True # at least one bettered
     return out
   def sa_neighbor(i, old):  

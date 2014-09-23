@@ -12,13 +12,13 @@ Settings = Options(sa = Options(kmax = 1000,
 	                              baseline = 1000,
                                 score = {},
                                 cooling = 0.5),
-                   mws = Options(threshold = 0.05,
-                                max_tries = 50, 
+                   mws = Options(threshold = 0.1,
+                                max_tries = 20, 
                                 max_changes = 1000,
-                                prob = 0.25,
+                                prob = 0.95,
                                 score = {}
                                 ), 
-                   others = Options(keep = 128, era = 100, lives = 1, a12 = [0.56, 0.64, 0.71][0]))
+                   others = Options(keep = 128, era = 50, lives = 3, a12 = [0.56, 0.64, 0.71][0]))
 def atom(x):
   try : return int(x)
   except ValueError:

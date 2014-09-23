@@ -18,7 +18,6 @@ def sa(model):
   sb = s
   eb = e
   k = 1
-  eraScore = []
   icontrol = Control(model)
   while k < Settings.sa.kmax:
     stopsign = icontrol.next(k) #true ---stop
@@ -42,66 +41,85 @@ def sa(model):
       say('?')
     say('.')
     k = k + 1
-    eraScore += [eb] # keep score for xtile
     if k % 50 == 0:
-      # Settings.sa.score[int(k/50-1)] = eraScore
-      # eraScore = []
       print "\n"  
       say(str(round(eb,3)))
   print "\n"
-  # line = ' '*26+'='*31
-  # print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
-  # for key, scorelist in Settings.sa.score.items():
-  #   print xtile(scorelist,lo=0, hi=1.0,width = 25)      
-  # say(str(sb))
   printReport(model)
   print "\n------\n:e",str(round(eb,3)),"\n:solution",sn
   return eb
 #   
 @printlook
 def mws(model):
+
   min_energy, max_energy = model.baseline()
   total_changes = 0
   total_tries = 0
   norm_energy = 0
   eraScore = []
-  k = 0
-  for _ in range(Settings.mws.max_tries):
+  control = Control(model)
+  optimalsign = False
+  solution = model.generate_x()
+  norm_energy = model.norm(model.getDepen(solution))
+  for k in range(Settings.mws.max_tries):
     total_tries += 1
-    solution = model.generate_x()
     for _ in range(Settings.mws.max_changes):
-      norm_energy = model.norm(model.getDepen(solution))
+      stopsign = control.next(total_changes) #true ---stop
+      if stopsign:
+        break
       if norm_energy <= Settings.mws.threshold:
-        say("\n")
-        say(str(round(model.norm(model.getDepen(solution)), 3))) 
-        print "\n"
-        print "total tries: %s" % total_tries
-        print "total changes: %s" % total_changes
-        print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
-        print "min_energy_obtained: %s" % model.getDepen(solution)
-        print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution, "\n"
-        # line = ' '*26+'='*31
-        # print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
-        # for key, scorelist in Settings.sa.score.items():
-        #   print xtile(scorelist,lo=0, hi=1.0,width = 25)      
-        return norm_energy
-      if Settings.mws.prob < random.random():
+        optimalsign = True
+        break
+        # say("\n")
+        # say(str(round(model.norm(model.getDepen(solution)), 3))) 
+        # print "\n"
+        # print "total tries: %s" % total_tries
+        # print "total changes: %s" % total_changes
+        # print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
+        # print "min_energy_obtained: %s" % model.getDepen(solution)
+        # printReport(model)
+        # print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution, "\n"
+        # # line = ' '*26+'='*31
+        # # print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
+        # # for key, scorelist in Settings.sa.score.items():
+        # #   print xtile(scorelist,lo=0, hi=1.0,width = 25)      
+        # return norm_energy
+      if  random.random()<=Settings.mws.prob:
         solution[random.randint(0,model.n-1)] = model.generate_x()[random.randint(0,model.n-1)]
+        control.logxy(solution)
         say("+")
-        eraScore += [str(round(model.norm(model.getDepen(solution)), 3))]
+        # eraScore += [str(round(model.norm(model.getDepen(solution)), 3))]
       else:
         # solution = optimal_neighbor(solution, model, min, max)
         solution = model.mws_neighbor(solution)
+        control.logxy(solution)
         say("!")
-        eraScore += [str(round(model.norm(model.getDepen(solution)), 3))]
+        # eraScore += [str(round(model.norm(model.getDepen(solution)), 3))]
       say(".")
       if total_changes % 50 == 0:
-        Settings.mws.score[k] = eraScore
-        k +=1
-        eraScore = []
+        # Settings.mws.score[k] = eraScore
+        # k +=1
+        # eraScore = []
         print "\n"
         say(str(round(model.norm(model.getDepen(solution)), 3))) 
-      total_changes +=1     
+      total_changes +=1   
+    if optimalsign or k == Settings.mws.max_tries-1:
+      pdb.set_trace()
+      say("\n")
+      say(str(round(model.norm(model.getDepen(solution)), 3))) 
+      print "\n"
+      print "total tries: %s" % total_tries
+      print "total changes: %s" % total_changes
+      print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
+      print "min_energy_obtained: %s" % model.getDepen(solution)
+      printReport(model)
+      print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution, "\n"
+      # line = ' '*26+'='*31
+      # print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
+      # for key, scorelist in Settings.sa.score.items():
+      #   print xtile(scorelist,lo=0, hi=1.0,width = 25)      
+      return norm_energy
+
 
 def printReport(m):
   for i, f in enumerate(m.log.y):
@@ -115,15 +133,16 @@ def printReport(m):
 def start():
   r = 1
   #for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
-  for klass in [Schaffer]:
+  for klass in [Fonseca]:
     print "\n !!!!", klass.__name__
-    for searcher in [sa, mws]:
+    for searcher in [mws]:
       name = searcher.__name__
       n = 0.0
       reseed()
       scorelist = []
       for _ in range(r):
         name, x =searcher(klass())
+        print "xsssss %f" %x 
         n += float(x)
         scorelist +=[float(x)]
       print xtile(scorelist,lo=0, hi=1.0,width = 25)
