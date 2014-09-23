@@ -132,7 +132,6 @@ def start():
   f1hi = []
   f0lo = []
   f0hi =[]
-  r = 2
   # for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
   for klass in [ZDT3, Viennet3]:
   #for klass in [ZDT1]:
