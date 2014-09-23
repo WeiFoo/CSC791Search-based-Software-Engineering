@@ -40,7 +40,7 @@ class Model:
     out = False
     for new,old in zip(news.log.y, olds.log.y):
       betterMed, same, betterIqr = new.better(old)
-      print betterMed, same, betterIqr
+      # print betterMed, same, betterIqr
       # pdb.set_trace()
       if worsed()  : return False # never any worsed
       if bettered(): out= out or True # at least one bettered
@@ -83,8 +83,8 @@ class Model:
 class Control(object): # based on Dr.Menzies' codes
   def __init__(i, model):
     i.kmax = Settings.sa.kmax
-    i.era = Settings.others.era
-    i.lives = Settings.others.lives
+    i.era = Settings.other.era
+    i.lives = Settings.other.lives
     i.logAll = {}
     i.model = model
   def __call__(i, k):
@@ -99,7 +99,7 @@ class Control(object): # based on Dr.Menzies' codes
   def checkimprove(i):
       if len(i.logAll) >= 2:
         current = i.era
-        before = i.era - Settings.others.era
+        before = i.era - Settings.other.era
         currentLog = i.logAll[current]
         beforeLog = i.logAll[before]
         # pdb.set_trace()
@@ -110,7 +110,7 @@ class Control(object): # based on Dr.Menzies' codes
   def next(i, k):  
     if k >= i.era:
       i.checkimprove()
-      i.era +=Settings.others.era
+      i.era +=Settings.other.era
       if i.lives == 0:
         return True
       else:

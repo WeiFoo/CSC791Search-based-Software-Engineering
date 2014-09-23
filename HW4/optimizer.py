@@ -46,8 +46,9 @@ def sa(model):
       say(str(round(eb,3)))
   print "\n"
   printReport(model)
-  print "\n------\n:e",str(round(eb,3)),"\n:solution",sn
-  return eb
+  print "\n------\n:Normalized f1+f2: ",str(round(eb,3)),"\n:Solution",sn
+  lohi=printRange(model)
+  return eb,lohi
 #   
 @printlook
 def mws(model):
@@ -84,7 +85,6 @@ def mws(model):
         say(str(round(model.norm(model.getDepen(solution)), 3))) 
       total_changes +=1   
     if optimalsign or k == Settings.mws.max_tries-1:
-      pdb.set_trace()
       say("\n")
       say(str(round(model.norm(model.getDepen(solution)), 3))) 
       print "\n"
@@ -93,23 +93,48 @@ def mws(model):
       print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
       print "min_energy_obtained: %s" % model.getDepen(solution)
       printReport(model)
-      print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution, "\n"    
-      return norm_energy
+      lohi =printRange(model)
+      print "\n------\n:Normalized f1+f2: ",str(round(norm_energy,3)),"\n:Solution",solution, "\n"    
+      return norm_energy, lohi
 
 
 def printReport(m):
   for i, f in enumerate(m.log.y):
-    print "\n <f %s" %i
+    print "\n <f%s" %i
     for era in sorted(m.history.keys()):
       # pdb.set_trace()
       log = m.history[era].log.y[i]
       print str(era).rjust(7), xtile(log._cache, width = 33, show = "%5.2f", lo = 0, hi = 1)
 
+def printRange(m):
+  lo = []
+  lohi = []
+  # print sorted(m.history.keys())
+  for i, f in enumerate(m.log.y):
+    tlo=10**5
+    thi=-10**5
+    for era in sorted(m.history.keys()):
+      # pdb.set_trace()
+      if m.history[era].log.y[i].lo < tlo:
+        tlo= m.history[era].log.y[i].lo
+      if m.history[era].log.y[i].hi > tlo:
+        thi= m.history[era].log.y[i].hi
+    lohi.append(tlo)
+    lohi.append(thi)
+  return  lohi
+    # print "\n the range of f%s is %s to %s " % (i, str(tlo), str(thi))
+
 @demo    
 def start():
-  r = 1
-  #for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
-  for klass in [ZDT1]:
+  r = Settings.other.repeats
+  rlohi=[]
+  f1lo = []
+  f1hi = []
+  f0lo = []
+  f0hi =[]
+  r = 2
+  for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
+  #for klass in [ZDT1]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:
       name = searcher.__name__
@@ -117,12 +142,20 @@ def start():
       reseed()
       scorelist = []
       for _ in range(r):
-        name, x =searcher(klass())
-        print "xsssss %f" %x 
-        n += float(x)
-        scorelist +=[float(x)]
-      print xtile(scorelist,lo=0, hi=1.0,width = 25)
-      print "# {0}:{1}".format(name, n/r)
+        x, lohi=searcher(klass())
+        rlohi.append(lohi)
+      for i in range(0, r):
+        f0lo.append(rlohi[i][0])
+        f0hi.append(rlohi[i][1])
+        f1lo.append(rlohi[i][2])
+        f1hi.append(rlohi[i][3]) 
+      print "\n # The range of f0 during %s repeats is from %s to %s " % (r, str(sorted(f0lo)[0]), str(sorted(f0hi)[-1]))
+      print "\n # The range of f1 during %s repeats is from %s to %s " % (r, str(sorted(f1lo)[0]), str(sorted(f1hi)[-1]))
+      #the following codes for hw3
+      # n += float(x)
+      # scorelist +=[float(x)]
+      # print xtile(scorelist,lo=0, hi=1.0,width = 25)
+      # print "# {0}:{1}".format(name, n/r)
 @demo
 def testmodel():
   # model = ZDT3()

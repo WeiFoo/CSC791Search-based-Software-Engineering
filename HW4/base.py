@@ -18,7 +18,11 @@ Settings = Options(sa = Options(kmax = 1000,
                                 prob = 0.95,
                                 score = {}
                                 ), 
-                   others = Options(keep = 128, era = 50, lives = 3, a12 = [0.56, 0.64, 0.71][0]))
+                   other = Options(keep = 128, 
+                                   era = 50,
+                                   lives = 3,
+                                   a12 = [0.56, 0.64, 0.71][0],
+                                   repeats = 30))
 def atom(x):
   try : return int(x)
   except ValueError:
@@ -67,7 +71,7 @@ def printlook(f):
     print "\n" +("-"*60)
     dump(Settings, f.__name__)
     print "\n# Runtime: %.3f secs" % (endTime-beginTime)
-    return f.__name__, x # return the searcher name and the results
+    return x # return the searcher name and the results
   return wrapper
 
 def dump(d, searchname, lvl = 0): # tricks from Dr. Menzies
@@ -83,7 +87,7 @@ def dump(d, searchname, lvl = 0): # tricks from Dr. Menzies
       line +=("  {0} :{1}".format(k, val))
   print gap + line
   for k in callableKey:
-    if k == searchname:
+    if k == searchname or k == "other":
       print gap + (" :{0} {1}".format(k, "options"))
       dump(d[k], lvl+1)
 

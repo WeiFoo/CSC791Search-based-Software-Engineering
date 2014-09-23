@@ -16,12 +16,12 @@ class Log():
     if tolog == None: return tolog
     i.n += 1
     updated = False
-    if len(i._cache) < Settings.others.keep:
+    if len(i._cache) < Settings.other.keep:
       i._cache +=[tolog] 
       updated = True
     else:
-      if rand() <= Settings.others.keep/i.n:
-         i._cache[int(rand()*Settings.others.keep)] = tolog
+      if rand() <= Settings.other.keep/i.n:
+         i._cache[int(rand()*Settings.other.keep)] = tolog
          updated = True
     if updated:
       i._report = None
@@ -48,7 +48,7 @@ class Num(Log):
     return (i._cache[p] + i._cache[q])/2
   def better(new,old):
     "better if (1)less median or (2)same and less iqr"
-    t = Settings.others.a12
+    t = Settings.other.a12
     betterIqr = new.has().iqr < old.has().iqr
     new.lessp = False
     if new.lessp:
@@ -70,7 +70,7 @@ class Num(Log):
 @demo
 def demoNum():
   for size in [16,32, 64,128, 256]:
-    Settings.others.keep = size
+    Settings.other.keep = size
     log = Num()
     for x in xrange(100000): log +=x
     print size, ":", log.has().median
