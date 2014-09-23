@@ -70,36 +70,16 @@ def mws(model):
       if norm_energy <= Settings.mws.threshold:
         optimalsign = True
         break
-        # say("\n")
-        # say(str(round(model.norm(model.getDepen(solution)), 3))) 
-        # print "\n"
-        # print "total tries: %s" % total_tries
-        # print "total changes: %s" % total_changes
-        # print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
-        # print "min_energy_obtained: %s" % model.getDepen(solution)
-        # printReport(model)
-        # print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution, "\n"
-        # # line = ' '*26+'='*31
-        # # print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
-        # # for key, scorelist in Settings.sa.score.items():
-        # #   print xtile(scorelist,lo=0, hi=1.0,width = 25)      
-        # return norm_energy
       if  random.random()<=Settings.mws.prob:
         solution[random.randint(0,model.n-1)] = model.generate_x()[random.randint(0,model.n-1)]
         control.logxy(solution)
         say("+")
-        # eraScore += [str(round(model.norm(model.getDepen(solution)), 3))]
       else:
-        # solution = optimal_neighbor(solution, model, min, max)
         solution = model.mws_neighbor(solution)
         control.logxy(solution)
         say("!")
-        # eraScore += [str(round(model.norm(model.getDepen(solution)), 3))]
       say(".")
       if total_changes % 50 == 0:
-        # Settings.mws.score[k] = eraScore
-        # k +=1
-        # eraScore = []
         print "\n"
         say(str(round(model.norm(model.getDepen(solution)), 3))) 
       total_changes +=1   
@@ -113,11 +93,7 @@ def mws(model):
       print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
       print "min_energy_obtained: %s" % model.getDepen(solution)
       printReport(model)
-      print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution, "\n"
-      # line = ' '*26+'='*31
-      # print ('%31s, %5s, %5s, %5s, %5s' % (' 10%', ' 30%', ' 50%', ' 70%', ' 90%'))+'\n'+line
-      # for key, scorelist in Settings.sa.score.items():
-      #   print xtile(scorelist,lo=0, hi=1.0,width = 25)      
+      print "\n------\n:e",str(round(norm_energy,3)),"\n:solution",solution, "\n"    
       return norm_energy
 
 
@@ -133,9 +109,9 @@ def printReport(m):
 def start():
   r = 1
   #for klass in [Schaffer, Fonseca, Kursawe, ZDT1]:
-  for klass in [Fonseca]:
+  for klass in [ZDT1]:
     print "\n !!!!", klass.__name__
-    for searcher in [mws]:
+    for searcher in [sa, mws]:
       name = searcher.__name__
       n = 0.0
       reseed()
