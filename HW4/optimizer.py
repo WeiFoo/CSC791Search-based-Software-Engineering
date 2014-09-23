@@ -127,7 +127,7 @@ def printRange(m):
 @demo    
 def start():
   r = Settings.other.repeats
-  rlohi=[]
+  rlohi=[] # stupid codes here, to be fixed
   f1lo = []
   f1hi = []
   f0lo = []
