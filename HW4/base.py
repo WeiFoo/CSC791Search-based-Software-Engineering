@@ -12,17 +12,17 @@ Settings = Options(sa = Options(kmax = 1000,
 	                              baseline = 1000,
                                 score = {},
                                 cooling = 0.5),
-                   mws = Options(threshold = 0.01,
+                   mws = Options(threshold = 0.0001,
                                 max_tries = 20, 
                                 max_changes = 1000,
-                                prob = 0.95,
+                                prob = 0.25,
                                 score = {}
                                 ), 
                    other = Options(keep = 128, 
                                    era = 50,
                                    lives = 3,
                                    a12 = [0.56, 0.64, 0.71][0],
-                                   repeats = 30))
+                                   repeats = 1))
 def atom(x):
   try : return int(x)
   except ValueError:
