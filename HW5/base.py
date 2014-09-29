@@ -18,6 +18,11 @@ Settings = Options(sa = Options(kmax = 1000,
                                 prob = 0.25,
                                 score = {}
                                 ), 
+                   ga = Options( pop = 50,
+                                 crossRate = 0.6,
+                                 crossPoints = 2,
+                                 genNum = [100, 200, 400, 800]
+                                ),
                    other = Options(keep = 128, 
                                    era = 50,
                                    lives = 3,

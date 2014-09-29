@@ -219,7 +219,7 @@ class Viennet3(Model):
 '''DTLZ7'''
 class DTLZ7(Model):
   def __init__(i):
-    i.M = 4
+    i.M = 20
     i.K = 20
     i.lo = 0
     i.hi = 1
@@ -231,9 +231,9 @@ class DTLZ7(Model):
   def fm(i):
     return (1 + i.g())*i.h()
   def g(i):
-    return 1 + 9/i.xy.x[i.M-1] * sum(i.xy.x[:i.M-1]) 
+    return 1 + (9/i.K) * sum(i.xy.x[:i.M-1]) 
   def h(i):
-    return i.M - sum([(i.xy.y[k]/(1+i.g()))*(1+sin(3*pi*i.xy.y[k])) for k in range(i.M-1)]) # k = 0,...., M-2
+    return i.M - sum([(i.xy.y[k]/(1.0+i.g()))*(1+sin(3.0*pi*i.xy.y[k])) for k in range(i.M-1)]) # k = 0,...., M-2
   def setup(i):
     tempx = i.generate_x()
     tempy = [i.fi(k) for k in tempx[:-1]]
@@ -242,8 +242,6 @@ class DTLZ7(Model):
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) 
     i.history = {} # hold all logs for eras
   def getDepen(i, xlst):
-    # y = [i.f1, i.f2]
-    pdb.set_trace()
     temp = i.fm()
     return sum(xlst[:i.M])+temp
 
