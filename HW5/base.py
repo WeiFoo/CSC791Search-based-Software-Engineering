@@ -25,7 +25,7 @@ Settings = Options(sa = Options(kmax = 1000,
                                 ),
                    other = Options(keep = 128, 
                                    era = 50,
-                                   lives = 3,
+                                   lives = 1,
                                    baseline = 1000,
                                    a12 = [0.56, 0.64, 0.71][0],
                                    repeats = 1))

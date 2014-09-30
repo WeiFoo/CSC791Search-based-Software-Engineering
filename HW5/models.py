@@ -97,7 +97,7 @@ class Control(object): # based on Dr.Menzies' codes
     for log in both:
       log[i.era].logxy(results)
   def checkimprove(i):
-      if len(i.logAll) >= 2:
+      if len(i.logAll) >= 100:
         current = i.era
         before = i.era - Settings.other.era
         currentLog = i.logAll[current]

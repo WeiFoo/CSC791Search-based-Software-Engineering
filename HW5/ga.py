@@ -1,11 +1,12 @@
 from __future__ import division
 from log import *
 from models import *
+from xtile import *
+from optimizer import *
 import sys, random, math, datetime, time,re, pdb, operator
 sys.dont_write_bytecode = True
 
-def ga():
-  model = DTLZ7()
+def ga(model):
   mutationRate = 1/model.n 
   population = []
   solution =[]
@@ -35,7 +36,6 @@ def ga():
     # print children
     for k, n in enumerate(children):
       if rand()< mutationRate:
-        print "mutation" + str(k)
         children[k]= selected[random.randint(0,1)][random.randint(0, model.n-1)] # pick value from mom or dad
     # print children
     return children
@@ -48,8 +48,7 @@ def ga():
     return parentlst
   def fit(fitness):
     sortedFitness = sorted(fitness.items(), key = lambda x:x[1]) # a sorted list    
-    return sortedFitness[:Settings.ga.pop]
-
+    return sortedFitness[:Settings.ga.pop] # just return the top 50 candidates as new populatioin
   def produce(selected):
   	children = crossover(selected)
   	children = mutate(children, selected)
@@ -62,32 +61,46 @@ def ga():
   for _ in xrange(Settings.ga.pop):
     temp = model.generate_x()
     population.append(temp)
-  for num in Settings.ga.genNum:
-    t = 0
-    while(t < num ): # figure stop out
-      stopsign = control.next(t) #true ---stop
-      if stopsign:
-        break
-      for (k, xlst) in enumerate(population):
-        fitness[k] = model.getDepen(xlst) 
-      newpopfitness = fit(fitness)
-      for n, k in newpopfitness:
-        population[n] = population[newpopfitness[0][0]] # new generation
-        control.logxy(population[n])
-      # for n, k in population:
-      #   control.logxy(k) # log new generation
-      eb = model.norm(newpopfitness[0][1])
-      solution = population[newpopfitness[0][0]]
-      for _ in range(mateNum):
-        selected = tournament(newpopfitness)
-        children.append(produce(selected))
-      population.extend(children)
-      t +=1
+  # for num in Settings.ga.genNum:
+  t = 0
+  while(t < Settings.ga.genNum): # figure stop out
+    stopsign = control.next(t) #true ---stop
+    if stopsign:
+      break
+    for (k, xlst) in enumerate(population):
+      fitness[k] = model.getDepen(xlst) 
+    newpopfitness = fit(fitness)
+    for n, k in newpopfitness:
+      population[n] = population[newpopfitness[0][0]] # new generation
+      control.logxy(population[n])
+    # for n, k in population:
+    #   control.logxy(k) # log new generation
+    eb = model.norm(newpopfitness[0][1])
+    solution = population[newpopfitness[0][0]]
+    for _ in range(mateNum):
+      selected = tournament(newpopfitness)
+      children.append(produce(selected))
+    population.extend(children)
+    t +=1
+  print "best solution : %s" % str(solution)
+  print "best normalized results: %s" % str(eb)  
+  print "-"*20
+  printReport(model)
+
+def startga():
+  for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
+  # for klass in [DTLZ7]:
+    print "="*50
+    print "!!!!", klass.__name__, 
+    print "\nSearcher: GA"
+    reseed()
+    ga(klass())
 
 
-      # print sortedFitness
+if __name__ == "__main__":startga()
+     # print sortedFitness
 
-ga()
+
 
 
     
