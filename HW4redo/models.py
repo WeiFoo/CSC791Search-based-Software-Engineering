@@ -14,6 +14,8 @@ class Model:
   def name(i):
     return i.__class__.__name__
   def setup(i):
+    i.min = 10**(5)
+    i.max = -10**(5)
     i.xy = Options(x = [i.generate_x()], y = [i.f1, i.f2])
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) # hardcode 2
     i.history = {} # hold all logs for eras
@@ -47,38 +49,40 @@ class Model:
     return out
   def sa_neighbor(i, old):  
     p = 1/i.n
-    new = old
+    new = old[:]
     for j in range(len(old)):
       if random.random() < p:
       	new_gen = i.generate_x()
-        old[j] = new_gen[random.randint(0, i.n-1)]   
-    return old
+        new[j] = new_gen[random.randint(0, i.n-1)]   
+    return new
   def mws_neighbor(i,solution):  
     optimized_index = random.randint(0, len(solution)-1)
     increment = (i.hi - i.lo)/10
-    temp_min = 10*(5)
-#   print "old solution : %s" % solution
+    temp_min = i.norm(i.getDepen(solution))
+    temp_solution = solution[:]
+    # print "old solution : %s" % solution
+    # print "old norm energy : %s" % i.norm(i.getDepen(solution))
     for _ in range(10):
-      solution[optimized_index] = i.lo + increment
-      temp = i.norm(i.getDepen(solution))
+      temp_solution[optimized_index] = i.lo + increment
+      temp = i.norm(i.getDepen(temp_solution))
       if temp < temp_min:
         temp_min = temp
-#   print "new solution : %s" % solution
+        solution = temp_solution[:]
+    # print "new solution : %s" % solution
+    # print "new norm energy : %s" %i.norm(i.getDepen(solution))
     return solution
   def baseline(i):
   # model = eval(model+"()")
-    i.min = 10**(5)
-    i.max = -10**(5)
-    for _ in xrange(100000):
+    for _ in xrange(Settings.other.baseline):
       temp = i.getDepen(i.generate_x())
       if temp > i.max:
         i.max = temp
       if temp < i.min:
-	    i.min = temp
+        i.min = temp
     return i.min, i.max
   def norm(i, x):
-  	e = (x - i.min)/(i.max - i.min)
-  	return max(0, min(e,1)) #avoid values <0 or >1
+    e = (x - i.min)/(i.max - i.min)
+    return e #avoid values <0 or >1
 
 class Control(object): # based on Dr.Menzies' codes
   def __init__(i, model):
@@ -122,8 +126,8 @@ class Control(object): # based on Dr.Menzies' codes
 '''Schaffer'''
 class Schaffer(Model):
   def __init__(i):
-    i.lo = -2
-    i.hi = 2
+    i.lo = -5
+    i.hi = 5
     i.n = 1
     i.fn = 2
     i.setup()
@@ -140,10 +144,24 @@ class Fonseca(Model):
     i.n = 3
     i.fn = 2
     i.setup()
+  # def f1(i, xlst):
+  #   return (1 - exp**(-1 * sum([(xlst[k] - 1/sqrt(i.n))**2 for k in xrange(i.n)])))
+  # def f2(i, xlst):
+  #   return (1 - exp**(-1 * sum([(xlst[k] + 1/sqrt(i.n))**2 for k in xrange(i.n)])))
   def f1(i, xlst):
-    return (1 - exp**(-1 * sum([(xlst[k] - 1/sqrt(i.n))**2 for k in xrange(i.n)])))
-  def f2(i, xlst):
-    return (1 - exp**(-1 * sum([(xlst[k] + 1/sqrt(i.n))**2 for k in xrange(i.n)])))
+    def f1_sum(x_list, n):
+      value = []
+      for item in x_list:
+        value.append((item - 1/math.sqrt(n))**2)
+      return sum(value)
+    return 1 - math.e ** (-1* f1_sum(xlst, i.n))
+  def f2(i,xlst):
+    def f2_sum(x_list, n):
+      value = []
+      for item in x_list:
+        value.append((item + 1/math.sqrt(n))**2)
+      return sum(value)  
+    return 1 - math.e ** (-1* f2_sum(xlst, i.n))
     
 '''Kusarvs'''
 class Kursawe(Model):
@@ -202,6 +220,8 @@ class Viennet3(Model):
     i.fn = 3
     i.setup1()
   def setup1(i):
+    i.min = 10**(5)
+    i.max = -10**(5)
     i.xy = Options(x = [i.generate_x()], y = [i.f1, i.f2, i.f3])
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) # hardcode 2
     i.history = {} # hold all logs for eras
