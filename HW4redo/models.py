@@ -97,7 +97,7 @@ class Control(object): # based on Dr.Menzies' codes
   def logxy(i, results):
     both = [i.history, i.logAll]
     for log in both:
-      if not i.era in i.logAll:
+      if not i.era in log:
         log[i.era] = i.model.cloneModel()
     for log in both:
       log[i.era].logxy(results)
@@ -189,11 +189,11 @@ class ZDT1(Model):
     i.setup()
   def f1(i, xlst):
     return xlst[0]
-  def g(i, xlst):
+  def f2(i, xlst):
     return (1 + 9 * (sum(xlst[1:]))/(i.n-1))
-  def f2(i,xlst):
-    g1 = i.g(xlst)
-    return g1*(1-sqrt(xlst[0]/g1))
+  # def f2(i,xlst):
+  #   g1 = i.g(xlst)
+  #   return g1*(1-sqrt(xlst[0]/g1))
 
 '''ZDT3'''
 class ZDT3(Model):

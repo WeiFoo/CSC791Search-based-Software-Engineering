@@ -9,7 +9,7 @@ def pairs(lst):
     yield last,i
     last = i
 
-def xtile(lst,lo=0,hi=0.001, width = 50, 
+def xtile(lst,lo=0,hi=0.0001, width = 50, 
              chops=[0.1 ,0.3,0.5,0.7,0.9],
              marks=["-" ," "," ","-"," "],
              bar="|",star="*",show="%3s"):

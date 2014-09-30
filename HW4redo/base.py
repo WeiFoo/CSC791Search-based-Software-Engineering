@@ -10,8 +10,8 @@ class Options: #"Thanks for Peter Norvig's trick"
 
 Settings = Options(sa = Options(kmax = 1000, 
                                 score = {},
-                                cooling = 0.8),
-                   mws = Options(threshold = 0.001,
+                                cooling = 0.6),
+                   mws = Options(threshold = 0.0001,
                                 max_tries = 20, 
                                 max_changes = 1000,
                                 prob = 0.25,
@@ -20,10 +20,10 @@ Settings = Options(sa = Options(kmax = 1000,
                    other = Options(keep = 128, 
                                    baseline = 10000,
                                    era = 100,
-                                   lives = 4,
+                                   lives = 3,
                                    show = False, 
                                    a12 = [0.56, 0.64, 0.71][0],
-                                   repeats = 20))
+                                   repeats = 30))
 def atom(x):
   try : return int(x)
   except ValueError:

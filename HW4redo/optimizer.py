@@ -49,7 +49,7 @@ def sa(model):
   printReport(model, history)
   print "\n"
   printSumReport(model, history)
-  print "\n------\n:Normalized Sum of Objectives : ",str(round(eb,3)),"\n:Solution",sb
+  # print "\n------\n:Normalized Sum of Objectives : ",str(round(eb,3)),"\n:Solution",sb
   lohi=printRange(model, history)
   return eb,lohi
 #   
@@ -71,10 +71,10 @@ def mws(model):
     for k in xrange(Settings.mws.max_tries):
       solution = model.generate_x()
       total_tries += 1
-      stopsign = control.next(total_changes) #true ---stop
-      if stopsign:
-        break
       for _ in range(Settings.mws.max_changes):
+        stopsign = control.next(total_changes) #true ---stop
+        if stopsign:
+          break
         norm_energy = model.norm(model.getDepen(solution))
         if norm_energy < Settings.mws.threshold:
           optimalsign = True
@@ -96,10 +96,10 @@ def mws(model):
   say("\n")
   say(str(round(model.norm(model.getDepen(solution)), 3))) 
   print "\n"
-  print "total tries: %s" % total_tries
-  print "total changes: %s" % total_changes
-  print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
-  print "min_energy_obtained: %s" % model.getDepen(solution)
+  # print "total tries: %s" % total_tries
+  # print "total changes: %s" % total_changes
+  # print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
+  # print "min_energy_obtained: %s" % model.getDepen(solution)
   printReport(model, history)
   print "\n"
   printSumReport(model, history)
@@ -157,7 +157,7 @@ def start(): #part 5 with part 3 and part4
   f2lo =[]
   f2hi =[]
   # for klass in [Schaffer,Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
-  for klass in [ZDT3]:
+  for klass in [Fonseca]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:
       name = klass.__name__
@@ -177,12 +177,12 @@ def start(): #part 5 with part 3 and part4
           f2lo.append(rlohi[i][4])
           f2hi.append(rlohi[i][5])
       print "\n # The range of f0 during %s repeats is from %s to %s " \
-             % (r, str(round(sorted(f0lo)[0], 3)), str( round(sorted(f0hi)[-1])))
+             % (Settings.other.repeats, str(round(sorted(f0lo)[0], 3)), str( round(sorted(f0hi)[-1])))
       print "\n # The range of f1 during %s repeats is from %s to %s " \
-             % (r, str(round(sorted(f1lo)[0],3)), str(round(sorted(f1hi)[-1])))
+             % (Settings.other.repeats, str(round(sorted(f1lo)[0],3)), str(round(sorted(f1hi)[-1])))
       if name =="Viennet3":
-        print "\n # The range of f1 during %s repeats is from %s to %s "\
-             % (r, str(round(sorted(f2lo)[0],3)), str(round(sorted(f2hi)[-1])))
+        print "\n # The range of f2 during %s repeats is from %s to %s "\
+             % (Settings.other.repeats, str(round(sorted(f2lo)[0],3)), str(round(sorted(f2hi)[-1])))
       rlohi = []
       #=====part 5 ends===========
 
