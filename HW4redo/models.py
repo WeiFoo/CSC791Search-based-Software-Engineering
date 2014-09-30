@@ -18,7 +18,7 @@ class Model:
     i.max = -10**(5)
     i.xy = Options(x = [i.generate_x()], y = [i.f1, i.f2])
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) # hardcode 2
-    i.history = {} # hold all logs for eras
+    # i.history = {} # hold all logs for eras
   def generate_x(i):  
     x= [i.lo + (i.hi-i.lo)*random.random() for _ in range(i.n)]  
     return x
@@ -82,19 +82,20 @@ class Model:
     return i.min, i.max
   def norm(i, x):
     e = (x - i.min)/(i.max - i.min)
-    return e #avoid values <0 or >1
+    return max(0, min(e,1)) #avoid values <0 or >1
 
 class Control(object): # based on Dr.Menzies' codes
-  def __init__(i, model):
+  def __init__(i, model, history = None):
     i.kmax = Settings.sa.kmax
     i.era = Settings.other.era
     i.lives = Settings.other.lives
+    i.history = {} if history == None else history
     i.logAll = {}
     i.model = model
   def __call__(i, k):
     i.next(k)
   def logxy(i, results):
-    both = [i.model.history, i.logAll]
+    both = [i.history, i.logAll]
     for log in both:
       if not i.era in i.logAll:
         log[i.era] = i.model.cloneModel()
@@ -224,7 +225,7 @@ class Viennet3(Model):
     i.max = -10**(5)
     i.xy = Options(x = [i.generate_x()], y = [i.f1, i.f2, i.f3])
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) # hardcode 2
-    i.history = {} # hold all logs for eras
+    # i.history = {} # hold all logs for eras
   def f1(i, xlst):
     xy2 = xlst[0]**2 + xlst[1]**2
     return 0.5* (xy2) + sin(xy2)

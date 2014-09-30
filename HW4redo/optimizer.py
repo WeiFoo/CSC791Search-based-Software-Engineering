@@ -9,136 +9,138 @@ sys.dont_write_bytecode = True
 @printlook      
 def sa(model):
   def P(old, new, t):
-    prob = math.e**((old - new)/t) 
+    prob = math.e**((old - new)/(t+0.00001)) 
     return prob 
   min_energy, max_energy = model.baseline()
-  s = model.generate_x()
-  e = model.norm(model.getDepen(s))
-  sb = s[:]
-  eb = e
-  k = 1
-  icontrol = Control(model)
-  while k < Settings.sa.kmax:
-    stopsign = icontrol.next(k) #true ---stop
-    if stopsign:
-      break
-    sn = model.sa_neighbor(s)
-    en = model.norm(model.getDepen(sn))
-    icontrol.logxy(sn)
-    temp = (k/Settings.sa.kmax)**Settings.sa.cooling
-    if en < eb:
-      sb = sn[:] ###!!!!! can't do sb = sn for lists, because
-      eb = en
-      if Settings.other.show: say('!')
-    if en < e:
-      s = sn[:]
-      e = en
-      if Settings.other.show:say('+')
-    elif P(e, en, temp) < random.random():
-      s = sn[:]
-      e = en
-      if Settings.other.show:say('?')
-    if Settings.other.show:say('.')
-    k = k + 1
-    if k % 30 == 0:
-      if Settings.other.show:print "\n"  
-      if Settings.other.show:say(str(round(eb,3)))
-    # print "sb :" + str(sb)
-    # print "sn :" +str(sn)
-    # print "eb:" +str(eb) 
-
+  history = {}
+  for _ in xrange(Settings.other.repeats):
+    s = model.generate_x()
+    e = model.norm(model.getDepen(s))
+    sb = s[:]
+    eb = e
+    k = 1
+    icontrol = Control(model, history)
+    while k < Settings.sa.kmax:
+      stopsign = icontrol.next(k) #true ---stop
+      if stopsign:
+        break
+      sn = model.sa_neighbor(s)
+      en = model.norm(model.getDepen(sn))
+      icontrol.logxy(sn)
+      temp = (k/Settings.sa.kmax)**Settings.sa.cooling
+      if en < eb:
+        sb = sn[:] ###!!!!! can't do sb = sn for lists, because
+        eb = en
+        if Settings.other.show: say('!')
+      if en < e:
+        s = sn[:]
+        e = en
+        if Settings.other.show:say('+')
+      elif P(e, en, temp) < random.random():
+        s = sn[:]
+        e = en
+        if Settings.other.show:say('?')
+      if Settings.other.show:say('.')
+      k = k + 1
+      if k % 30 == 0:
+        if Settings.other.show:print "\n"  
+        if Settings.other.show:say(str(round(eb,3)))
+    print "+"
+  printReport(model, history)
   print "\n"
-  printReport(model)
-  print "\n"
-  printSumReport(model)
+  printSumReport(model, history)
   print "\n------\n:Normalized Sum of Objectives : ",str(round(eb,3)),"\n:Solution",sb
-  lohi=printRange(model)
+  lohi=printRange(model, history)
   return eb,lohi
 #   
 @printlook
 def mws(model):
 
   min_energy, max_energy = model.baseline()
-  total_changes = 0
-  total_tries = 0
   norm_energy = 0
   eraScore = []
   control = Control(model)
   optimalsign = False
-  solution = model.generate_x()
+  eb = 0
   norm_energy = 10
-  for k in range(Settings.mws.max_tries):
-    total_tries += 1
-    for _ in range(Settings.mws.max_changes):
+  history = {}
+  for _ in xrange(Settings.other.repeats):
+    control = Control(model, history)
+    total_changes = 0
+    total_tries = 0
+    for k in xrange(Settings.mws.max_tries):
+      solution = model.generate_x()
+      total_tries += 1
       stopsign = control.next(total_changes) #true ---stop
       if stopsign:
         break
-      norm_energy = model.norm(model.getDepen(solution))
-      if norm_energy <= Settings.mws.threshold:
-        optimalsign = True
-        break
-      if  random.random()<=Settings.mws.prob:
-        solution[random.randint(0,model.n-1)] = model.generate_x()[random.randint(0,model.n-1)]
-        control.logxy(solution)
-        if Settings.other.show:say("+")
-      else:
-        solution = model.mws_neighbor(solution)
-        control.logxy(solution)
-        if Settings.other.show:say("!")
-      if Settings.other.show:say(".")
-      if total_changes % 30 == 0:
-        if Settings.other.show:print "\n"
-        if Settings.other.show:say(str(round(model.norm(model.getDepen(solution)), 3))) 
-      total_changes +=1   
-    if optimalsign or k == Settings.mws.max_tries-1:
-      say("\n")
-      say(str(round(model.norm(model.getDepen(solution)), 3))) 
-      print "\n"
-      print "total tries: %s" % total_tries
-      print "total changes: %s" % total_changes
-      print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
-      print "min_energy_obtained: %s" % model.getDepen(solution)
-      printReport(model)
-      print "\n"
-      printSumReport(model)
-      lohi =printRange(model)
-      print "\n------\n:Normalized Sum of Objectives: ",str(round(norm_energy,3)),"\n:Solution",solution, "\n"    
-      return norm_energy, lohi
+      for _ in range(Settings.mws.max_changes):
+        norm_energy = model.norm(model.getDepen(solution))
+        if norm_energy < Settings.mws.threshold:
+          optimalsign = True
+          break
+        if  random.random()<Settings.mws.prob:
+          solution[random.randint(0,model.n-1)] = model.generate_x()[random.randint(0,model.n-1)]
+          control.logxy(solution)
+          if Settings.other.show:say("+")
+        else:
+          solution = model.mws_neighbor(solution)
+          control.logxy(solution)
+          if Settings.other.show:say("!")
+        if Settings.other.show:say(".")
+        if total_changes % 30 == 0:
+          if Settings.other.show:print "\n"
+          if Settings.other.show:say(str(round(model.norm(model.getDepen(solution)), 3))) 
+        total_changes +=1   
+    # if optimalsign or k == Settings.mws.max_tries-1:
+  say("\n")
+  say(str(round(model.norm(model.getDepen(solution)), 3))) 
+  print "\n"
+  print "total tries: %s" % total_tries
+  print "total changes: %s" % total_changes
+  print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
+  print "min_energy_obtained: %s" % model.getDepen(solution)
+  printReport(model, history)
+  print "\n"
+  printSumReport(model, history)
+  lohi =printRange(model, history)
+  print "\n------\n:Normalized Sum of Objectives: ",str(round(norm_energy,3)),"\n:Solution",solution, "\n"    
+  return norm_energy, lohi
 
 
-def printReport(m):
+def printReport(m, history):
   for i, f in enumerate(m.log.y):
     print "\n <f%s" %i
-    for era in sorted(m.history.keys()):
+    for era in sorted(history.keys()):
       # pdb.set_trace()
-      log = m.history[era].log.y[i]
+      log = history[era].log.y[i]
       print str(era).rjust(7), xtile(log._cache, width = 33, show = "%5.2f", lo = 0, hi = 1)
 
 
-def printSumReport(m):
+def printSumReport(m, history):
   # for i, f in enumerate(m.log.y):
   print "\n Sum" 
-  for era in sorted(m.history.keys()):
+  for era in sorted(history.keys()):
     # pdb.set_trace()
-    log = [m.history[era].log.y[k] for k in range (len(m.log.y))]
+    log = [history[era].log.y[k] for k in range (len(m.log.y))]
     ss = []
     ss.extend([log[s]._cache for s in range(len(log))])
     logsum = map(sum, zip(*ss))
     print str(era).rjust(7), xtile(logsum, width = 33, show = "%5.2f", lo = 0, hi = 1)
 
-def printRange(m):
+def printRange(m, history):
   lo = []
   lohi = []
   # print sorted(m.history.keys())
   for i, f in enumerate(m.log.y):
     tlo=10**5
     thi=-10**5
-    for era in sorted(m.history.keys()):
+    for era in sorted(history.keys()):
       # pdb.set_trace()
-      if m.history[era].log.y[i].lo < tlo:
-        tlo= m.history[era].log.y[i].lo
-      if m.history[era].log.y[i].hi > tlo:
-        thi= m.history[era].log.y[i].hi
+      if history[era].log.y[i].lo < tlo:
+        tlo= history[era].log.y[i].lo
+      if history[era].log.y[i].hi > tlo:
+        thi= history[era].log.y[i].hi
     lohi.append(tlo)
     lohi.append(thi)
   return  lohi
@@ -146,7 +148,7 @@ def printRange(m):
 
 @demo    
 def start(): #part 5 with part 3 and part4 
-  r = Settings.other.repeats
+  r = 1
   rlohi=[] # stupid codes here, to be fixed
   f1lo = []
   f1hi = []
@@ -155,7 +157,7 @@ def start(): #part 5 with part 3 and part4
   f2lo =[]
   f2hi =[]
   # for klass in [Schaffer,Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
-  for klass in [Fonseca]:
+  for klass in [ZDT3]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:
       name = klass.__name__
