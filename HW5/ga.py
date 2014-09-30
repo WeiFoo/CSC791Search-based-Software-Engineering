@@ -9,46 +9,80 @@ def ga():
   mutationRate = 1/model.n 
   population = []
   solution =[]
+  children = []
+  fitness = {}
+  mateNum = 20
   def selection(sortedFitness):
     return [population[sortedFitness[0][0]], population[sortedFitness[1][0]]] # sroted[0] and [1] are the smallest two we preferred
   def crossover(selected):
-    children = []
+    '''crossover will do this way: offsprint1 = p* parent 1+ (1-p)* parent2 for numbers between two points '''
+    def what(lst):
+      return lst[0] if isinstance(lst, list) else lst
+    children1 = []
     if rand()> Settings.ga.crossRate:
       return selected[0]
     else:
-      index = sorted([random.randint(0, model.n - 1) for _ in xrange(Settings.ga.crossPoints)])
-      parent = selected[0] 
-      children = parent[:]
-      children[index[0]:index[1]] = selected[1][index[0]:index[1]]
-      return children
+      if model.n ==1:
+        children1 = [(what(selected[0]) + what(selected[1]))*0.5]
+      else:
+        index = sorted([random.randint(0, model.n - 1) for _ in xrange(Settings.ga.crossPoints)])
+        parent1 = selected[0]
+        parent2 = selected[1]
+        children1 = parent1[:]
+        children1[index[0]:index[1]] = parent2[index[0]:index[1]]
+      return children1
   def mutate(children, selected):
     # print children
     for k, n in enumerate(children):
       if rand()< mutationRate:
         print "mutation" + str(k)
-        children[k] = selected[random.randint(0,1)][random.randint(0, model.n-1)] # pick value from mom or dad
+        children[k]= selected[random.randint(0,1)][random.randint(0, model.n-1)] # pick value from mom or dad
     # print children
     return children
+  def tournament(sortedFitness, m=10): # do tornament selection, select the best daddy or mom in  m = 10 candidates
+    index = []
+    for _ in range(m):
+      index.append(random.randint(0, Settings.ga.pop-1))
+    betterIndex = list(set(sorted(index)))
+    parentlst = [population[sortedFitness[betterIndex[0]][0]], population[sortedFitness[betterIndex[1]][0]]]
+    return parentlst
+  def fit(fitness):
+    sortedFitness = sorted(fitness.items(), key = lambda x:x[1]) # a sorted list    
+    return sortedFitness[:Settings.ga.pop]
 
   def produce(selected):
   	children = crossover(selected)
   	children = mutate(children, selected)
   	return children
 
+  min_energy, max_energy = model.baseline()
+  eb= 0
+  solution = []
+  control = Control(model)
   for _ in xrange(Settings.ga.pop):
     temp = model.generate_x()
     population.append(temp)
   for num in Settings.ga.genNum:
     t = 0
     while(t < num ): # figure stop out
-      fitness = {}
+      stopsign = control.next(t) #true ---stop
+      if stopsign:
+        break
       for (k, xlst) in enumerate(population):
         fitness[k] = model.getDepen(xlst) 
-      sortedFitness = sorted(fitness.items(), key = lambda x:x[1]) # a sorted list
-      solution = sortedFitness[0]
-      selected = selection(sortedFitness)
-      children = produce(selected)
-      population[sortedFiness[-1][1]] = children # replace the worst solution in population with children 
+      newpopfitness = fit(fitness)
+      for n, k in newpopfitness:
+        population[n] = population[newpopfitness[0][0]] # new generation
+        control.logxy(population[n])
+      # for n, k in population:
+      #   control.logxy(k) # log new generation
+      eb = model.norm(newpopfitness[0][1])
+      solution = population[newpopfitness[0][0]]
+      for _ in range(mateNum):
+        selected = tournament(newpopfitness)
+        children.append(produce(selected))
+      population.extend(children)
+      t +=1
 
 
       # print sortedFitness
