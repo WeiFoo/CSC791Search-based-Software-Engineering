@@ -18,7 +18,7 @@ class Model:
     i.max = -10**(5)
     i.xy = Options(x = [i.generate_x()], y = [i.f1, i.f2])
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) # hardcode 2
-    # i.history = {} # hold all logs for eras
+    i.history = {} # hold all logs for eras
   def generate_x(i):  
     x= [i.lo + (i.hi-i.lo)*random.random() for _ in range(i.n)]  
     return x

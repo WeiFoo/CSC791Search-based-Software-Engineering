@@ -45,7 +45,6 @@ def sa(model):
       if k % 30 == 0:
         if Settings.other.show:print "\n"  
         if Settings.other.show:say(str(round(eb,3)))
-    print "+"
   printReport(model, history)
   print "\n"
   printSumReport(model, history)
@@ -104,7 +103,7 @@ def mws(model):
   print "\n"
   printSumReport(model, history)
   lohi =printRange(model, history)
-  print "\n------\n:Normalized Sum of Objectives: ",str(round(norm_energy,3)),"\n:Solution",solution, "\n"    
+  # print "\n------\n:Normalized Sum of Objectives: ",str(round(norm_energy,3)),"\n:Solution",solution, "\n"    
   return norm_energy, lohi
 
 
@@ -156,10 +155,10 @@ def start(): #part 5 with part 3 and part4
   f0hi =[]
   f2lo =[]
   f2hi =[]
-  # for klass in [Schaffer,Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
-  for klass in [Fonseca]:
+  for klass in [Schaffer,Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
+  # for klass in [Kursawe]:
     print "\n !!!!", klass.__name__
-    for searcher in [sa, mws]:
+    for searcher in [mws]:
       name = klass.__name__
       n = 0.0
       reseed()
@@ -176,12 +175,12 @@ def start(): #part 5 with part 3 and part4
         if name == "Viennet3": # f1, f2, f3
           f2lo.append(rlohi[i][4])
           f2hi.append(rlohi[i][5])
-      print "\n # The range of f0 during %s repeats is from %s to %s " \
+      print "# The range of f0 during %s repeats is from %s to %s " \
              % (Settings.other.repeats, str(round(sorted(f0lo)[0], 3)), str( round(sorted(f0hi)[-1])))
-      print "\n # The range of f1 during %s repeats is from %s to %s " \
+      print "# The range of f1 during %s repeats is from %s to %s " \
              % (Settings.other.repeats, str(round(sorted(f1lo)[0],3)), str(round(sorted(f1hi)[-1])))
       if name =="Viennet3":
-        print "\n # The range of f2 during %s repeats is from %s to %s "\
+        print "# The range of f2 during %s repeats is from %s to %s "\
              % (Settings.other.repeats, str(round(sorted(f2lo)[0],3)), str(round(sorted(f2hi)[-1])))
       rlohi = []
       #=====part 5 ends===========
