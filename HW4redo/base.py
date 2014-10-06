@@ -11,10 +11,10 @@ class Options: #"Thanks for Peter Norvig's trick"
 Settings = Options(sa = Options(kmax = 1000, 
                                 score = {},
                                 cooling = 0.6),
-                   mws = Options(threshold = 0.005,
+                   mws = Options(threshold = 0.0001,
                                 max_tries = 20, 
                                 max_changes = 1000,
-                                prob = 0.15,
+                                prob = 0.25,
                                 score = {}
                                 ), 
                    other = Options(keep = 64, 

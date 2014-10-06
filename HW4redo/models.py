@@ -95,7 +95,7 @@ class Control(object): # based on Dr.Menzies' codes
   def __call__(i, k):
     i.next(k)
   def logxy(i, results):
-    both = [i.history, i.logAll]
+    both = [i.history, i.logAll, i.model.history]
     for log in both:
       if not i.era in log:
         log[i.era] = i.model.cloneModel()
@@ -225,7 +225,7 @@ class Viennet3(Model):
     i.max = -10**(5)
     i.xy = Options(x = [i.generate_x()], y = [i.f1, i.f2, i.f3])
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) # hardcode 2
-    # i.history = {} # hold all logs for eras
+    i.history = {} # hold all logs for eras
   def f1(i, xlst):
     xy2 = xlst[0]**2 + xlst[1]**2
     return 0.5* (xy2) + sin(xy2)

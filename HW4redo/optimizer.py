@@ -12,6 +12,7 @@ def sa(model):
     prob = math.e**((old - new)/(t+0.00001)) 
     return prob 
   history = {}
+  eb =0.0
   for _ in xrange(Settings.other.repeats):
     #reseed()
     min_energy, max_energy = model.baseline()
@@ -46,9 +47,11 @@ def sa(model):
       if k % 30 == 0:
         if Settings.other.show:print "\n"  
         if Settings.other.show:say(str(round(eb,3)))
-  printReport(model, history)
+  if Settings.other.show: 
+    printReport(model, history)
   print "\n"
-  printSumReport(model, history)
+  if Settings.other.show: 
+    printSumReport(model, history)
   # print "\n------\n:Normalized Sum of Objectives : ",str(round(eb,3)),"\n:Solution",sb
   lohi=printRange(model, history)
   return eb,lohi
@@ -59,7 +62,7 @@ def mws(model):
   eraScore = []
   control = Control(model)
   optimalsign = False
-  eb = 0
+  eb = 0.0
   norm_energy = 10
   history = {}
   for _ in xrange(Settings.other.repeats):
@@ -94,16 +97,17 @@ def mws(model):
           if Settings.other.show:say(str(round(model.norm(model.getDepen(solution)), 3))) 
         total_changes +=1   
     # if optimalsign or k == Settings.mws.max_tries-1:
-  say("\n")
-  say(str(round(model.norm(model.getDepen(solution)), 3))) 
-  print "\n"
+  if Settings.other.show: 
+    say("\n")
+    say(str(round(model.norm(model.getDepen(solution)), 3))) 
+    print "\n"
   # print "total tries: %s" % total_tries
   # print "total changes: %s" % total_changes
   # print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
   # print "min_energy_obtained: %s" % model.getDepen(solution)
-  printReport(model, history)
-  print "\n"
-  printSumReport(model, history)
+    printReport(model, history)
+    print "\n"
+    printSumReport(model, history)
   lohi =printRange(model, history)
   # print "\n------\n:Normalized Sum of Objectives: ",str(round(norm_energy,3)),"\n:Solution",solution, "\n"    
   return norm_energy, lohi
@@ -129,7 +133,7 @@ def printSumReport(m, history):
     logsum = map(sum, zip(*ss))
     minvalue = min(logsum)
     maxvalue = max(logsum)
-    normlog = [(x - minvalue)/(maxvalue - minvalue) for x in logsum]
+    normlog = [(x - minvalue)/(maxvalue - minvalue +0.00001) for x in logsum]
     print str(era).rjust(7), xtile(normlog, width = 33, show = "%5.2f", lo = 0, hi = 1)
 
 def printRange(m, history):
@@ -163,7 +167,7 @@ def start(): #part 5 with part 3 and part4
   for klass in [Schaffer,Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
   # for klass in [Kursawe]:
     print "\n !!!!", klass.__name__
-    for searcher in [mws]:
+    for searcher in [sa, mws]:
       name = klass.__name__
       n = 0.0
       reseed()
@@ -197,30 +201,53 @@ def start(): #part 5 with part 3 and part4
       # print "# {0}:{1}".format(name, n/r)
 @demo 
 def part6():
-  r = 5
-  lastera = []
+  r = 20
   searchcount = 0
+  Settings.other.repeats = 1
   for klass in [ZDT1]:
     print "\n !!!!", klass.__name__
-    for searcher in [sa, mws]:
-      reseed()
-      for k in range(r):
-        Settings.sa.cooling = rand() # get variants of sa, mws
-        Settings.mws.prob = rand()
-        Settings.mws.max_changes = int(1000*rand())
-        model = klass()
-        x, lohi = searcher(model)
-        for i, f in enumerate(model.log.y):
-          temp = []
-          searchername = "mws" if searchcount else "sa"
-          label = searchername + str(k) +"f%s" %i
-          temp = (model.history[sorted(model.history.keys())[-1]].log.y[i]._cache)
-          temp = [ float(i) for i in temp]
-          temp.insert(0,str(label))
-          lastera.append(temp) 
-      rdivDemo(lastera) 
-      searchcount +=1  
-      lastera = []     
+    for variant in range(5):
+      Settings.sa.cooling = rand() # get variants of sa, mws
+      Settings.mws.prob = rand()
+      Settings.mws.max_changes = int(1000*rand())
+      allEB = []
+      for searcher in [sa, mws]:
+        lastera = []
+        reseed()
+        for _ in range(r):
+          model = klass()
+          x, lohi = searcher(model)
+          lastera += [x]
+        searchername = "mws" if searchcount else "sa"
+        label = searchername + str(variant) 
+        lastera.insert(0,label)
+        allEB.append(lastera)
+        rdivDemo(allEB) 
+        searchcount += 1
+      searchcount = 0 
+
+          # temp = []
+          # hi =sorted(model.history.keys())[-1]
+          # log = [model.history[hi].log.y[k] for k in range (len(model.log.y))]
+          # ss = []
+          # ss.extend([log[s]._cache for s in range(len(log))])
+          # logsum = map(sum, zip(*ss))
+          # temp = [ float(i) for i in logsum]
+          # lastera+=temp 
+          # for i, f in enumerate(model.log.y):
+          #   temp = []
+          #   searchername = "mws" if searchcount else "sa"
+          #   label = searchername + str(k) +"f%s" %i
+          #   temp = (model.history[sorted(model.history.keys())[-1]].log.y[i]._cache)
+          #   temp = [ float(i) for i in temp]
+          #   temp.insert(0,str(label))
+          #   lastera.append(temp) 
+        # searchername = "mws" if searchcount else "sa"
+        # label = searchername + str(variant) 
+        # lastera.insert(0,str(label))
+        # rdivDemo(lastera)  
+        # searchcount +=1
+        # lastera = []     
 @demo
 def testmodel():
   # model = ZDT3()
