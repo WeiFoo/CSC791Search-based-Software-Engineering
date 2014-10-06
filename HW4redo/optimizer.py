@@ -13,7 +13,7 @@ def sa(model):
     return prob 
   history = {}
   for _ in xrange(Settings.other.repeats):
-    reseed()
+    #reseed()
     min_energy, max_energy = model.baseline()
     s = model.generate_x()
     e = model.norm(model.getDepen(s))
@@ -55,8 +55,6 @@ def sa(model):
 #   
 @printlook
 def mws(model):
-
-  min_energy, max_energy = model.baseline()
   norm_energy = 0
   eraScore = []
   control = Control(model)
@@ -65,10 +63,13 @@ def mws(model):
   norm_energy = 10
   history = {}
   for _ in xrange(Settings.other.repeats):
+    min_energy, max_energy = model.baseline()
     control = Control(model, history)
     total_changes = 0
     total_tries = 0
     for k in xrange(Settings.mws.max_tries):
+      if control.lives ==0:
+        break
       solution = model.generate_x()
       total_tries += 1
       for _ in range(Settings.mws.max_changes):
@@ -119,7 +120,7 @@ def printReport(m, history):
 
 def printSumReport(m, history):
   # for i, f in enumerate(m.log.y):
-  print "\n Sum" 
+  print "\n Objective Value" 
   for era in sorted(history.keys()):
     # pdb.set_trace()
     log = [history[era].log.y[k] for k in range (len(m.log.y))]
@@ -162,7 +163,7 @@ def start(): #part 5 with part 3 and part4
   for klass in [Schaffer,Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
   # for klass in [Kursawe]:
     print "\n !!!!", klass.__name__
-    for searcher in [sa]:
+    for searcher in [mws]:
       name = klass.__name__
       n = 0.0
       reseed()
