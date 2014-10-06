@@ -11,9 +11,10 @@ def sa(model):
   def P(old, new, t):
     prob = math.e**((old - new)/(t+0.00001)) 
     return prob 
-  min_energy, max_energy = model.baseline()
   history = {}
   for _ in xrange(Settings.other.repeats):
+    reseed()
+    min_energy, max_energy = model.baseline()
     s = model.generate_x()
     e = model.norm(model.getDepen(s))
     sb = s[:]
@@ -125,7 +126,10 @@ def printSumReport(m, history):
     ss = []
     ss.extend([log[s]._cache for s in range(len(log))])
     logsum = map(sum, zip(*ss))
-    print str(era).rjust(7), xtile(logsum, width = 33, show = "%5.2f", lo = 0, hi = 1)
+    minvalue = min(logsum)
+    maxvalue = max(logsum)
+    normlog = [(x - minvalue)/(maxvalue - minvalue) for x in logsum]
+    print str(era).rjust(7), xtile(normlog, width = 33, show = "%5.2f", lo = 0, hi = 1)
 
 def printRange(m, history):
   lo = []
@@ -158,7 +162,7 @@ def start(): #part 5 with part 3 and part4
   for klass in [Schaffer,Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
   # for klass in [Kursawe]:
     print "\n !!!!", klass.__name__
-    for searcher in [mws]:
+    for searcher in [sa]:
       name = klass.__name__
       n = 0.0
       reseed()

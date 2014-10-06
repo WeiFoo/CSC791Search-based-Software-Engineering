@@ -17,10 +17,10 @@ Settings = Options(sa = Options(kmax = 1000,
                                 prob = 0.5,
                                 score = {}
                                 ), 
-                   other = Options(keep = 128, 
+                   other = Options(keep = 32, 
                                    baseline = 10000,
                                    era = 100,
-                                   lives = 5,
+                                   lives = 4,
                                    show = False, 
                                    a12 = [0.56, 0.64, 0.71][0],
                                    repeats = 30))
