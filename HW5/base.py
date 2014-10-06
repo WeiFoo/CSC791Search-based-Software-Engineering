@@ -1,5 +1,5 @@
 from __future__ import division
-import sys, random, math, datetime, time,re
+import sys, random, math, datetime, time,re, pdb
 sys.dont_write_bytecode = True
 
 rand= random.random
@@ -23,12 +23,12 @@ Settings = Options(sa = Options(kmax = 1000,
                                  crossPoints = 2,
                                  genNum = [100, 200, 400, 800]
                                 ),
-                   other = Options(keep = 128, 
+                   other = Options(keep = 64 , 
                                    era = 50,
                                    lives = 1,
                                    baseline = 1000,
                                    a12 = [0.56, 0.64, 0.71][0],
-                                   repeats = 1))
+                                   repeats = 30))
 def atom(x):
   try : return int(x)
   except ValueError:
@@ -75,8 +75,9 @@ def printlook(f):
     x = f(*lst)
     endTime = time.time()
     print "\n" +("-"*60)
-    dump(Settings, f.__name__)
+    # dump(Settings, f.__name__)
     print "\n# Runtime: %.3f secs" % (endTime-beginTime)
+    x = [x, f.__name__]
     return x # return the searcher name and the results
   return wrapper
 

@@ -3,9 +3,11 @@ from log import *
 from models import *
 from xtile import *
 from optimizer import *
+from base import *
 import sys, random, math, datetime, time,re, pdb, operator
 sys.dont_write_bytecode = True
 
+@printlook 
 def ga(model):
   mutationRate = 1/model.n 
   population = []
@@ -85,7 +87,9 @@ def ga(model):
   print "best solution : %s" % str(solution)
   print "best normalized results: %s" % str(eb)  
   print "-"*20
-  printReport(model)
+  # printReport(model)
+  lohi=printRange(model)
+  return eb,lohi
 
 def startga():
   for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
@@ -97,7 +101,7 @@ def startga():
     ga(klass())
 
 
-if __name__ == "__main__":startga()
+# if __name__ == "__main__":startga()
      # print sortedFitness
 
 

@@ -5,6 +5,7 @@ from sk import *
 from base import *
 import numpy as np
 from xtile import *
+from ga import *
 sys.dont_write_bytecode = True
 @printlook      
 def sa(model):
@@ -44,7 +45,7 @@ def sa(model):
       print "\n"  
       say(str(round(eb,3)))
   print "\n"
-  printReport(model)
+  # printReport(model)
   print "\n------\n:Normalized Sum of Objectives : ",str(round(eb,3)),"\n:Solution",sn
   lohi=printRange(model)
   return eb,lohi
@@ -91,7 +92,7 @@ def mws(model):
       print "total changes: %s" % total_changes
       print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
       print "min_energy_obtained: %s" % model.getDepen(solution)
-      printReport(model)
+      # printReport(model)
       lohi =printRange(model)
       print "\n------\n:Normalized Sum of Objectives: ",str(round(norm_energy,3)),"\n:Solution",solution, "\n"    
       return norm_energy, lohi
@@ -135,7 +136,7 @@ def start(): #part 5 with part 3 and part4
   f2hi =[]
   for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
     print "\n !!!!", klass.__name__
-    for searcher in [sa, mws]:
+    for searcher in [ga, sa, mws]:
       name = klass.__name__
       n = 0.0
       reseed()
@@ -193,6 +194,24 @@ def part6():
       rdivDemo(lastera) 
       searchcount +=1  
       lastera = []     
+@demo 
+def HW5():
+  for klass in [ Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3, DTLZ7]:
+    print "\n !!!!", klass.__name__
+    allEB  = []
+    for searcher in [ga, sa, mws]:
+      repeats = 5
+      eb = 5*[0]
+      name = klass.__name__
+      reseed()
+      for r in range(repeats):
+        results=searcher(klass()) # lohi is a list containing [lo,hi] paris of f1&f2 
+        eb[r] = results[0][0]
+      eb.insert(0, results[1])
+      allEB.append(eb)
+      rdivDemo(allEB)
+
+
 @demo
 def testmodel():
   # model = ZDT3()
