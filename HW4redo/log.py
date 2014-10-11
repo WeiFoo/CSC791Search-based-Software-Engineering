@@ -75,6 +75,4 @@ def demoNum():
     for x in xrange(100000): log +=x
     print size, ":", log.has().median
 
-
-
 if __name__ == "__main__": eval(cmd())

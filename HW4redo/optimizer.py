@@ -1,6 +1,5 @@
 from __future__ import division
 import sys, random, math
-# from models import *
 from sk import *
 from sa import *
 from mws import *
