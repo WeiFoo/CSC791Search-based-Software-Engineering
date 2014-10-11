@@ -1,5 +1,5 @@
 from __future__ import division
-import sys, random, math, datetime, time,re
+import sys, random, math, datetime, time,re, pdb
 sys.dont_write_bytecode = True
 
 rand= random.random
@@ -92,3 +92,41 @@ def dump(d, searchname, lvl = 0): # tricks from Dr. Menzies
       print gap + (" :{0} {1}".format(k, "options"))
       dump(d[k], lvl+1)
 
+def printReport(m, history):
+  for i, f in enumerate(m.log.y):
+    print "\n <f%s" %i
+    for era in sorted(history.keys()):
+      # pdb.set_trace()
+      log = history[era].log.y[i]
+      print str(era).rjust(7), xtile(log._cache, width = 33, show = "%5.2f", lo = 0, hi = 1)
+
+
+def printSumReport(m, history):
+  # for i, f in enumerate(m.log.y):
+  print "\n Objective Value" 
+  for era in sorted(history.keys()):
+    # pdb.set_trace()
+    log = [history[era].log.y[k] for k in range (len(m.log.y))]
+    ss = []
+    ss.extend([log[s]._cache for s in range(len(log))])
+    logsum = map(sum, zip(*ss))
+    minvalue = min(logsum)
+    maxvalue = max(logsum)
+    normlog = [(x - minvalue)/(maxvalue - minvalue +0.00001) for x in logsum]
+    print str(era).rjust(7), xtile(normlog, width = 33, show = "%5.2f", lo = 0, hi = 1)
+
+def printRange(m, history):
+  rrange = {}
+  # print sorted(m.history.keys())
+  for i, f in enumerate(m.log.y):
+    tlo=10**5
+    thi=-10**5
+    for era in sorted(history.keys()):
+      # pdb.set_trace()
+      if history[era].log.y[i].lo < tlo:
+        tlo= history[era].log.y[i].lo
+      if history[era].log.y[i].hi > tlo:
+        thi= history[era].log.y[i].hi
+    temp = (round(tlo, 3), round(thi, 3))
+    rrange[temp] =rrange.get(temp, 'f') +str(i) #{(0.0, 24.826): 'f0'}
+  return  rrange
