@@ -23,7 +23,8 @@ Settings = Options(sa = Options(kmax = 1000,
                                    lives = 4,
                                    show = False, 
                                    a12 = [0.56, 0.64, 0.71][0],
-                                   repeats = 30))
+                                   repeats = 30,
+                                   reportrange = True))
 def atom(x):
   try : return int(x)
   except ValueError:
