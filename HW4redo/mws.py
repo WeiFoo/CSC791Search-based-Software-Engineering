@@ -1,10 +1,7 @@
 from __future__ import division
 import sys, random, math
 from models import *
-from sk import *
 from base import *
-import numpy as np
-from xtile import *
 sys.dont_write_bytecode = True
 @printlook
 def mws(model):
@@ -47,7 +44,7 @@ def mws(model):
           if Settings.other.show:say(str(round(model.norm(model.getDepen(solution)), 3))) 
         total_changes +=1   
     # if optimalsign or k == Settings.mws.max_tries-1:
-  if Settings.other.show: 
+  if Settings.other.xtile: 
     say("\n")
     say(str(round(model.norm(model.getDepen(solution)), 3))) 
     print "\n"

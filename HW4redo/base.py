@@ -1,5 +1,6 @@
 from __future__ import division
 import sys, random, math, datetime, time,re, pdb
+from xtile import *
 sys.dont_write_bytecode = True
 
 rand= random.random
@@ -22,6 +23,7 @@ Settings = Options(sa = Options(kmax = 1000,
                                    era = 50,
                                    lives = 4,
                                    show = False, 
+                                   xtile = True,
                                    a12 = [0.56, 0.64, 0.71][0],
                                    repeats = 30,
                                    reportrange =True))

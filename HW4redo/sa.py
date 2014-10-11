@@ -1,10 +1,7 @@
 from __future__ import division
 import sys, random, math
 from models import *
-from sk import *
 from base import *
-import numpy as np
-from xtile import *
 sys.dont_write_bytecode = True
 @printlook      
 def sa(model):
@@ -47,10 +44,9 @@ def sa(model):
       if k % 30 == 0:
         if Settings.other.show:print "\n"  
         if Settings.other.show:say(str(round(eb,3)))
-  if Settings.other.show: 
+  if Settings.other.xtile: 
     printReport(model, history)
-  print "\n"
-  if Settings.other.show: 
+    print "\n"
     printSumReport(model, history)
   # print "\n------\n:Normalized Sum of Objectives : ",str(round(eb,3)),"\n:Solution",sb
   if Settings.other.reportrange:
