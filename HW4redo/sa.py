@@ -53,5 +53,8 @@ def sa(model):
   if Settings.other.show: 
     printSumReport(model, history)
   # print "\n------\n:Normalized Sum of Objectives : ",str(round(eb,3)),"\n:Solution",sb
-  lohi=printRange(model, history)
-  return eb,lohi
+  if Settings.other.reportrange:
+    rrange=printRange(model, history)
+    return eb,rrange
+  else:
+    return eb

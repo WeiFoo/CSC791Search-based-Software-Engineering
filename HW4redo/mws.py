@@ -51,13 +51,11 @@ def mws(model):
     say("\n")
     say(str(round(model.norm(model.getDepen(solution)), 3))) 
     print "\n"
-  # print "total tries: %s" % total_tries
-  # print "total changes: %s" % total_changes
-  # print "min_energy:{0}, max_energy:{1}".format(min_energy, max_energy)
-  # print "min_energy_obtained: %s" % model.getDepen(solution)
     printReport(model, history)
     print "\n"
     printSumReport(model, history)
-  lohi =printRange(model, history)
-  # print "\n------\n:Normalized Sum of Objectives: ",str(round(norm_energy,3)),"\n:Solution",solution, "\n"    
-  return norm_energy, lohi
+  if Settings.other.reportrange:
+    rrange =printRange(model, history)
+    return norm_energy, rrange
+  else:
+    return norm_energy
