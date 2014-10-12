@@ -10,7 +10,6 @@ sin = math.sin
 pi = math.pi
 
 class Model:
-
   def name(i):
     return i.__class__.__name__
   def setup(i):
