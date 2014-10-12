@@ -7,8 +7,9 @@ def de(model):
   eb = 0.0
   np = Settings.de.np
   repeats = Settings.de.repeats
-  f = Settings.de.f
+  fa = Settings.de.f
   cr = Settings.de.cr
+  threshold = Settings.de.threshold
   min_e, max_e = model.baseline()
   # s = model.generate_x()
   # e = model.norm(model.getDepen(s))
@@ -36,18 +37,38 @@ def de(model):
     b = gen1(seen)
     c = gen1(seen)
     return a, b, c
+  def trim(x):
+    return max(model.lo, min(x,model.hi))
+
   def update(n,f,frontier):
+    newf = []
     a, b, c = gen3(n,f,frontier)
-
-
+    for n in xrange(len(f)):
+      if cr <rand():
+        newf.append(f[n])
+      else:
+        newf.append(trim(a[n]+fa*(b[n]-c[n])))  
+    return newf
 
   frontier = [model.generate_x() for _ in xrange(np)]
   sb, eb = evaluate(frontier)
   for k in xrange(repeats):
+    if eb < threshold:
+      break
+    nextgen = []
     if eb < Settings.de.threshold:
       return eb, 
     for n,f in enumerate (frontier):
       new = update(n, f, frontier)
+      if model.norm(model.getDepen(new)) < model.norm(model.getDepen(f)):
+        nextgen.append(new)
+      else:
+        nextgen.append(f)
+    frontier = nextgen
+    sb, eb = evaluate(frontier)
+  print eb
+
+
   # print sb, eb
 
 
