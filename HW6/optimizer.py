@@ -3,9 +3,10 @@ import sys, random, math
 from sk import *
 from sa import *
 from mws import *
+from ga import *
 sys.dont_write_bytecode = True
 @demo
-def part345(): #part 5 with part 3 and part4 
+def HW4part345(): #part 5 with part 3 and part4 
   for klass in [Schaffer,Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
     print "\n !!!!", klass.__name__
     for searcher in [sa, mws]:
@@ -15,7 +16,7 @@ def part345(): #part 5 with part 3 and part4
         print "# The range of objective "+ str(rrange[key])+" during %s repeats is %s " \
              % (Settings.other.repeats, str(key))  
 @demo
-def part6():
+def HW4part6():
   def genvariants():
     Settings.sa.cooling = rand() # get variants of sa, mws
     Settings.mws.prob = rand()
@@ -34,13 +35,30 @@ def part6():
         reseed()
         for _ in range(r):
           model = klass()
-          x = searcher[key](model)
+          x = searcher[key](klass())
           lastera += [x]
         label = key + str(variant) 
         lastera.insert(0,label)
         allEB.append(lastera)
       rdivDemo(allEB) 
- 
+@demo 
+def HW5():
+  for klass in [ Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3, DTLZ7]:
+    print "\n !!!!", klass.__name__
+    allEB  = []
+    searcher = {"ga":ga}
+    #searcher = {"sa":sa, "mws":mws, "ga":ga}
+    for key in searcher.keys():
+      repeats = 5
+      eb = 5*[0]
+      name = klass.__name__
+      reseed()
+      for r in range(repeats):
+        results=searcher[key](klass()) # lohi is a list containing [lo,hi] paris of f1&f2 
+        eb[r] = results[0]
+      eb.insert(0, key)
+      allEB.append(eb)
+      rdivDemo(allEB)
 @demo
 def testmodel():
   # model = ZDT3()

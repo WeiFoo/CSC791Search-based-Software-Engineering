@@ -237,3 +237,38 @@ class Viennet3(Model):
     xy2 = xlst[0]**2 + xlst[1]**2
     return (1/(xy2+1) - 1.1* exp**(-xy2))
 
+  '''DTLZ7'''
+class DTLZ7(Model):
+  def __init__(i):
+    i.M = 20
+    i.K = 20
+    i.lo = 0
+    i.hi = 1
+    i.n = i.M + i.K -1
+    i.fn = i.M
+    i.setup()
+  def fi(i, x): # the frist one is x[0]
+    return x
+  def fm(i, xh=0):
+    return (1 + i.g())*i.h()
+  def g(i):
+    return 1 + (9/i.K) * sum(i.xy.x[:i.M-1]) 
+  def h(i):
+    sumtemp = 0
+    for n,x in enumerate(i.xy.x):
+      if n ==i.M-2:
+        break
+      sumtemp +=(i.xy.y[n](x)/(1.0+i.g()))*(1+sin(3.0*pi*i.xy.y[n](x)))
+    return (i.M - sumtemp)# k = 0,...., M-2
+  def setup(i):
+    tempx = i.generate_x()
+    tempy = [i.fi for k in tempx[:-1]]
+    tempy.append(i.fm)
+    i.xy = Options(x = tempx, y = tempy)
+    i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) 
+    i.history = {} # hold all logs for eras
+  def getDepen(i, xlst):
+    temp = i.fm()
+    return sum(xlst[:i.M])+temp
+
+

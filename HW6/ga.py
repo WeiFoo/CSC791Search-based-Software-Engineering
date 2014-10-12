@@ -14,6 +14,7 @@ def ga(model):
   solution =[]
   children = []
   fitness = {}
+  history = {}
   mateNum = 20
   def selection(sortedFitness):
     return [population[sortedFitness[0][0]], population[sortedFitness[1][0]]] # sroted[0] and [1] are the smallest two we preferred
@@ -59,7 +60,7 @@ def ga(model):
   min_energy, max_energy = model.baseline()
   eb= 0
   solution = []
-  control = Control(model)
+  control = Control(model, history)
   for _ in xrange(Settings.ga.pop):
     temp = model.generate_x()
     population.append(temp)
@@ -88,8 +89,13 @@ def ga(model):
   print "best normalized results: %s" % str(eb)  
   print "-"*20
   # printReport(model)
-  lohi=printRange(model)
-  return eb,lohi
+  # lohi=printRange(model)
+  # return eb,lohi
+  if Settings.other.reportrange:
+    rrange=printRange(model, history)
+    return eb,rrange
+  else:
+    return eb
 
 def startga():
   for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
