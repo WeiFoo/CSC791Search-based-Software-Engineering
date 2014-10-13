@@ -71,6 +71,7 @@ def start():
     reseed()
     pso(klass())
 
+#test
 
 if __name__ == "__main__":start()
      # print sortedFitness
