@@ -266,6 +266,8 @@ class DTLZ7(Model):
     i.xy = Options(x = tempx, y = tempy)
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) 
     i.history = {} # hold all logs for eras
+    i.min = 10**(5)
+    i.max = -10**(5)
   def getDepen(i, xlst):
     temp = i.fm()
     return sum(xlst[:i.M])+temp
