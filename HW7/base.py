@@ -30,6 +30,7 @@ Settings = Options(sa = Options(kmax = 1000,
                                 threshold = 0.000001
                                 ),
                    pso = Options(N = 30,
+                                 w = 1,
                                  phi1 = 2.8,
                                  phi2 = 1.3,
                                  threshold = 0.000001,
