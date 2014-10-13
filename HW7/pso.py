@@ -12,6 +12,7 @@ def pso(model):
   pos = []
   lbest = [] # local best position for each 
   gbest = model.generate_x() # global best position for all
+  min_e, max_e = model.baseline()
   eb = 10**5
   N = Settings.pso.N
   w = Settings.pso.w
@@ -54,20 +55,19 @@ def pso(model):
     for n in xrange(N):
       vel[n] = velocity(vel[n], pos[n], lbest[n], gbest)
       pos[n] = move(vel[n], pos[n])
-
-
-
-
-
-
-
-  
+      if fitness(pos[n]) < fitness(lbest[n]):
+        lbest[n] = pos[n]
+        if fitness(pos[n]) < fitness(gbest):
+          gbest = pos[n]
+    eb = fitness(gbest)
+  return eb 
+ 
 def start():
-  for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
-  # for klass in [DTLZ7]:
+  # for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
+  for klass in [Kursawe, ZDT1, DTLZ7]: # these three can't find optimal values
     print "="*50
     print "!!!!", klass.__name__, 
-    print "\nSearcher: GA"
+    print "\nSearcher: PSO"
     reseed()
     pso(klass())
 
