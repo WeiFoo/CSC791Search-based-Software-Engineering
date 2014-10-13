@@ -272,4 +272,34 @@ class DTLZ7(Model):
     temp = i.fm()
     return sum(xlst[:i.M])+temp
 
+    '''Schwefel's'''
+class Schwefel(Model):
+  def __init__(i):
+    i.lo = -pi
+    i.hi = pi
+    i.n = [10,20, 40][0]
+    i.f_bias = -460
+    i.fn = 1
+    i.randI = lambda x: random.randint(-x, x)
+    i.randF = lambda x: random.uniform(-x, x)
+    i.a = [[i.randI(100) for _ in xrange(i.n)] for _ in xrange(i.n)] # matrix for a
+    i.b = [[i.randI(100) for _ in xrange(i.n)] for _ in xrange(i.n)] # matrix for b
+    i.alpha = [i.randF(pi) for _ in xrange(i.n)] # alpha
+    i.setup()
+  def f(i, x):
+    F = sum([(i.A(n) - i.B(x,n))**2 for n in xrange(i.n)]) + i.f_bias
+    return F
+  def A(i,n):
+    sumA = sum([i.a[n][j]*sin(i.alpha[j]) + i.b[n][j] * cos(i.alpha[j]) for j in xrange(i.n)])
+    return sumA
+  def B(i, x,n):
+    sumB = sum([i.a[n][j]*sin(s) + i.b[n][j]* cos(s) for j,s in enumerate(x)])
+    return sumB
+  def setup(i):
+    i.min = 10**(5)
+    i.max = -10**(5)
+    i.xy = Options(x = [i.generate_x()], y = [i.f])
+    i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) 
+    i.history = {} # hold all logs for eras
+
 
