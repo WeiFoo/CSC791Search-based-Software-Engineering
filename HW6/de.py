@@ -20,6 +20,7 @@ def de(model):
   def evaluate(pop):
     for n, x in enumerate(pop):
       scores[n] = model.norm(model.getDepen(x))
+      # scores[n]= model.getDepen(x)
     # print scores
     ordered = sorted(scores.items(), key=lambda x: x[1]) # alist of turple
     # print ordered
@@ -64,7 +65,7 @@ def de(model):
         nextgen.append(f)
     frontier = nextgen
     sb, eb = evaluate(frontier)
-  print eb
+    print eb
   if Settings.other.reportrange:
     rrange=printRange(model, history) # no history right now!
     return eb,rrange

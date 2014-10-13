@@ -82,7 +82,8 @@ class Model:
     return i.min, i.max
   def norm(i, x):
     e = (x - i.min)/(i.max - i.min)
-    return max(0, min(e,1)) #avoid values <0 or >1
+    # return max(0, min(e,1)) #avoid values <0 or >1
+    return e
 
 class Control(object): # based on Dr.Menzies' codes
   def __init__(i, model, history = None):
@@ -283,15 +284,15 @@ class Schwefel(Model):
     i.fn = 1
     i.randI = lambda x: random.randint(-x, x)
     i.randF = lambda x: random.uniform(-x, x)
-    i.a = [[i.randI(100) for _ in xrange(i.n)] for _ in xrange(i.n)]
-    i.b = [[i.randI(100) for _ in xrange(i.n)] for _ in xrange(i.n)]
-    i.apha = [i.randF(pi) for _ in xrange(i.n)]
+    i.a = [[i.randI(100) for _ in xrange(i.n)] for _ in xrange(i.n)] # matrix for a
+    i.b = [[i.randI(100) for _ in xrange(i.n)] for _ in xrange(i.n)] # matrix for b
+    i.alpha = [i.randF(pi) for _ in xrange(i.n)] # alpha
     i.setup()
   def f(i, x):
     F = sum([(i.A(n) - i.B(x,n))**2 for n in xrange(i.n)]) + i.f_bias
     return F
   def A(i,n):
-    sumA = sum([i.a[n][j]*sin(i.apha[j]) + i.b[n][j] * cos(i.apha[j]) for j in xrange(i.n)])
+    sumA = sum([i.a[n][j]*sin(i.alpha[j]) + i.b[n][j] * cos(i.alpha[j]) for j in xrange(i.n)])
     return sumA
   def B(i, x,n):
     sumB = sum([i.a[n][j]*sin(s) + i.b[n][j]* cos(s) for j,s in enumerate(x)])

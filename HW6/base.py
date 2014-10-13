@@ -25,7 +25,7 @@ Settings = Options(sa = Options(kmax = 1000,
                                 genNum = [100, 200, 400, 800]
                                 ),
                    de = Options(np= 100, 
-                                repeats = 100, 
+                                repeats = 1000, 
                                 f = 0.75,
                                 cr = 0.3,
                                 threshold = 0.000001),
