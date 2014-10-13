@@ -4,7 +4,7 @@ from models import *
 from xtile import *
 from optimizer import *
 from base import *
-import sys, random, math, datetime, time,re, pdb, operator
+import sys,random, math, datetime, time,re, pdb, operator
 sys.dont_write_bytecode = True
 
 @printlook 
@@ -101,7 +101,7 @@ def startga():
     ga(klass())
 
 
-# if __name__ == "__main__":startga()
+if __name__ == "__main__":startga()
      # print sortedFitness
 
 

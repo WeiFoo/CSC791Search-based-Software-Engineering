@@ -3,7 +3,7 @@ import sys, random, math
 from models import *
 from sk import *
 from base import *
-import numpy as np
+# import numpy as np
 from xtile import *
 from ga import *
 sys.dont_write_bytecode = True
