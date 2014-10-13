@@ -4,7 +4,7 @@ from models import *
 from base import *
 
 def de(model):
-  eb = 0.0
+  eb = 10**5
   np = Settings.de.np
   repeats = Settings.de.repeats
   fa = Settings.de.f
@@ -72,7 +72,7 @@ def de(model):
     return eb
 
 def deDemo():
-  for klass in [Schaffer]:
+  for klass in [Schwefel]:
   # for klass in [DTLZ7]:
     print "="*50
     print "!!!!", klass.__name__, 

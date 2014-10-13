@@ -7,6 +7,7 @@ sys.dont_write_bytecode = True
 exp = math.e
 sqrt = math.sqrt
 sin = math.sin
+cos = math.cos
 pi = math.pi
 
 class Model:
@@ -280,11 +281,27 @@ class Schwefel(Model):
     i.n = [10,20, 40][0]
     i.f_bias = -460
     i.fn = 1
+    i.randI = lambda x: random.randint(-x, x)
+    i.randF = lambda x: random.uniform(-x, x)
+    i.a = [[i.randI(100) for _ in xrange(i.n)] for _ in xrange(i.n)]
+    i.b = [[i.randI(100) for _ in xrange(i.n)] for _ in xrange(i.n)]
+    i.apha = [i.randF(pi) for _ in xrange(i.n)]
     i.setup()
-  def f1(i, x):
-    return x[0] * x[0]
-  def f2(i, x):
-    return (x[0]-2) ** 2
+  def f(i, x):
+    F = sum([(i.A(n) - i.B(x,n))**2 for n in xrange(i.n)]) + i.f_bias
+    return F
+  def A(i,n):
+    sumA = sum([i.a[n][j]*sin(i.apha[j]) + i.b[n][j] * cos(i.apha[j]) for j in xrange(i.n)])
+    return sumA
+  def B(i, x,n):
+    sumB = sum([i.a[n][j]*sin(s) + i.b[n][j]* cos(s) for j,s in enumerate(x)])
+    return sumB
+  def setup(i):
+    i.min = 10**(5)
+    i.max = -10**(5)
+    i.xy = Options(x = [i.generate_x()], y = [i.f])
+    i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) 
+    i.history = {} # hold all logs for eras
 
 
 
