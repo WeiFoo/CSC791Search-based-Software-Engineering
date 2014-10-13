@@ -272,4 +272,20 @@ class DTLZ7(Model):
     temp = i.fm()
     return sum(xlst[:i.M])+temp
 
+'''Schwefel's'''
+class Schwefel(Model):
+  def __init__(i):
+    i.lo = -pi
+    i.hi = pi
+    i.n = [10,20, 40][0]
+    i.f_bias = -460
+    i.fn = 1
+    i.setup()
+  def f1(i, x):
+    return x[0] * x[0]
+  def f2(i, x):
+    return (x[0]-2) ** 2
+
+
+
 

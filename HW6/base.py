@@ -4,6 +4,7 @@ from xtile import *
 sys.dont_write_bytecode = True
 
 rand= random.random
+pi = math.pi
 
 
 class Options: #"Thanks for Peter Norvig's trick"
