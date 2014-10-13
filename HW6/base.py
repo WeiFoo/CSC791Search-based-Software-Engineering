@@ -36,7 +36,7 @@ Settings = Options(sa = Options(kmax = 1000,
                                    xtile = True,
                                    a12 = [0.56, 0.64, 0.71][0],
                                    repeats = 30,
-                                   reportrange =True))
+                                   reportrange =False))
 def atom(x):
   try : return int(x)
   except ValueError:

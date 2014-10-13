@@ -2,7 +2,6 @@ from __future__ import division
 from log import *
 from models import *
 from xtile import *
-from optimizer import *
 from base import *
 import sys,random, math, datetime, time,re, pdb, operator
 sys.dont_write_bytecode = True
@@ -91,6 +90,10 @@ def ga(model):
   # printReport(model)
   # lohi=printRange(model)
   # return eb,lohi
+  if Settings.other.xtile: 
+    printReport(model, history)
+    print "\n"
+    printSumReport(model, history)
   if Settings.other.reportrange:
     rrange=printRange(model, history)
     return eb,rrange

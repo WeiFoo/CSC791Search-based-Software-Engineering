@@ -56,8 +56,6 @@ def de(model):
     if eb < threshold:
       break
     nextgen = []
-    if eb < Settings.de.threshold:
-      return eb, 
     for n,f in enumerate (frontier):
       new = update(n, f, frontier)
       if model.norm(model.getDepen(new)) < model.norm(model.getDepen(f)):
@@ -67,16 +65,11 @@ def de(model):
     frontier = nextgen
     sb, eb = evaluate(frontier)
   print eb
-
-
-  # print sb, eb
-
-
-
-
-
-
-
+  if Settings.other.reportrange:
+    rrange=printRange(model, history) # no history right now!
+    return eb,rrange
+  else:
+    return eb
 
 def deDemo():
   for klass in [Schaffer]:

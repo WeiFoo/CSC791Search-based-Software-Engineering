@@ -4,7 +4,9 @@ from sk import *
 from sa import *
 from mws import *
 from ga import *
+from de import *
 sys.dont_write_bytecode = True
+
 @demo
 def HW4part345(): #part 5 with part 3 and part4 
   for klass in [Schaffer,Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:
@@ -55,10 +57,34 @@ def HW5():
       reseed()
       for r in range(repeats):
         results=searcher[key](klass()) # lohi is a list containing [lo,hi] paris of f1&f2 
-        eb[r] = results[0]
+        if Settings.other.reportrange:
+          eb[r] = results[0]
+        else:
+          eb[r] = results
       eb.insert(0, key)
       allEB.append(eb)
       rdivDemo(allEB)
+@demo 
+def HW6():
+  # for klass in [ Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3, DTLZ7]:
+  for klass in [ Schaffer]:
+    print "\n !!!!", klass.__name__
+    allEB  = []
+    #searcher = {"ga":ga}
+    searcher = {"sa":sa, "mws":mws, "ga":ga, "de": de}
+    Settings.other.repeats = 1
+    for key in searcher.keys():
+      repeats = 2
+      eb = repeats*[0]
+      name = klass.__name__
+      reseed()
+      for r in range(repeats):
+        results=searcher[key](klass()) # lohi is a list containing [lo,hi] paris of f1&f2 
+        eb[r] = results[0] if isinstance(results, tuple) else results
+      eb.insert(0, key)
+      allEB.append(eb)
+      rdivDemo(allEB)
+
 @demo
 def testmodel():
   # model = ZDT3()
