@@ -1,0 +1,7 @@
+ a2ps --center-title="csc791sbse:hw6:Fu" -q2gC -o hw6.ps optimizer_hw6.py ga.py sa.py mws.py de.py models.py log.py base.py 
+
+ ps2pdf hw6.ps hw6.pdf
+
+ a2ps --center-title="csc791sbse:hw6:Fu" -q2gC -f4 -o result.ps hw6.txt
+
+ result.ps result.pdf
