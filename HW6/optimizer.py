@@ -45,10 +45,10 @@ def HW4part6():
       rdivDemo(allEB) 
 @demo 
 def HW5():
-  for klass in [ Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3, DTLZ7]:
+  for klass in [ DTLZ7]:
     print "\n !!!!", klass.__name__
     allEB  = []
-    searcher = {"ga":ga}
+    searcher = {"sa":sa}
     #searcher = {"sa":sa, "mws":mws, "ga":ga}
     for key in searcher.keys():
       repeats = 5
@@ -67,14 +67,14 @@ def HW5():
 @demo 
 def HW6():
   # for klass in [ Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3, DTLZ7]:
-  for klass in [ Schaffer]:
+  for klass in [DTLZ7]:
     print "\n !!!!", klass.__name__
     allEB  = []
     #searcher = {"ga":ga}
     searcher = {"sa":sa, "mws":mws, "ga":ga, "de": de}
     Settings.other.repeats = 1
     for key in searcher.keys():
-      repeats = 2
+      repeats = 5
       eb = repeats*[0]
       name = klass.__name__
       reseed()

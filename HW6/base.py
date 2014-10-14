@@ -30,13 +30,13 @@ Settings = Options(sa = Options(kmax = 1000,
                                 cr = 0.3,
                                 threshold = 0.000001),
                    other = Options(keep = 64, 
-                                   baseline = 10000,
+                                   baseline = 1000,
                                    era = 50,
-                                   lives = 4,
+                                   lives = 1,
                                    show = False, 
-                                   xtile = True,
+                                   xtile = False,
                                    a12 = [0.56, 0.64, 0.71][0],
-                                   repeats = 30,
+                                   repeats = 1,
                                    reportrange =False))
 def atom(x):
   try : return int(x)
