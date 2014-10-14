@@ -7,6 +7,7 @@ sys.dont_write_bytecode = True
 exp = math.e
 sqrt = math.sqrt
 sin = math.sin
+cos = math.cos
 pi = math.pi
 
 class Model:
