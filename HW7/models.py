@@ -14,8 +14,8 @@ class Model:
   def name(i):
     return i.__class__.__name__
   def setup(i):
-    i.min = 10**(5)
-    i.max = -10**(5)
+    # i.min = 10**(5)
+    # i.max = -10**(5)
     i.xy = Options(x = [i.generate_x], y = [i.f1, i.f2]) # cahnge i.generate_x() to i.generate_x, any issues hereafter??
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) # hardcode 2
     i.history = {} # hold all logs for eras
@@ -73,6 +73,8 @@ class Model:
     return solution
   def baseline(i):
   # model = eval(model+"()")
+    i.min = 10**(5)
+    i.max = -10**(5)
     for _ in xrange(Settings.other.baseline):
       temp = i.getDepen(i.generate_x())
       if temp > i.max:
@@ -267,11 +269,14 @@ class DTLZ7(Model):
     i.xy = Options(x = tempx, y = tempy)
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) 
     i.history = {} # hold all logs for eras
-    i.min = 10**(5)
-    i.max = -10**(5)
+    # i.min = 10**(5)
+    # i.max = -10**(5)
   def getDepen(i, xlst):
     temp = i.fm()
     return sum(xlst[:i.M])+temp
+
+  def getDepenlst(i, xlst):
+    return xlst[:i.M]+ [i.fm()]
 
     '''Schwefel's'''
 class Schwefel(Model):
@@ -333,7 +338,6 @@ class Osyczka(Model):
       return 4 - (x[0]- 3)**2 - x[1] >= 0
     def g6(x):
       return (x[2] - 3)**2 + x[3] - 4 >= 0
-
     while 1:
       x= [i.lo[n] + (i.hi[n]-i.lo[n])*random.random() for n in range(2,6)]
       if g5(x) and g6(x):
