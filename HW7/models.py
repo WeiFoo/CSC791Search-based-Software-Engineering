@@ -16,7 +16,7 @@ class Model:
   def setup(i):
     i.min = 10**(5)
     i.max = -10**(5)
-    i.xy = Options(x = [i.generate_x()], y = [i.f1, i.f2])
+    i.xy = Options(x = [i.generate_x], y = [i.f1, i.f2]) # cahnge i.generate_x() to i.generate_x, any issues hereafter??
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) # hardcode 2
     i.history = {} # hold all logs for eras
   def generate_x(i):  
@@ -302,5 +302,57 @@ class Schwefel(Model):
     i.xy = Options(x = [i.generate_x()], y = [i.f])
     i.log = Options(x = [ Num() for _ in range(i.n)], y = [ Num() for _ in range(i.fn)]) 
     i.history = {} # hold all logs for eras
+
+  '''Osyczka'''
+class Osyczka(Model):
+  def __init__(i):
+    i.lo = [0, 0, -1, 0, 1, 0]
+    i.hi = [10, 10, 5, 6, 5, 10]
+    i.fn = 2
+    i.n = 6
+    i.setup()
+
+  def generate_x1x2(i):
+    def g1(x):
+      return x[0] + x[1] - 2 >= 0
+    def g2(x):
+      return 6 - x[0] - x[1] >= 0
+    def g3(x):
+      return 2 - x[1] + x[0] >= 0
+    def g4(x):
+      return 2 - x[0] + 3* x[1] >= 0
+    while 1:
+      x= [i.lo[n] + (i.hi[n]-i.lo[n])*random.random() for n in range(2)]
+      if g1(x) and g2(x) and g3(x) and g4(x):
+        return x
+      else:
+        continue
+
+  def generate_x3456(i):
+    def g5(x):
+      return 4 - (x[0]- 3)**2 - x[1] >= 0
+    def g6(x):
+      return (x[2] - 3)**2 + x[3] - 4 >= 0
+
+    while 1:
+      x= [i.lo[n] + (i.hi[n]-i.lo[n])*random.random() for n in range(2,6)]
+      if g5(x) and g6(x):
+        return x
+      else:
+        continue
+
+  def generate_x(i):
+    x12 = i.generate_x1x2()
+    x3456 = i.generate_x3456()
+    x = x12 + x3456 
+    return x
+
+  def f1(i, x):
+    result = -25*(x[0] -2) **2 - (x[1] - 2)**2 - (x[2] - 1)**2 - (x[3] - 4) **2 -(x[4] -1) **2
+    return result
+
+  def f2(i, x):
+    result = sum([i**2 for i in x])
+    return result
 
 
