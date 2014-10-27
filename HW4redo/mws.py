@@ -3,7 +3,7 @@ import sys, random, math
 from models import *
 from base import *
 sys.dont_write_bytecode = True
-@printlook
+# @printlook
 def mws(model):
   norm_energy = 0
   eraScore = []

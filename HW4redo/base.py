@@ -10,20 +10,18 @@ class Options: #"Thanks for Peter Norvig's trick"
   def __init__(i, **d): i.__dict__.update(d)
 
 Settings = Options(sa = Options(kmax = 1000, 
-                                score = {},
                                 cooling = 0.6),
-                   mws = Options(threshold = 0.0001,
+                   mws = Options(threshold = 0.001,
                                 max_tries = 20, 
                                 max_changes = 1000,
-                                prob = 0.25,
-                                score = {}
+                                prob = 0.75,
                                 ), 
                    other = Options(keep = 64, 
                                    baseline = 10000,
                                    era = 50,
                                    lives = 4,
                                    show = False, 
-                                   xtile = True,
+                                   xtile = False,
                                    a12 = [0.56, 0.64, 0.71][0],
                                    repeats = 30,
                                    reportrange =True))
@@ -73,12 +71,12 @@ def printlook(f):
     x = f(*lst)
     endTime = time.time()
     print "\n" +("-"*60)
-    dump(Settings, f.__name__)
+    # dump(Settings, f.__name__)
     print "\n# Runtime: %.3f secs" % (endTime-beginTime)
     return x # return the searcher name and the results
   return wrapper
 
-def dump(d, searchname, lvl = 0): # tricks from Dr. Menzies
+def dump(d, searchname = " ", lvl = 0): # tricks from Dr. Menzies
   d = d if isinstance(d, dict) else d.__dict__
   callableKey, line , gap = [], "", "  "*lvl
   for k in sorted(d.keys()):
@@ -91,9 +89,10 @@ def dump(d, searchname, lvl = 0): # tricks from Dr. Menzies
       line +=("  {0} :{1}".format(k, val))
   print gap + line
   for k in callableKey:
-    if k == searchname or k == "other":
-      print gap + (" :{0} {1}".format(k, "options"))
-      dump(d[k], lvl+1)
+    # if k == searchname or k == "other": # for new hw4 part6, I comment them.
+    print gap + (" :{0} {1}".format(k, "options"))
+    dump(d[k], lvl+1)
+
 
 def printReport(m, history):
   for i, f in enumerate(m.log.y):

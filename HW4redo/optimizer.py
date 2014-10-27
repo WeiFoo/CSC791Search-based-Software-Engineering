@@ -14,19 +14,22 @@ def part345(): #part 5 with part 3 and part4
       for key in rrange.keys():
         print "# The range of objective "+ str(rrange[key])+" during %s repeats is %s " \
              % (Settings.other.repeats, str(key))  
-@demo
+@printlook
 def part6():
-  def genvariants():
-    Settings.sa.cooling = rand() # get variants of sa, mws
-    Settings.mws.prob = rand()
+  def genvariants(i):
+    Settings.sa.cooling =[0.9, 0.85, 0.8, 0.75, 0.7][i] # get variants of sa, mws
+    Settings.mws.prob = [0.15,0.35, 0.5, 0.75, 0.95][i]
     Settings.mws.max_changes = int(1000*rand())
   r = 20
   Settings.other.repeats = 1
   Settings.other.reportrange = False
   for klass in [ZDT1]:
     print "\n !!!!", klass.__name__
-    for variant in range(1):
-      genvariants()
+    for variant in range(5):
+      ShowDate = datetime.datetime.now().strftime
+      print "#", ShowDate("%Y-%m-%d %H:%M:%S")
+      beginTime = time.time()
+      genvariants(variant)
       allEB = []
       searcher = { "sa": sa, "mws" :mws}
       for key in searcher.keys():
@@ -39,8 +42,15 @@ def part6():
         label = key + str(variant) 
         lastera.insert(0,label)
         allEB.append(lastera)
-      rdivDemo(allEB) 
- 
+      dump(Settings,lvl = 0)
+      rdivDemo(allEB)
+      endTime = time.time()
+      print "\n" +("-"*60)
+      # dump(Settings, f.__name__)
+      print "\n# Runtime: %.3f secs" % (endTime-beginTime)
+      print "\n" +("-"*60)
+      print "\n"
+
 @demo
 def testmodel():
   # model = ZDT3()
