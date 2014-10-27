@@ -6,7 +6,7 @@ from base import *
 import sys,random, math, pdb, operator
 sys.dont_write_bytecode = True
 
-@printlook 
+# @printlook 
 def pso(model):
   vel = []
   pos = []
@@ -38,11 +38,11 @@ def pso(model):
     # print v 
     # print '\n'
     # print newVel
-    return [trim(i) for i in newVel] # velosity should be in the range
+    return [model.trim(i,n) for n, i in enumerate(newVel)] # velosity should be in the range
 
   def move(v, p):
     newp = [v[i] + p[i] for i in xrange(model.n)]
-    return [trim(i) for i in newp] # movements should be in the range
+    return [model.trim(i,n) for n, i in enumerate(newp)] # movements should be in the range
 
 
   init() # init all parameters

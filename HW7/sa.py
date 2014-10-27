@@ -4,7 +4,7 @@ from models import *
 from base import *
 #this is a test
 sys.dont_write_bytecode = True
-@printlook      
+# @printlook      
 def sa(model):
   def P(old, new, t):
     prob = math.e**((old - new)/(t+0.00001)) 

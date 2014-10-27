@@ -1,10 +1,10 @@
 from __future__ import division
-import sys, random, math
+import sys, random, math, pdb
 from models import *
 from base import *
 
 def de(model):
-  eb = 0.0
+  eb = 100.0
   np = Settings.de.np
   repeats = Settings.de.repeats
   fa = Settings.de.f
@@ -37,8 +37,6 @@ def de(model):
     b = gen1(seen)
     c = gen1(seen)
     return a, b, c
-  def trim(x):
-    return max(model.lo, min(x,model.hi))
 
   def update(n,f,frontier):
     newf = []
@@ -47,7 +45,7 @@ def de(model):
       if cr <rand():
         newf.append(f[n])
       else:
-        newf.append(trim(a[n]+fa*(b[n]-c[n])))  
+        newf.append(model.trim(a[n]+fa*(b[n]-c[n]), n))  # adapt to the Osyzcka model, pass n
     return newf
 
   frontier = [model.generate_x() for _ in xrange(np)]
@@ -64,7 +62,7 @@ def de(model):
         nextgen.append(f)
     frontier = nextgen
     sb, eb = evaluate(frontier)
-  print eb
+  #print eb
   if Settings.other.reportrange:
     rrange=printRange(model, history) # no history right now!
     return eb,rrange

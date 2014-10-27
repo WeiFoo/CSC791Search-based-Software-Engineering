@@ -6,7 +6,7 @@ from base import *
 import sys,random, math, datetime, time,re, pdb, operator
 sys.dont_write_bytecode = True
 
-@printlook 
+# @printlook 
 def ga(model):
   mutationRate = 1/model.n 
   population = []
@@ -84,9 +84,9 @@ def ga(model):
       children.append(produce(selected))
     population.extend(children)
     t +=1
-  print "best solution : %s" % str(solution)
-  print "best normalized results: %s" % str(eb)  
-  print "-"*20
+  # print "best solution : %s" % str(solution)
+  # print "best normalized results: %s" % str(eb)  
+  # print "-"*20
   # printReport(model)
   # lohi=printRange(model)
   # return eb,lohi

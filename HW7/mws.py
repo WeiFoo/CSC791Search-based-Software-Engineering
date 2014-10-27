@@ -3,14 +3,13 @@ import sys, random, math
 from models import *
 from base import *
 sys.dont_write_bytecode = True
-@printlook
+# @printlook
 def mws(model):
-  norm_energy = 0
   eraScore = []
   control = Control(model)
   optimalsign = False
-  eb = 0.0
-  norm_energy = 10
+  eb = 100.0
+  norm_energy = 10**5
   history = {}
   for _ in xrange(Settings.other.repeats):
     min_energy, max_energy = model.baseline()

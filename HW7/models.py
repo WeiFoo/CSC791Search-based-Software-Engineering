@@ -56,14 +56,22 @@ class Model:
         new[j] = new_gen[random.randint(0, i.n-1)]   
     return new
   def mws_neighbor(i,solution):  
+    lo = 10**5
+    hi = -10**5
     optimized_index = random.randint(0, len(solution)-1)
-    increment = (i.hi - i.lo)/10
+    if isinstance(i.hi,int):
+      hi = i.hi
+      lo = i.lo
+    if isinstance(i.hi, list):
+      hi = i.hi[optimized_index]
+      lo = i.lo[optimized_index]
+    increment = (hi - lo) /10
     temp_min = i.norm(i.getDepen(solution))
     temp_solution = solution[:]
     # print "old solution : %s" % solution
     # print "old norm energy : %s" % i.norm(i.getDepen(solution))
     for _ in range(10):
-      temp_solution[optimized_index] = i.lo + increment
+      temp_solution[optimized_index] = lo + increment
       temp = i.norm(i.getDepen(temp_solution))
       if temp < temp_min:
         temp_min = temp
@@ -85,6 +93,8 @@ class Model:
   def norm(i, x):
     e = (x - i.min)/(i.max - i.min)
     return max(0, min(e,1)) #avoid values <0 or >1
+  def trim(i, x, n ):
+    return max(i.lo, min(x, i.hi))
 
 class Control(object): # based on Dr.Menzies' codes
   def __init__(i, model, history = None):
@@ -358,5 +368,8 @@ class Osyczka(Model):
   def f2(i, x):
     result = sum([i**2 for i in x])
     return result
+  def trim(i, x, n):
+    return max(i.lo[n], min(x, i.hi[n]))
+
 
 
