@@ -1,0 +1,3672 @@
+%!PS-Adobe-3.0
+%%Title: optimizer.py, ga.py, sa.py, mws.py, de.py, pso.py, models.py, log.py, base.py
+%%For: Wei Fu
+%%Creator: a2ps version 4.14
+%%CreationDate: Mon Oct 27 21:56:32 2014
+%%BoundingBox: 24 24 588 768
+%%DocumentData: Clean7Bit
+%%Orientation: Landscape
+%%Pages: 12
+%%PageOrder: Ascend
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: font Courier
+%%+ font Courier-Bold
+%%+ font Courier-BoldOblique
+%%+ font Courier-Oblique
+%%+ font Helvetica
+%%+ font Helvetica-Bold
+%%+ font Symbol
+%%+ font Times-Bold
+%%+ font Times-Roman
+%%DocumentProcessColors: Black 
+%%DocumentSuppliedResources: procset a2ps-a2ps-hdr
+%%+ procset a2ps-black+white-Prolog
+%%+ encoding ISO-8859-1Encoding
+%%EndComments
+/a2psdict 200 dict def
+a2psdict begin
+%%BeginProlog
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+
+% EPSF import as in the Red Book
+/BeginInclude {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack 
+  userdict begin
+    0 setgray 0 setlinecap
+    1 setlinewidth 0 setlinejoin
+    10 setmiterlimit [ ] 0 setdash newpath
+    gs_languagelevel 1 ne {
+      false setstrokeadjust false setoverprint 
+    } if
+} bind def
+
+/EndInclude {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+/BeginEPSF {
+  BeginInclude
+  /showpage { } def
+} bind def
+
+/EndEPSF {
+  EndInclude
+} bind def
+
+% Page prefeed
+/page_prefeed {         % bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} bind def
+
+/deffont {
+  findfont exch scalefont def
+} bind def
+
+/reencode_font {
+  findfont reencode 2 copy definefont pop def
+} bind def
+
+% Function c-show (str => -)
+% centers text only according to x axis.
+/c-show { 
+  dup stringwidth pop
+  2 div neg 0 rmoveto
+  show
+} bind def
+
+% Function l-show (str => -)
+% prints texts so that it ends at currentpoint
+/l-show {
+  dup stringwidth pop neg 
+  0 
+  rmoveto show
+} bind def
+
+% center-fit show (str w => -)
+% show centered, and scale currentfont so that the width is less than w
+/cfshow {
+  exch dup stringwidth pop
+  % If the title is too big, try to make it smaller
+  3 2 roll 2 copy
+  gt
+  { % if, i.e. too big
+    exch div
+    currentfont exch scalefont setfont
+  } { % ifelse
+    pop pop 
+  }
+  ifelse
+  c-show			% center title
+} bind def
+
+% Return the y size of the current font
+% - => fontsize
+/currentfontsize {
+  currentfont /FontMatrix get 3 get 1000 mul
+} bind def
+
+% reencode the font
+% <encoding-vector> <fontdict> -> <newfontdict>
+/reencode { %def
+  dup length 5 add dict begin
+    { %forall
+      % <vector> <key> <val>
+      1 index /FID ne 
+      { def }{ pop pop } ifelse
+    } forall
+    /Encoding exch def % -
+
+    % Use the font's bounding box to determine the ascent, descent,
+    % and overall height; don't forget that these values have to be
+    % transformed using the font's matrix.
+    % We use `load' because sometimes BBox is executable, sometimes not.
+    % Since we need 4 numbers an not an array avoid BBox from being executed
+    /FontBBox load aload pop
+    FontMatrix transform /Ascent exch def pop
+    FontMatrix transform /Descent exch def pop
+    /FontHeight Ascent Descent sub def
+
+    % Get the underline position and thickness if they're defined.
+    % Use 1 if they are not defined.
+    currentdict /FontInfo 2 copy known
+    { get
+      /UnderlinePosition 2 copy % <FontInfo> /UP <FontInfo> /UP
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+
+      /UnderlineThickness 2 copy % <FontInfo> /UT <FontInfo> /UT
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+      pop % -
+    }{ pop pop
+    } ifelse
+
+    currentdict
+  end 
+} bind def
+
+% Function print line number (<string> # -)
+/# {
+  gsave
+    sx cw mul neg 2 div 0 rmoveto
+    f# setfont
+    c-show
+  grestore
+} bind def
+
+% -------- Some routines to enlight plain b/w printings ---------
+
+% Underline
+% width --
+/dounderline {
+  currentpoint
+  gsave
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    0 rlineto
+    stroke
+  grestore
+} bind def
+
+% Underline a string
+% string --
+/dounderlinestring {
+  stringwidth pop
+  dounderline
+} bind def
+
+/UL {
+  /ul exch store
+} bind def
+
+% Draw a box of WIDTH wrt current font
+% width --
+/dobox {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    stroke
+  grestore
+} bind def
+
+/BX {
+  /bx exch store
+} bind def
+
+% Box a string
+% string --
+/doboxstring {
+  stringwidth pop
+  dobox
+} bind def
+
+%
+% ------------- Color routines ---------------
+%
+/FG /setrgbcolor load def
+
+% Draw the background
+% width --
+/dobackground {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    bgcolor aload pop setrgbcolor
+    fill
+  grestore
+} bind def
+
+% Draw bg for a string
+% string --
+/dobackgroundstring {
+  stringwidth pop
+  dobackground
+} bind def
+
+
+/BG {
+  dup /bg exch store
+  { mark 4 1 roll ] /bgcolor exch store } if
+} bind def
+
+
+/Show {
+  bg { dup dobackgroundstring } if
+  ul { dup dounderlinestring } if
+  bx { dup doboxstring } if
+  show
+} bind def
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T {
+  cw mul x0 add
+  bg { dup currentpoint pop sub dobackground } if
+  ul { dup currentpoint pop sub dounderline } if
+  bx { dup currentpoint pop sub dobox } if
+  y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n {
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+/S {
+  Show
+} bind def
+
+%%BeginResource: procset a2ps-a2ps-hdr 2.0 2
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Function title: prints page header.
+% <ct> <rt> <lt> are passed as argument
+/title { 
+  % 1. Draw the background
+  x v get y v get moveto
+  gsave
+    0 th 2 div neg rmoveto 
+    th setlinewidth
+    0.95 setgray
+    pw 0 rlineto stroke
+  grestore
+  % 2. Border it
+  gsave
+    0.7 setlinewidth
+    pw 0 rlineto
+    0 th neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+  % stk: ct rt lt
+  x v get y v get th sub 1 add moveto
+%%IncludeResource: font Helvetica
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  % 3. The left title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    fnfs 0.8 mul hm rmoveto
+    show			% left title
+  grestore
+  exch
+  % stk: ct ltw rt
+  % 4. the right title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    dup
+    pw exch stringwidth pop fnfs 0.8 mul add sub
+    hm
+    rmoveto
+    show			% right title
+  grestore
+  % stk: ct ltw rtw
+  % 5. the center title
+  gsave
+    pw 3 1 roll
+    % stk: ct pw ltw rtw
+    3 copy 
+    % Move to the center of the left room
+    sub add 2 div hm rmoveto
+    % What is the available space in here?
+    add sub fnfs 0.8 mul sub fnfs 0.8 mul sub
+    % stk: ct space_left
+%%IncludeResource: font Helvetica-Bold
+  fHelvetica-Bold fnfs scalefont setfont
+    cfshow
+  grestore
+} bind def
+
+% Function border: prints virtual page border
+/border { %def
+  gsave				% print four sides
+    0 setgray
+    x v get y v get moveto
+    0.7 setlinewidth		% of the square
+    pw 0 rlineto
+    0 ph neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+} bind def
+
+% Function water: prints a water mark in background
+/water { %def
+  gsave
+    scx scy moveto rotate
+%%IncludeResource: font Times-Bold
+  fTimes-Bold 100 scalefont setfont
+    .97 setgray
+    dup stringwidth pop 2 div neg -50 rmoveto
+    show
+  grestore
+} bind def
+
+% Function rhead: prints the right header
+/rhead {  %def
+  lx ly moveto
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  l-show
+} bind def
+
+% Function footer (cf rf lf -> -)
+/footer {
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  dx dy moveto
+  show
+
+  snx sny moveto
+  l-show
+  
+  fnx fny moveto
+  c-show
+} bind def
+%%EndResource
+%%BeginResource: procset a2ps-black+white-Prolog 2.0 1
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T { 
+  cw mul x0 add y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n { %def
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+}  bind def
+
+/S {
+  Show
+} bind def
+
+/p {
+  false UL
+  false BX
+  fCourier bfs scalefont setfont
+  Show
+} bind def
+
+/sy {
+  false UL
+  false BX
+  fSymbol bfs scalefont setfont
+  Show
+} bind def
+
+/k {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/K {
+  false UL
+  false BX
+  fCourier-Bold bfs scalefont setfont
+  Show
+} bind def
+
+/c {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/C {
+  false UL
+  false BX
+  fCourier-BoldOblique bfs scalefont setfont
+  Show 
+} bind def
+
+/l {
+  false UL
+  false BX
+  fHelvetica bfs scalefont setfont
+  Show
+} bind def
+
+/L {
+  false UL
+  false BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show 
+} bind def
+
+/str{
+  false UL
+  false BX
+  fTimes-Roman bfs scalefont setfont
+  Show
+} bind def
+
+/e{
+  false UL
+  true BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show
+} bind def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier
+%%IncludeResource: font Courier-Oblique
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Times-Roman
+%%IncludeResource: font Symbol
+%%IncludeResource: font Courier-BoldOblique
+%%BeginResource: encoding ISO-8859-1Encoding
+/ISO-8859-1Encoding [
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quoteright 
+/parenleft /parenright /asterisk /plus /comma /minus /period /slash 
+/zero /one /two /three /four /five /six /seven 
+/eight /nine /colon /semicolon /less /equal /greater /question 
+/at /A /B /C /D /E /F /G 
+/H /I /J /K /L /M /N /O 
+/P /Q /R /S /T /U /V /W 
+/X /Y /Z /bracketleft /backslash /bracketright /asciicircum /underscore 
+/quoteleft /a /b /c /d /e /f /g 
+/h /i /j /k /l /m /n /o 
+/p /q /r /s /t /u /v /w 
+/x /y /z /braceleft /bar /braceright /asciitilde /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclamdown /cent /sterling /currency /yen /brokenbar /section 
+/dieresis /copyright /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron 
+/degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph /bullet 
+/cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf /threequarters /questiondown 
+/Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla 
+/Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis 
+/Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply 
+/Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls 
+/agrave /aacute /acircumflex /atilde /adieresis /aring /ae /ccedilla 
+/egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis 
+/eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide 
+/oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis 
+] def
+%%EndResource
+% Initialize page description variables.
+/sh 612 def
+/sw 792 def
+/llx 24 def
+/urx 768 def
+/ury 588 def
+/lly 24 def
+/#copies 1 def
+/th 15.000000 def
+/fnfs 11 def
+/bfs 7.060185 def
+/cw 4.236111 def
+
+% Dictionary for ISO-8859-1 support
+/iso1dict 8 dict begin
+  /fCourier ISO-8859-1Encoding /Courier reencode_font
+  /fCourier-Bold ISO-8859-1Encoding /Courier-Bold reencode_font
+  /fCourier-BoldOblique ISO-8859-1Encoding /Courier-BoldOblique reencode_font
+  /fCourier-Oblique ISO-8859-1Encoding /Courier-Oblique reencode_font
+  /fHelvetica ISO-8859-1Encoding /Helvetica reencode_font
+  /fHelvetica-Bold ISO-8859-1Encoding /Helvetica-Bold reencode_font
+  /fTimes-Bold ISO-8859-1Encoding /Times-Bold reencode_font
+  /fTimes-Roman ISO-8859-1Encoding /Times-Roman reencode_font
+currentdict end def
+/bgcolor [ 0 0 0 ] def
+/bg false def
+/ul false def
+/bx false def
+% The font for line numbering
+/f# /Helvetica findfont bfs .6 mul scalefont def
+/fSymbol /Symbol findfont def
+/hm fnfs 0.25 mul def
+/pw
+   cw 86.400000 mul
+def
+/ph
+   520.335631 th add
+def
+/pmw urx llx sub pw 2 mul sub 1 div def
+/pmh 0 def
+/v 0 def
+/x [
+  0
+  dup pmw add pw add
+] def
+/y [
+  pmh ph add 0 mul ph add
+  dup
+] def
+/scx sw 2 div def
+/scy sh 2 div def
+/snx urx def
+/sny lly 2 add def
+/dx llx def
+/dy sny def
+/fnx scx def
+/fny dy def
+/lx snx def
+/ly ury fnfs 0.8 mul sub def
+/sx 5 def
+/tab 8 def
+/x0 0 def
+/y0 0 def
+%%EndSetup
+
+%%Page: (1-2) 1
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (from) K
+( __future__ ) p
+(import) K
+( division) p n
+0 T () S
+(import) K
+( sys, random, math) p n
+0 T () S
+(from) K
+( sk ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( sa ) p
+(import) K
+( *) p n
+(5) # () S
+(from) K
+( mws ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( ga ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( de ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( pso ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( models ) p
+(import) K
+( *) p n
+(10) # (sys.dont_write_bytecode = True) N
+0 T () N
+0 T (@demo) N
+0 T () S
+(def) K
+( HW4part345\(\): ) p
+(#part 5 with part 3 and part4 ) c n
+0 T () S
+(  ) p
+(for) K
+( klass ) p
+(in) K
+( [Schaffer,Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:) p n
+(15) # (    ) S
+(print) K
+( ") p
+(\\n !!!!) str
+(", klass.__name__) p n
+0 T (    ) S
+(for) K
+( searcher ) p
+(in) K
+( [sa, mws]:) p n
+0 T (      reseed\(\)) N
+0 T (      x, rrange=searcher\(klass\(\)\) ) S
+(#rrange is a dic: key is range, value is the o) c n
+0 T (bj name) N
+0 T () S
+(      ) p
+(for) K
+( key ) p
+(in) K
+( rrange.keys\(\):) p n
+(20) # (        ) S
+(print) K
+( ") p
+(# The range of objective ) str
+("+ str\(rrange[key]\)+") p
+( during %s repeats is %s ) str
+(" \\) p n
+0 T (             % \(Settings.other.repeats, str\(key\)\)  ) N
+0 T (@demo) N
+0 T () S
+(def) K
+( HW4part6\(\):) p n
+0 T (  ) S
+(def) K
+( genvariants\(\):) p n
+(25) # (    Settings.sa.cooling = rand\(\) ) S
+(# get variants of sa, mws) c n
+0 T () S
+(    Settings.mws.prob = rand\(\)) p n
+0 T (    Settings.mws.max_changes = int\(1000*rand\(\)\)) N
+0 T (  r = 20) N
+0 T (  Settings.other.repeats = 1) N
+(30) # (  Settings.other.reportrange = False) N
+0 T (  ) S
+(for) K
+( klass ) p
+(in) K
+( [ZDT1]:) p n
+0 T (    ) S
+(print) K
+( ") p
+(\\n !!!!) str
+(", klass.__name__) p n
+0 T (    ) S
+(for) K
+( variant ) p
+(in) K
+( range\(1\):) p n
+0 T (      genvariants\(\)) N
+(35) # (      allEB = []) N
+0 T (      searcher = { ") S
+(sa) str
+(": sa, ") p
+(mws) str
+(" :mws}) p n
+0 T (      ) S
+(for) K
+( key ) p
+(in) K
+( searcher.keys\(\):) p n
+0 T (        lastera = []) N
+0 T (        reseed\(\)) N
+(40) # (        ) S
+(for) K
+( _ ) p
+(in) K
+( range\(r\):) p n
+0 T (          model = klass\(\)) N
+0 T (          x = searcher[key]\(klass\(\)\)) N
+0 T (          lastera += [x]) N
+0 T (        label = key + str\(variant\) ) N
+(45) # (        lastera.insert\(0,label\)) N
+0 T (        allEB.append\(lastera\)) N
+0 T (      rdivDemo\(allEB\) ) N
+0 T (@demo ) N
+0 T () S
+(def) K
+( HW5\(\):) p n
+(50) # (  ) S
+(# for klass in [ Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3, DTLZ7]:) c n
+0 T () S
+(  ) p
+(for) K
+( klass ) p
+(in) K
+( [DTLZ7]:) p n
+0 T (    ) S
+(print) K
+( ") p
+(\\n !!!!) str
+(", klass.__name__) p n
+0 T (    allEB  = []) N
+0 T (    searcher = {") S
+(sa) str
+(":sa}) p n
+(55) # (    ) S
+(#searcher = {"sa":sa, "mws":mws, "ga":ga}) c n
+0 T () S
+(    ) p
+(for) K
+( key ) p
+(in) K
+( searcher.keys\(\):) p n
+0 T (      repeats = 5) N
+0 T (      eb = 5*[0]) N
+0 T (      name = klass.__name__) N
+(60) # (      reseed\(\)) N
+0 T (      ) S
+(for) K
+( r ) p
+(in) K
+( range\(repeats\):) p n
+0 T (        results=searcher[key]\(klass\(\)\) ) S
+(# lohi is a list containing [lo,hi] paris) c n
+0 T ( of f1&f2 ) N
+0 T () S
+(        ) p
+(if) K
+( Settings.other.reportrange:) p n
+0 T (          eb[r] = results[0]) N
+(65) # (        ) S
+(else) K
+(:) p n
+0 T (          eb[r] = results) N
+0 T (      eb.insert\(0, key\)) N
+0 T (      allEB.append\(eb\)) N
+0 T (      rdivDemo\(allEB\)) N
+(70) # (@demo ) N
+0 T () S
+(def) K
+( HW6\(\):) p n
+(csc791sbse:hw7:Fu) (Page 1/2) (Oct 27, 14 21:56) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (  ) p
+(for) K
+( klass ) p
+(in) K
+( [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:) p n
+0 T (  ) S
+(# for klass in [ Schaffer]:) c n
+0 T () S
+(    ) p
+(print) K
+( ") p
+(\\n !!!!) str
+(", klass.__name__) p n
+(75) # (    allEB  = []) N
+0 T (    ) S
+(#searcher = {"ga":ga}) c n
+0 T () S
+(    searcher = {") p
+(sa) str
+(":sa, ") p
+(mws) str
+(":mws, ") p
+(ga) str
+(":ga, ") p
+(de) str
+(": de}) p n
+0 T (    Settings.other.repeats = 1) N
+0 T (    ) S
+(for) K
+( key ) p
+(in) K
+( searcher.keys\(\):) p n
+(80) # (      repeats = 5) N
+0 T (      eb = repeats*[0]) N
+0 T (      name = klass.__name__) N
+0 T (      reseed\(\)) N
+0 T (      ) S
+(for) K
+( r ) p
+(in) K
+( range\(repeats\):) p n
+(85) # (        results=searcher[key]\(klass\(\)\) ) S
+(# lohi is a list containing [lo,hi] paris) c n
+0 T ( of f1&f2 ) N
+0 T () S
+(        eb[r] = results[0] ) p
+(if) K
+( isinstance\(results, tuple\) ) p
+(else) K
+( results) p n
+0 T (      eb.insert\(0, key\)) N
+0 T (      allEB.append\(eb\)) N
+0 T (      rdivDemo\(allEB\)) N
+(90) # (@demo ) N
+0 T () S
+(def) K
+( HW7\(\):) p n
+0 T (  ) S
+(for) K
+( klass ) p
+(in) K
+( [ Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3, DTLZ7,Schwefe) p n
+0 T (l, Osyczka]:) N
+0 T (  ) S
+(# for klass in [Osyczka]:) c n
+0 T () S
+(    ) p
+(print) K
+( ") p
+(\\n !!!!) str
+(", klass.__name__) p n
+(95) # (    allEB  = []) N
+0 T (    ) S
+(# searcher = {"sa":sa}) c n
+0 T () S
+(    searcher = {") p
+(sa) str
+(":sa, ") p
+(mws) str
+(":mws, ") p
+(ga) str
+(":ga, ") p
+(de) str
+(": de, ") p
+(pso) str
+(":pso}) p n
+0 T (    Settings.other.repeats = 1) N
+0 T (    ) S
+(for) K
+( key ) p
+(in) K
+( searcher.keys\(\):) p n
+(100) # (      repeats = 1) N
+0 T (      eb = repeats*[0]) N
+0 T (      name = klass.__name__) N
+0 T (      reseed\(\)) N
+0 T (      ShowDate = datetime.datetime.now\(\).strftime) N
+(105) # (     ) S
+(# print "#", ShowDate\("%Y-%m-%d %H:%M:%S"\)) c n
+0 T () S
+(      beginTime = time.time\(\)) p n
+0 T (      ) S
+(for) K
+( r ) p
+(in) K
+( range\(repeats\):) p n
+0 T (        results=searcher[key]\(klass\(\)\) ) S
+(# lohi is a list containing [lo,hi] paris) c n
+0 T ( of f1&f2 ) N
+0 T () S
+(        eb[r] = results[0] ) p
+(if) K
+( isinstance\(results, tuple\) ) p
+(else) K
+( results) p n
+(110) # (      eb.insert\(0, key\)) N
+0 T (      allEB.append\(eb\)) N
+0 T (      endTime = time.time\(\)) N
+0 T (      ) S
+(# print "\\n" +\("-"*60\)) c n
+0 T () S
+(      ) p
+(# dump\(Settings, f.__name__\)) c n
+(115) # () S
+(      ) p
+(print) K
+( ") p
+(#) str
+("+key+") p
+( Runtime: %.3f secs) str
+(" % \(endTime-beginTime\)) p n
+0 T (      ) S
+(# print "\\n" +\("-"*60\)) c n
+0 T () S
+(    rdivDemo\(allEB\)) p n
+0 T (    dump\(Settings,lvl = 0\)) N
+0 T () N
+(120) # (@demo) N
+0 T () S
+(def) K
+( testmodel\(\):) p n
+0 T (  model = DTLZ7\(\)) N
+0 T (  ) S
+(# model = Osyczka\(\)) c n
+0 T () S
+(  depen = model.getDepen\(model.generate_x\(\)\)) p n
+(125) # (  ) S
+(print) K
+( depen) p n
+0 T () N
+0 T () S
+(if) K
+( __name__ ) p
+(\272) sy
+( ") p
+(__main__) str
+(": eval\(cmd\(\)\)) p n
+0 T () N
+0 T () N
+(130) # () N
+0 T () N
+0 T () N
+0 T () N
+0 T () N
+(135) # () N
+0 T () N
+0 T () N
+(csc791sbse:hw7:Fu) (Page 2/2) (Oct 27, 14 21:56) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(optimizer.py) (1/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 2
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (from) K
+( __future__ ) p
+(import) K
+( division) p n
+0 T () S
+(from) K
+( log ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( models ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( xtile ) p
+(import) K
+( *) p n
+(5) # () S
+(from) K
+( base ) p
+(import) K
+( *) p n
+0 T () S
+(import) K
+( sys,random, math, datetime, time,re, pdb, operator) p n
+0 T (sys.dont_write_bytecode = True) N
+0 T () N
+0 T () S
+(# @printlook ) c n
+(10) # () S
+(def) K
+( ga\(model\):) p n
+0 T (  mutationRate = 1/model.n ) N
+0 T (  population = []) N
+0 T (  solution =[]) N
+0 T (  children = []) N
+(15) # (  fitness = {}) N
+0 T (  history = {}) N
+0 T (  mateNum = 20) N
+0 T (  ) S
+(def) K
+( selection\(sortedFitness\):) p n
+0 T (    ) S
+(return) K
+( [population[sortedFitness[0][0]], population[sortedFitness[1][0]]] ) p
+(# ) c n
+0 T (sroted[0] and [1] are the smallest two we preferred) N
+(20) # () S
+(  ) p
+(def) K
+( crossover\(selected\):) p n
+0 T (    ''') S
+(crossover will do this way: offsprint1 = p* parent 1+ \(1-p\)* parent2 for numbers between two points ) str
+(''') p n
+0 T (    ) S
+(def) K
+( what\(lst\):) p n
+0 T (      ) S
+(return) K
+( lst[0] ) p
+(if) K
+( isinstance\(lst, list\) ) p
+(else) K
+( lst) p n
+0 T (    children1 = []) N
+(25) # (    ) S
+(if) K
+( rand\(\)> Settings.ga.crossRate:) p n
+0 T (      ) S
+(return) K
+( selected[0]) p n
+0 T (    ) S
+(else) K
+(:) p n
+0 T (      ) S
+(if) K
+( model.n ) p
+(\272) sy
+(1:) p n
+0 T (        children1 = [\(what\(selected[0]\) + what\(selected[1]\)\)*0.5]) N
+(30) # (      ) S
+(else) K
+(:) p n
+0 T (        index = sorted\([random.randint\(0, model.n - 1\) ) S
+(for) K
+( _ ) p
+(in) K
+( xrange\(Settings.) p n
+0 T (ga.crossPoints\)]\)) N
+0 T (        parent1 = selected[0]) N
+0 T (        parent2 = selected[1]) N
+0 T (        children1 = parent1[:]) N
+(35) # (        children1[index[0]:index[1]] = parent2[index[0]:index[1]]) N
+0 T (      ) S
+(return) K
+( children1) p n
+0 T (  ) S
+(def) K
+( mutate\(children, selected\):) p n
+0 T (    ) S
+(# print children) c n
+0 T () S
+(    ) p
+(for) K
+( k, n ) p
+(in) K
+( enumerate\(children\):) p n
+(40) # (      ) S
+(if) K
+( rand\(\)< mutationRate:) p n
+0 T (        children[k]= selected[random.randint\(0,1\)][random.randint\(0, model.n-1\)]) N
+0 T ( ) S
+(# pick value from mom or dad) c n
+0 T () S
+(    ) p
+(# print children) c n
+0 T () S
+(    ) p
+(return) K
+( children) p n
+0 T (  ) S
+(def) K
+( tournament\(sortedFitness, m=10\): ) p
+(# do tornament selection, select the best) c n
+0 T ( daddy or mom in  m = 10 candidates) N
+(45) # () S
+(    index = []) p n
+0 T (    ) S
+(for) K
+( _ ) p
+(in) K
+( range\(m\):) p n
+0 T (      index.append\(random.randint\(0, Settings.ga.pop-1\)\)) N
+0 T (    betterIndex = list\(set\(sorted\(index\)\)\)) N
+0 T (    parentlst = [population[sortedFitness[betterIndex[0]][0]], population[sorted) N
+0 T (Fitness[betterIndex[1]][0]]]) N
+(50) # (    ) S
+(return) K
+( parentlst) p n
+0 T (  ) S
+(def) K
+( fit\(fitness\):) p n
+0 T (    sortedFitness = sorted\(fitness.items\(\), key = ) S
+(lambda) K
+( x:x[1]\) ) p
+(# a sorted list) c n
+0 T (    ) N
+0 T () S
+(    ) p
+(return) K
+( sortedFitness[:Settings.ga.pop] ) p
+(# just return the top 50 candidates a) c n
+0 T (s new populatioin) N
+0 T () S
+(  ) p
+(def) K
+( produce\(selected\):) p n
+(55) # (  ) S 8 T (children = crossover\(selected\)) N
+0 T (  ) S 8 T (children = mutate\(children, selected\)) N
+0 T (  ) S 8 T () S
+(return) K
+( children) p n
+0 T () N
+0 T (  min_energy, max_energy = model.baseline\(\)) N
+(60) # (  eb= 0) N
+0 T (  solution = []) N
+0 T (  control = Control\(model, history\)) N
+0 T (  ) S
+(for) K
+( _ ) p
+(in) K
+( xrange\(Settings.ga.pop\):) p n
+0 T (    temp = model.generate_x\(\)) N
+(65) # (    population.append\(temp\)) N
+0 T (  ) S
+(# for num in Settings.ga.genNum:) c n
+(csc791sbse:hw7:Fu) (Page 1/2) (Oct 27, 14 14:41) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (  t = 0) p n
+0 T (  ) S
+(while) K
+(\(t < Settings.ga.genNum\): ) p
+(# figure stop out) c n
+0 T () S
+(    stopsign = control.next\(t\) ) p
+(#true ---stop) c n
+(70) # () S
+(    ) p
+(if) K
+( stopsign:) p n
+0 T (      ) S
+(break) K n
+0 T () S
+(    ) p
+(for) K
+( \(k, xlst\) ) p
+(in) K
+( enumerate\(population\):) p n
+0 T (      fitness[k] = model.getDepen\(xlst\) ) N
+0 T (    newpopfitness = fit\(fitness\)) N
+(75) # (    ) S
+(for) K
+( n, k ) p
+(in) K
+( newpopfitness:) p n
+0 T (      population[n] = population[newpopfitness[0][0]] ) S
+(# new generation) c n
+0 T () S
+(      control.logxy\(population[n]\)) p n
+0 T (    ) S
+(# for n, k in population:) c n
+0 T () S
+(    ) p
+(#   control.logxy\(k\) # log new generation) c n
+(80) # () S
+(    eb = model.norm\(newpopfitness[0][1]\)) p n
+0 T (    solution = population[newpopfitness[0][0]]) N
+0 T (    ) S
+(for) K
+( _ ) p
+(in) K
+( range\(mateNum\):) p n
+0 T (      selected = tournament\(newpopfitness\)) N
+0 T (      children.append\(produce\(selected\)\)) N
+(85) # (    population.extend\(children\)) N
+0 T (    t +=1) N
+0 T (  ) S
+(# print "best solution : %s" % str\(solution\)) c n
+0 T () S
+(  ) p
+(# print "best normalized results: %s" % str\(eb\)  ) c n
+0 T () S
+(  ) p
+(# print "-"*20) c n
+(90) # () S
+(  ) p
+(# printReport\(model\)) c n
+0 T () S
+(  ) p
+(# lohi=printRange\(model\)) c n
+0 T () S
+(  ) p
+(# return eb,lohi) c n
+0 T () S
+(  ) p
+(if) K
+( Settings.other.xtile: ) p n
+0 T (    printReport\(model, history\)) N
+(95) # (    ) S
+(print) K
+( ") p
+(\\n) str
+(") p n
+0 T (    printSumReport\(model, history\)) N
+0 T (  ) S
+(if) K
+( Settings.other.reportrange:) p n
+0 T (    rrange=printRange\(model, history\)) N
+0 T (    ) S
+(return) K
+( eb,rrange) p n
+(100) # (  ) S
+(else) K
+(:) p n
+0 T (    ) S
+(return) K
+( eb) p n
+0 T () N
+0 T () S
+(def) K
+( startga\(\):) p n
+0 T (  ) S
+(for) K
+( klass ) p
+(in) K
+( [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:) p n
+(105) # (  ) S
+(# for klass in [DTLZ7]:) c n
+0 T () S
+(    ) p
+(print) K
+( ") p
+(=) str
+("*50) p n
+0 T (    ) S
+(print) K
+( ") p
+(!!!!) str
+(", klass.__name__, ) p n
+0 T (    ) S
+(print) K
+( ") p
+(\\nSearcher: GA) str
+(") p n
+0 T (    reseed\(\)) N
+(110) # (    ga\(klass\(\)\)) N
+0 T () N
+0 T () N
+0 T () S
+(if) K
+( __name__ ) p
+(\272) sy
+( ") p
+(__main__) str
+(":startga\(\)) p n
+0 T (     ) S
+(# print sortedFitness) c n
+(115) # () N
+0 T () N
+0 T () N
+0 T () N
+0 T () S
+(    ) p n
+(120) # () N
+(csc791sbse:hw7:Fu) (Page 2/2) (Oct 27, 14 14:41) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(ga.py) (2/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1) 3
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (from) K
+( __future__ ) p
+(import) K
+( division) p n
+0 T () S
+(import) K
+( sys, random, math) p n
+0 T () S
+(from) K
+( models ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( base ) p
+(import) K
+( *) p n
+(5) # () S
+(#this is a test) c n
+0 T () S
+(sys.dont_write_bytecode = True) p n
+0 T () S
+(# @printlook      ) c n
+0 T () S
+(def) K
+( sa\(model\):) p n
+0 T (  ) S
+(def) K
+( P\(old, new, t\):) p n
+(10) # (    prob = math.e**\(\(old - new\)/\(t+0.00001\)\) ) N
+0 T (    ) S
+(return) K
+( prob ) p n
+0 T (  history = {}) N
+0 T (  eb =0.0) N
+0 T (  ) S
+(for) K
+( _ ) p
+(in) K
+( xrange\(Settings.other.repeats\):) p n
+(15) # (    ) S
+(#reseed\(\)) c n
+0 T () S
+(    min_energy, max_energy = model.baseline\(\)) p n
+0 T (    s = model.generate_x\(\)) N
+0 T (    e = model.norm\(model.getDepen\(s\)\)) N
+0 T (    sb = s[:]) N
+(20) # (    eb = e) N
+0 T (    k = 1) N
+0 T (    icontrol = Control\(model, history\)) N
+0 T (    ) S
+(while) K
+( k < Settings.sa.kmax:) p n
+0 T (      stopsign = icontrol.next\(k\) ) S
+(#true ---stop) c n
+(25) # () S
+(      ) p
+(if) K
+( stopsign:) p n
+0 T (        ) S
+(break) K n
+0 T () S
+(      sn = model.sa_neighbor\(s\)) p n
+0 T (      en = model.norm\(model.getDepen\(sn\)\)) N
+0 T (      icontrol.logxy\(sn\)) N
+(30) # (      temp = \(k/Settings.sa.kmax\)**Settings.sa.cooling) N
+0 T (      ) S
+(if) K
+( en < eb:) p n
+0 T (        sb = sn[:] ) S
+(###!!!!! can't do sb = sn for lists, because) c n
+0 T () S
+(        eb = en) p n
+0 T (        ) S
+(if) K
+( Settings.other.show: say\(') p
+(!) str
+('\)) p n
+(35) # (      ) S
+(if) K
+( en < e:) p n
+0 T (        s = sn[:]) N
+0 T (        e = en) N
+0 T (        ) S
+(if) K
+( Settings.other.show:say\(') p
+(+) str
+('\)) p n
+0 T (      ) S
+(elif) K
+( P\(e, en, temp\) < random.random\(\):) p n
+(40) # (        s = sn[:]) N
+0 T (        e = en) N
+0 T (        ) S
+(if) K
+( Settings.other.show:say\(') p
+(?) str
+('\)) p n
+0 T (      ) S
+(if) K
+( Settings.other.show:say\(') p
+(.) str
+('\)) p n
+0 T (      k = k + 1) N
+(45) # (      ) S
+(if) K
+( k % 30 ) p
+(\272) sy
+( 0:) p n
+0 T (        ) S
+(if) K
+( Settings.other.show:) p
+(print) K
+( ") p
+(\\n) str
+("  ) p n
+0 T (        ) S
+(if) K
+( Settings.other.show:say\(str\(round\(eb,3\)\)\)) p n
+0 T (  ) S
+(if) K
+( Settings.other.xtile: ) p n
+0 T (    printReport\(model, history\)) N
+(50) # (    ) S
+(print) K
+( ") p
+(\\n) str
+(") p n
+0 T (    printSumReport\(model, history\)) N
+0 T (  ) S
+(# print "\\n------\\n:Normalized Sum of Objectives : ",str\(round\(eb,3\)\),"\\n:Solu) c n
+0 T (tion",sb) N
+0 T () S
+(  ) p
+(if) K
+( Settings.other.reportrange:) p n
+0 T (    rrange=printRange\(model, history\)) N
+(55) # (    ) S
+(return) K
+( eb,rrange) p n
+0 T (  ) S
+(else) K
+(:) p n
+0 T (    ) S
+(return) K
+( eb) p
+(csc791sbse:hw7:Fu) (Page 1/1) (Oct 27, 14 11:07) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(sa.py) (3/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1) 4
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (from) K
+( __future__ ) p
+(import) K
+( division) p n
+0 T () S
+(import) K
+( sys, random, math) p n
+0 T () S
+(from) K
+( models ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( base ) p
+(import) K
+( *) p n
+(5) # (sys.dont_write_bytecode = True) N
+0 T () S
+(# @printlook) c n
+0 T () S
+(def) K
+( mws\(model\):) p n
+0 T (  eraScore = []) N
+0 T (  control = Control\(model\)) N
+(10) # (  optimalsign = False) N
+0 T (  eb = 100.0) N
+0 T (  norm_energy = 10**5) N
+0 T (  history = {}) N
+0 T (  ) S
+(for) K
+( _ ) p
+(in) K
+( xrange\(Settings.other.repeats\):) p n
+(15) # (    min_energy, max_energy = model.baseline\(\)) N
+0 T (    control = Control\(model, history\)) N
+0 T (    total_changes = 0) N
+0 T (    total_tries = 0) N
+0 T (    ) S
+(for) K
+( k ) p
+(in) K
+( xrange\(Settings.mws.max_tries\):) p n
+(20) # (      ) S
+(if) K
+( control.lives ) p
+(\272) sy
+(0:) p n
+0 T (        ) S
+(break) K n
+0 T () S
+(      solution = model.generate_x\(\)) p n
+0 T (      total_tries += 1) N
+0 T (      ) S
+(for) K
+( _ ) p
+(in) K
+( range\(Settings.mws.max_changes\):) p n
+(25) # (        stopsign = control.next\(total_changes\) ) S
+(#true ---stop) c n
+0 T () S
+(        ) p
+(if) K
+( stopsign:) p n
+0 T (          ) S
+(break) K n
+0 T () S
+(        norm_energy = model.norm\(model.getDepen\(solution\)\)) p n
+0 T (        ) S
+(if) K
+( norm_energy < Settings.mws.threshold:) p n
+(30) # (          optimalsign = True) N
+0 T (          ) S
+(break) K n
+0 T () S
+(        ) p
+(if) K
+(  random.random\(\)<Settings.mws.prob:) p n
+0 T (          solution[random.randint\(0,model.n-1\)] = model.generate_x\(\)[random.rand) N
+0 T (int\(0,model.n-1\)]) N
+0 T (          control.logxy\(solution\)) N
+(35) # (          ) S
+(if) K
+( Settings.other.show:say\(") p
+(+) str
+("\)) p n
+0 T (        ) S
+(else) K
+(:) p n
+0 T (          solution = model.mws_neighbor\(solution\)) N
+0 T (          control.logxy\(solution\)) N
+0 T (          ) S
+(if) K
+( Settings.other.show:say\(") p
+(!) str
+("\)) p n
+(40) # (        ) S
+(if) K
+( Settings.other.show:say\(") p
+(.) str
+("\)) p n
+0 T (        ) S
+(if) K
+( total_changes % 30 ) p
+(\272) sy
+( 0:) p n
+0 T (          ) S
+(if) K
+( Settings.other.show:) p
+(print) K
+( ") p
+(\\n) str
+(") p n
+0 T (          ) S
+(if) K
+( Settings.other.show:say\(str\(round\(model.norm\(model.getDepen\(solutio) p n
+0 T (n\)\), 3\)\)\) ) N
+0 T (        total_changes +=1   ) N
+(45) # (    ) S
+(# if optimalsign or k == Settings.mws.max_tries-1:) c n
+0 T () S
+(  ) p
+(if) K
+( Settings.other.xtile: ) p n
+0 T (    say\(") S
+(\\n) str
+("\)) p n
+0 T (    say\(str\(round\(model.norm\(model.getDepen\(solution\)\), 3\)\)\) ) N
+0 T (    ) S
+(print) K
+( ") p
+(\\n) str
+(") p n
+(50) # (    printReport\(model, history\)) N
+0 T (    ) S
+(print) K
+( ") p
+(\\n) str
+(") p n
+0 T (    printSumReport\(model, history\)) N
+0 T (  ) S
+(if) K
+( Settings.other.reportrange:) p n
+0 T (    rrange =printRange\(model, history\)) N
+(55) # (    ) S
+(return) K
+( norm_energy, rrange) p n
+0 T (  ) S
+(else) K
+(:) p n
+0 T (    ) S
+(return) K
+( norm_energy) p
+(csc791sbse:hw7:Fu) (Page 1/1) (Oct 27, 14 11:10) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(mws.py) (4/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 5
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (from) K
+( __future__ ) p
+(import) K
+( division) p n
+0 T () S
+(import) K
+( sys, random, math, pdb) p n
+0 T () S
+(from) K
+( models ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( base ) p
+(import) K
+( *) p n
+(5) # () N
+0 T () S
+(def) K
+( de\(model\):) p n
+0 T (  eb = 100.0) N
+0 T (  np = Settings.de.np) N
+0 T (  repeats = Settings.de.repeats) N
+(10) # (  fa = Settings.de.f) N
+0 T (  cr = Settings.de.cr) N
+0 T (  threshold = Settings.de.threshold) N
+0 T (  min_e, max_e = model.baseline\(\)) N
+0 T (  ) S
+(# s = model.generate_x\(\)) c n
+(15) # () S
+(  ) p
+(# e = model.norm\(model.getDepen\(s\)\)) c n
+0 T () S
+(  ) p
+(# sb = s[:]) c n
+0 T () S
+(  ) p
+(# eb = e) c n
+0 T () S
+(  indices = []) p n
+0 T (  scores = {}) N
+(20) # (  ) S
+(def) K
+( evaluate\(pop\):) p n
+0 T (    ) S
+(for) K
+( n, x ) p
+(in) K
+( enumerate\(pop\):) p n
+0 T (      scores[n] = model.norm\(model.getDepen\(x\)\)) N
+0 T (    ) S
+(# print scores) c n
+0 T () S
+(    ordered = sorted\(scores.items\(\), key=) p
+(lambda) K
+( x: x[1]\) ) p
+(# alist of turple) c n
+(25) # () S
+(    ) p
+(# print ordered) c n
+0 T () S
+(    ) p
+(return) K
+(  pop[ordered[0][0]], ordered[0][1]) p n
+0 T (  ) S
+(def) K
+( gen3\(n,f,frontier\):) p n
+0 T (    seen = [n]) N
+0 T (    ) S
+(def) K
+( gen1\(seen\):) p n
+(30) # (      ) S
+(while) K
+( 1:) p n
+0 T (        k = random.randint\(0, np -1\)) N
+0 T (        ) S
+(if) K
+( k ) p
+(\330) sy
+( ) p
+(in) K
+( seen:) p n
+0 T (          seen += [k]) N
+0 T (          ) S
+(break) K n
+(35) # () S
+(      ) p
+(return) K
+( frontier[k]) p n
+0 T (    a = gen1\(seen\)) N
+0 T (    b = gen1\(seen\)) N
+0 T (    c = gen1\(seen\)) N
+0 T (    ) S
+(return) K
+( a, b, c) p n
+(40) # () N
+0 T (  ) S
+(def) K
+( update\(n,f,frontier\):) p n
+0 T (    newf = []) N
+0 T (    a, b, c = gen3\(n,f,frontier\)) N
+0 T (    ) S
+(for) K
+( n ) p
+(in) K
+( xrange\(len\(f\)\):) p n
+(45) # (      ) S
+(if) K
+( cr <rand\(\):) p n
+0 T (        newf.append\(f[n]\)) N
+0 T (      ) S
+(else) K
+(:) p n
+0 T (        newf.append\(model.trim\(a[n]+fa*\(b[n]-c[n]\), n\)\)  ) S
+(# adapt to the Osyzcka ) c n
+0 T (model, pass n) N
+0 T () S
+(    ) p
+(return) K
+( newf) p n
+(50) # () N
+0 T (  frontier = [model.generate_x\(\) ) S
+(for) K
+( _ ) p
+(in) K
+( xrange\(np\)]) p n
+0 T (  sb, eb = evaluate\(frontier\)) N
+0 T (  ) S
+(for) K
+( k ) p
+(in) K
+( xrange\(repeats\):) p n
+0 T (    ) S
+(if) K
+( eb < threshold:) p n
+(55) # (      ) S
+(break) K n
+0 T () S
+(    nextgen = []) p n
+0 T (    ) S
+(for) K
+( n,f ) p
+(in) K
+( enumerate \(frontier\):) p n
+0 T (      new = update\(n, f, frontier\)) N
+0 T (      ) S
+(if) K
+( model.norm\(model.getDepen\(new\)\) < model.norm\(model.getDepen\(f\)\):) p n
+(60) # (        nextgen.append\(new\)) N
+0 T (      ) S
+(else) K
+(:) p n
+0 T (        nextgen.append\(f\)) N
+0 T (    frontier = nextgen) N
+0 T (    sb, eb = evaluate\(frontier\)) N
+(65) # (  ) S
+(#print eb) c n
+0 T () S
+(  ) p
+(if) K
+( Settings.other.reportrange:) p n
+0 T (    rrange=printRange\(model, history\) ) S
+(# no history right now!) c n
+0 T () S
+(    ) p
+(return) K
+( eb,rrange) p n
+0 T (  ) S
+(else) K
+(:) p n
+(70) # (    ) S
+(return) K
+( eb) p n
+0 T () N
+0 T () S
+(def) K
+( deDemo\(\):) p n
+(csc791sbse:hw7:Fu) (Page 1/2) (Oct 27, 14 15:24) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (  ) p
+(for) K
+( klass ) p
+(in) K
+( [Schaffer]:) p n
+0 T (  ) S
+(# for klass in [DTLZ7]:) c n
+(75) # () S
+(    ) p
+(print) K
+( ") p
+(=) str
+("*50) p n
+0 T (    ) S
+(print) K
+( ") p
+(!!!!) str
+(", klass.__name__, ) p n
+0 T (    ) S
+(print) K
+( ") p
+(\\nSearcher: DE) str
+(") p n
+0 T (    reseed\(\)) N
+0 T (    de\(klass\(\)\)) N
+(80) # () S
+(if) K
+( __name__ ) p
+(\272) sy
+( ") p
+(__main__) str
+(": deDemo\(\)) p n
+0 T (  ) N
+(csc791sbse:hw7:Fu) (Page 2/2) (Oct 27, 14 15:24) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(de.py) (5/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 6
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (from) K
+( __future__ ) p
+(import) K
+( division) p n
+0 T () S
+(from) K
+( log ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( models ) p
+(import) K
+( *) p n
+0 T () S
+(from) K
+( xtile ) p
+(import) K
+( *) p n
+(5) # () S
+(from) K
+( base ) p
+(import) K
+( *) p n
+0 T () S
+(import) K
+( sys,random, math, pdb, operator) p n
+0 T (sys.dont_write_bytecode = True) N
+0 T () N
+0 T () S
+(# @printlook ) c n
+(10) # () S
+(def) K
+( pso\(model\):) p n
+0 T (  vel = []) N
+0 T (  pos = []) N
+0 T (  lbest = [] ) S
+(# local best position for each ) c n
+0 T () S
+(  gbest = model.generate_x\(\) ) p
+(# global best position for all) c n
+(15) # () S
+(  min_e, max_e = model.baseline\(\)) p n
+0 T (  eb = 10**5) N
+0 T (  N = Settings.pso.N) N
+0 T (  w = Settings.pso.w) N
+0 T (  repeats = Settings.pso.repeats) N
+(20) # (  threshold = Settings.pso.threshold) N
+0 T (  phi1 = Settings.pso.phi1) N
+0 T (  phi2 = Settings.pso.phi2) N
+0 T (  phi = phi2 + phi1) N
+0 T (  K = 2/\(abs\(2 - \(phi\) -math.sqrt\(phi **2\) -4*phi\)\)) N
+(25) # (  fitness =) S
+(lambda) K
+( x: model.norm\(model.getDepen\(x\)\) ) p n
+0 T (  trim = ) S
+(lambda) K
+( x : max\(model.lo, min\(x, model.hi\)\) ) p n
+0 T (  ) S
+(def) K
+( init\(gbest = gbest\):) p n
+0 T (    ) S
+(for) K
+( n ) p
+(in) K
+( xrange\(N\):) p n
+0 T (      vel.append\([0 ) S
+(for) K
+( _ ) p
+(in) K
+( xrange\(model.n\)]\)) p n
+(30) # (      pos.extend\([model.generate_x\(\) ) S
+(for) K
+( _ ) p
+(in) K
+( xrange\(model.n\)]\)) p n
+0 T (      lbest.append\(pos[n]\)) N
+0 T (      ) S
+(if) K
+( fitness\(pos[n]\) < fitness\(gbest\): ) p
+(#??why I should pass gbest) c n
+0 T () S
+(        gbest = pos[n]) p n
+0 T (        eb = fitness\(gbest\)) N
+(35) # (  ) S
+(def) K
+( velocity\(v, p, l, g\):) p n
+0 T (    newVel = [K*\(w*v[i]+phi1*rand\(\)*\(l[i]-p[i]\)+phi2*rand\(\)*\(g[i]-p[i]\)\\) N
+0 T (            \)) S
+(for) K
+( i ) p
+(in) K
+( xrange\(model.n\)]) p n
+0 T (    ) S
+(# print v ) c n
+0 T () S
+(    ) p
+(# print '\\n') c n
+(40) # () S
+(    ) p
+(# print newVel) c n
+0 T () S
+(    ) p
+(return) K
+( [model.trim\(i,n\) ) p
+(for) K
+( n, i ) p
+(in) K
+( enumerate\(newVel\)] ) p
+(# velosity should be ) c n
+0 T (in the range) N
+0 T () N
+0 T () S
+(  ) p
+(def) K
+( move\(v, p\):) p n
+0 T (    newp = [v[i] + p[i] ) S
+(for) K
+( i ) p
+(in) K
+( xrange\(model.n\)]) p n
+(45) # (    ) S
+(return) K
+( [model.trim\(i,n\) ) p
+(for) K
+( n, i ) p
+(in) K
+( enumerate\(newp\)] ) p
+(# movements should be i) c n
+0 T (n the range) N
+0 T () N
+0 T () N
+0 T () S
+(  init\(\) ) p
+(# init all parameters) c n
+0 T () S
+(  ) p
+(# print vel) c n
+(50) # () S
+(  ) p
+(# print lbest) c n
+0 T () S
+(  ) p
+(# print gbest) c n
+0 T () S
+(  ) p
+(for) K
+( k ) p
+(in) K
+( xrange\(repeats\):) p n
+0 T (    ) S
+(if) K
+( eb < threshold:) p n
+0 T (      ) S
+(break) K n
+(55) # () S
+(    ) p
+(for) K
+( n ) p
+(in) K
+( xrange\(N\):) p n
+0 T (      vel[n] = velocity\(vel[n], pos[n], lbest[n], gbest\)) N
+0 T (      pos[n] = move\(vel[n], pos[n]\)) N
+0 T (      ) S
+(if) K
+( fitness\(pos[n]\) < fitness\(lbest[n]\):) p n
+0 T (        lbest[n] = pos[n]) N
+(60) # (        ) S
+(if) K
+( fitness\(pos[n]\) < fitness\(gbest\):) p n
+0 T (          gbest = pos[n]) N
+0 T (    eb = fitness\(gbest\)) N
+0 T (  ) S
+(return) K
+( eb ) p n
+0 T ( ) N
+(65) # () S
+(def) K
+( start\(\):) p n
+0 T (  ) S
+(# for klass in [Schaffer, Fonseca, Kursawe, ZDT1, ZDT3, Viennet3]:) c n
+0 T () S
+(  ) p
+(for) K
+( klass ) p
+(in) K
+( [Kursawe, ZDT1, DTLZ7]: ) p
+(# these three can't find optimal values) c n
+0 T () S
+(    ) p
+(print) K
+( ") p
+(=) str
+("*50) p n
+0 T (    ) S
+(print) K
+( ") p
+(!!!!) str
+(", klass.__name__, ) p n
+(70) # (    ) S
+(print) K
+( ") p
+(\\nSearcher: PSO) str
+(") p n
+0 T (    reseed\(\)) N
+(csc791sbse:hw7:Fu) (Page 1/2) (Oct 27, 14 15:23) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (    pso\(klass\(\)\)) p n
+0 T () N
+0 T () S
+(#test) c n
+(75) # () N
+0 T () S
+(if) K
+( __name__ ) p
+(\272) sy
+( ") p
+(__main__) str
+(":start\(\)) p n
+0 T (     ) S
+(# print sortedFitness) c n
+0 T () N
+0 T () N
+(80) # () N
+0 T () N
+0 T () S
+(    ) p n
+0 T () N
+(csc791sbse:hw7:Fu) (Page 2/2) (Oct 27, 14 15:23) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(pso.py) (6/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 7
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (from) K
+( __future__ ) p
+(import) K
+( division) p n
+0 T () S
+(from) K
+( log ) p
+(import) K
+( *) p n
+0 T () S
+(import) K
+( sys, random, math, datetime, time,re, pdb) p n
+0 T (sys.dont_write_bytecode = True) N
+(5) # () N
+0 T () N
+0 T (exp = math.e) N
+0 T (sqrt = math.sqrt) N
+0 T (sin = math.sin) N
+(10) # (cos = math.cos) N
+0 T (pi = math.pi) N
+0 T () N
+0 T () S
+(class) K
+( Model:) p n
+0 T (  ) S
+(def) K
+( name\(i\):) p n
+(15) # (    ) S
+(return) K
+( i.__class__.__name__) p n
+0 T (  ) S
+(def) K
+( setup\(i\):) p n
+0 T (    ) S
+(# i.min = 10**\(5\)) c n
+0 T () S
+(    ) p
+(# i.max = -10**\(5\)) c n
+0 T () S
+(    i.xy = Options\(x = [i.generate_x], y = [i.f1, i.f2]\) ) p
+(# cahnge i.generate_x\(\)) c n
+0 T ( to i.generate_x, any issues hereafter??) N
+(20) # () S
+(    i.log = Options\(x = [ Num\(\) ) p
+(for) K
+( _ ) p
+(in) K
+( range\(i.n\)], y = [ Num\(\) ) p
+(for) K
+( _ ) p
+(in) K
+( range) p n
+0 T (\(i.fn\)]\) ) S
+(# hardcode 2) c n
+0 T () S
+(    i.history = {} ) p
+(# hold all logs for eras) c n
+0 T () S
+(  ) p
+(def) K
+( generate_x\(i\):  ) p n
+0 T (    x= [i.lo + \(i.hi-i.lo\)*random.random\(\) ) S
+(for) K
+( _ ) p
+(in) K
+( range\(i.n\)]  ) p n
+0 T (    ) S
+(return) K
+( x) p n
+(25) # (  ) S
+(def) K
+( getDepen\(i, xlst\):) p n
+0 T (    ) S
+(# y = [i.f1, i.f2]) c n
+0 T () S
+(    ) p
+(return) K
+( sum\([f\(xlst\) ) p
+(for) K
+( f ) p
+(in) K
+( i.xy.y]\)) p n
+0 T (  ) S
+(def) K
+( getDepenlst\(i, xlst\):) p n
+0 T (    ) S
+(return) K
+( [f\(xlst\) ) p
+(for) K
+( f ) p
+(in) K
+( i.xy.y]) p n
+(30) # (  ) S
+(def) K
+( cloneModel\(i\): ) p
+(# from Dr.Menzies') c n
+0 T () S
+(    ) p
+(return) K
+( i.__class__\(\)) p n
+0 T (  ) S
+(def) K
+( logxy\(i, x\):) p n
+0 T (    ) S
+(for) K
+( val, log ) p
+(in) K
+( zip\(x, i.log.x\): log += val) p n
+0 T (    y = i.getDepenlst\(x\)) N
+(35) # (    ) S
+(for) K
+( val, log ) p
+(in) K
+( zip\(y, i.log.y\): log += val) p n
+0 T (  ) S
+(def) K
+( better\(news,olds\): ) p
+(# from Dr.Menzies') c n
+0 T () S
+(    ) p
+(def) K
+( worsed\(\):) p n
+0 T (      ) S
+(return) K
+(  \(\(same     ) p
+(\331) sy
+( ) p
+(\330) sy
+( betterIqr\) ) p
+(\332) sy
+( ) p n
+0 T (               \() S
+(\330) sy
+( same ) p
+(\331) sy
+( ) p
+(\330) sy
+( betterMed\)\)) p n
+(40) # (    ) S
+(def) K
+( bettered\(\):) p n
+0 T (      ) S
+(return) K
+(  ) p
+(\330) sy
+( same ) p
+(\331) sy
+( betterMed) p n
+0 T (    out = False) N
+0 T (    ) S
+(for) K
+( new,old ) p
+(in) K
+( zip\(news.log.y, olds.log.y\):) p n
+0 T (      betterMed, same, betterIqr = new.better\(old\)) N
+(45) # (      ) S
+(# print betterMed, same, betterIqr) c n
+0 T () S
+(      ) p
+(# pdb.set_trace\(\)) c n
+0 T () S
+(      ) p
+(if) K
+( worsed\(\)  : ) p
+(return) K
+( False ) p
+(# never any worsed) c n
+0 T () S
+(      ) p
+(if) K
+( bettered\(\): out= out ) p
+(\332) sy
+( True ) p
+(# at least one bettered) c n
+0 T () S
+(    ) p
+(return) K
+( out) p n
+(50) # (  ) S
+(def) K
+( sa_neighbor\(i, old\):  ) p n
+0 T (    p = 1/i.n) N
+0 T (    new = old[:]) N
+0 T (    ) S
+(for) K
+( j ) p
+(in) K
+( range\(len\(old\)\):) p n
+0 T (      ) S
+(if) K
+( random.random\(\) < p:) p n
+(55) # (      ) S 8 T (new_gen = i.generate_x\(\)) N
+0 T (        new[j] = new_gen[random.randint\(0, i.n-1\)]   ) N
+0 T (    ) S
+(return) K
+( new) p n
+0 T (  ) S
+(def) K
+( mws_neighbor\(i,solution\):  ) p n
+0 T (    lo = 10**5) N
+(60) # (    hi = -10**5) N
+0 T (    optimized_index = random.randint\(0, len\(solution\)-1\)) N
+0 T (    ) S
+(if) K
+( isinstance\(i.hi,int\):) p n
+0 T (      hi = i.hi) N
+0 T (      lo = i.lo) N
+(65) # (    ) S
+(if) K
+( isinstance\(i.hi, list\):) p n
+0 T (      hi = i.hi[optimized_index]) N
+0 T (      lo = i.lo[optimized_index]) N
+0 T (    increment = \(hi - lo\) /10) N
+0 T (    temp_min = i.norm\(i.getDepen\(solution\)\)) N
+(70) # (    temp_solution = solution[:]) N
+0 T (    ) S
+(# print "old solution : %s" % solution) c n
+(csc791sbse:hw7:Fu) (Page 1/6) (Oct 27, 14 15:21) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (    ) p
+(# print "old norm energy : %s" % i.norm\(i.getDepen\(solution\)\)) c n
+0 T () S
+(    ) p
+(for) K
+( _ ) p
+(in) K
+( range\(10\):) p n
+0 T (      temp_solution[optimized_index] = lo + increment) N
+(75) # (      temp = i.norm\(i.getDepen\(temp_solution\)\)) N
+0 T (      ) S
+(if) K
+( temp < temp_min:) p n
+0 T (        temp_min = temp) N
+0 T (        solution = temp_solution[:]) N
+0 T (    ) S
+(# print "new solution : %s" % solution) c n
+(80) # () S
+(    ) p
+(# print "new norm energy : %s" %i.norm\(i.getDepen\(solution\)\)) c n
+0 T () S
+(    ) p
+(return) K
+( solution) p n
+0 T (  ) S
+(def) K
+( baseline\(i\):) p n
+0 T (  ) S
+(# model = eval\(model+"\(\)"\)) c n
+0 T () S
+(    i.min = 10**\(5\)) p n
+(85) # (    i.max = -10**\(5\)) N
+0 T (    ) S
+(for) K
+( _ ) p
+(in) K
+( xrange\(Settings.other.baseline\):) p n
+0 T (      temp = i.getDepen\(i.generate_x\(\)\)) N
+0 T (      ) S
+(if) K
+( temp > i.max:) p n
+0 T (        i.max = temp) N
+(90) # (      ) S
+(if) K
+( temp < i.min:) p n
+0 T (        i.min = temp) N
+0 T (    ) S
+(return) K
+( i.min, i.max) p n
+0 T (  ) S
+(def) K
+( norm\(i, x\):) p n
+0 T (    e = \(x - i.min\)/\(i.max - i.min\)) N
+(95) # (    ) S
+(return) K
+( max\(0, min\(e,1\)\) ) p
+(#avoid values <0 or >1) c n
+0 T () S
+(  ) p
+(def) K
+( trim\(i, x, n \):) p n
+0 T (    ) S
+(return) K
+( max\(i.lo, min\(x, i.hi\)\)) p n
+0 T () N
+0 T () S
+(class) K
+( Control\(object\): ) p
+(# based on Dr.Menzies' codes) c n
+(100) # () S
+(  ) p
+(def) K
+( __init__\(i, model, history = None\):) p n
+0 T (    i.kmax = Settings.sa.kmax) N
+0 T (    i.era = Settings.other.era) N
+0 T (    i.lives = Settings.other.lives) N
+0 T (    i.history = {} ) S
+(if) K
+( history ) p
+(\272) sy
+( None ) p
+(else) K
+( history) p n
+(105) # (    i.logAll = {}) N
+0 T (    i.model = model) N
+0 T (  ) S
+(def) K
+( __call__\(i, k\):) p n
+0 T (    i.next\(k\)) N
+0 T (  ) S
+(def) K
+( logxy\(i, results\):) p n
+(110) # (    both = [i.history, i.logAll, i.model.history]) N
+0 T (    ) S
+(for) K
+( log ) p
+(in) K
+( both:) p n
+0 T (      ) S
+(if) K
+( ) p
+(\330) sy
+( i.era ) p
+(in) K
+( log:) p n
+0 T (        log[i.era] = i.model.cloneModel\(\)) N
+0 T (    ) S
+(for) K
+( log ) p
+(in) K
+( both:) p n
+(115) # (      log[i.era].logxy\(results\)) N
+0 T (  ) S
+(def) K
+( checkimprove\(i\):) p n
+0 T (      ) S
+(if) K
+( len\(i.logAll\) ) p
+(\263) sy
+( 2:) p n
+0 T (        current = i.era) N
+0 T (        before = i.era - Settings.other.era) N
+(120) # (        currentLog = i.logAll[current]) N
+0 T (        beforeLog = i.logAll[before]) N
+0 T (        ) S
+(# pdb.set_trace\(\)) c n
+0 T () S
+(        ) p
+(if) K
+( ) p
+(\330) sy
+( currentLog.better\(beforeLog\):) p n
+0 T (          ) S
+(pass) K n
+(125) # () S
+(        ) p
+(else) K
+(:) p n
+0 T (          i.lives += 1) N
+0 T (  ) S
+(def) K
+( next\(i, k\):  ) p n
+0 T (    ) S
+(if) K
+( k ) p
+(\263) sy
+( i.era:) p n
+0 T (      i.checkimprove\(\)) N
+(130) # (      i.era +=Settings.other.era) N
+0 T (      ) S
+(if) K
+( i.lives ) p
+(\272) sy
+( 0:) p n
+0 T (        ) S
+(return) K
+( True) p n
+0 T (      ) S
+(else) K
+(:) p n
+0 T (        i.lives -=1) N
+(135) # (        ) S
+(return) K
+( False) p n
+0 T () N
+0 T () N
+0 T () N
+0 T (''') S
+(Schaffer) str
+(''') p n
+(140) # () S
+(class) K
+( Schaffer\(Model\):) p n
+0 T (  ) S
+(def) K
+( __init__\(i\):) p n
+0 T (    i.lo = -5) N
+0 T (    i.hi = 5) N
+0 T (    i.n = 1) N
+(csc791sbse:hw7:Fu) (Page 2/6) (Oct 27, 14 15:21) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(models.py) (7/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3-4) 8
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(145) # (    i.fn = 2) p n
+0 T (    i.setup\(\)) N
+0 T (  ) S
+(def) K
+( f1\(i, x\):) p n
+0 T (    ) S
+(return) K
+( x[0] * x[0]) p n
+0 T (  ) S
+(def) K
+( f2\(i, x\):) p n
+(150) # (    ) S
+(return) K
+( \(x[0]-2\) ** 2) p n
+0 T () N
+0 T (''') S
+(Fonseca) str
+(''') p n
+0 T () S
+(class) K
+( Fonseca\(Model\):) p n
+0 T (  ) S
+(def) K
+( __init__\(i\):) p n
+(155) # (    i.lo = -4) N
+0 T (    i.hi = 4) N
+0 T (    i.n = 3) N
+0 T (    i.fn = 2) N
+0 T (    i.setup\(\)) N
+(160) # (  ) S
+(# def f1\(i, xlst\):) c n
+0 T () S
+(  ) p
+(#   return \(1 - exp**\(-1 * sum\([\(xlst[k] - 1/sqrt\(i.n\)\)**2 for k in xrange\(i.n) c n
+0 T (\)]\)\)\)) N
+0 T () S
+(  ) p
+(# def f2\(i, xlst\):) c n
+0 T () S
+(  ) p
+(#   return \(1 - exp**\(-1 * sum\([\(xlst[k] + 1/sqrt\(i.n\)\)**2 for k in xrange\(i.n) c n
+0 T (\)]\)\)\)) N
+0 T () S
+(  ) p
+(def) K
+( f1\(i, xlst\):) p n
+(165) # (    ) S
+(def) K
+( f1_sum\(x_list, n\):) p n
+0 T (      value = []) N
+0 T (      ) S
+(for) K
+( item ) p
+(in) K
+( x_list:) p n
+0 T (        value.append\(\(item - 1/math.sqrt\(n\)\)**2\)) N
+0 T (      ) S
+(return) K
+( sum\(value\)) p n
+(170) # (    ) S
+(return) K
+( 1 - math.e ** \(-1* f1_sum\(xlst, i.n\)\)) p n
+0 T (  ) S
+(def) K
+( f2\(i,xlst\):) p n
+0 T (    ) S
+(def) K
+( f2_sum\(x_list, n\):) p n
+0 T (      value = []) N
+0 T (      ) S
+(for) K
+( item ) p
+(in) K
+( x_list:) p n
+(175) # (        value.append\(\(item + 1/math.sqrt\(n\)\)**2\)) N
+0 T (      ) S
+(return) K
+( sum\(value\)  ) p n
+0 T (    ) S
+(return) K
+( 1 - math.e ** \(-1* f2_sum\(xlst, i.n\)\)) p n
+0 T (    ) N
+0 T (''') S
+(Kusarvs) str
+(''') p n
+(180) # () S
+(class) K
+( Kursawe\(Model\):) p n
+0 T (  ) S
+(def) K
+( __init__\(i\):) p n
+0 T (    i.lo = -5) N
+0 T (    i.hi = 5) N
+0 T (    i.n = 3) N
+(185) # (    i.fn = 2) N
+0 T (    i.setup\(\)) N
+0 T (  ) S
+(def) K
+( f1\(i, xlst\):) p n
+0 T (    ) S
+(return) K
+( sum\([-10*exp**\(-0.2 * sqrt\(xlst[k]**2 + xlst[k+1]**2\)\) ) p
+(for) K
+( k ) p
+(in) K
+( xrang) p n
+0 T (e\(i.n -1\)]\)) N
+0 T (  ) S
+(def) K
+( f2\(i, xlst\):) p n
+(190) # (    a = 0.8) N
+0 T (    b = 3) N
+0 T (    ) S
+(return) K
+( sum\([abs\(x\)**a + 5*sin\(x\)**b ) p
+(for) K
+( x ) p
+(in) K
+( xlst]\) ) p n
+0 T () N
+0 T (''') S
+(ZDT1) str
+(''') p n
+(195) # () S
+(class) K
+( ZDT1\(Model\):) p n
+0 T (  ) S
+(def) K
+( __init__\(i\):) p n
+0 T (    i.lo = 0) N
+0 T (    i.hi = 1) N
+0 T (    i.n = 30) N
+(200) # (    i.fn = 2) N
+0 T (    i.setup\(\)) N
+0 T (  ) S
+(def) K
+( f1\(i, xlst\):) p n
+0 T (    ) S
+(return) K
+( xlst[0]) p n
+0 T (  ) S
+(def) K
+( f2\(i, xlst\):) p n
+(205) # (    ) S
+(return) K
+( \(1 + 9 * \(sum\(xlst[1:]\)\)/\(i.n-1\)\)) p n
+0 T (  ) S
+(# def f2\(i,xlst\):) c n
+0 T () S
+(  ) p
+(#   g1 = i.g\(xlst\)) c n
+0 T () S
+(  ) p
+(#   return g1*\(1-sqrt\(xlst[0]/g1\)\)) c n
+0 T () N
+(210) # () S
+(''') p
+(ZDT3) str
+(''') p n
+0 T () S
+(class) K
+( ZDT3\(Model\):) p n
+0 T (  ) S
+(def) K
+( __init__\(i\):) p n
+0 T (    i.lo = 0) N
+0 T (    i.hi = 1) N
+(csc791sbse:hw7:Fu) (Page 3/6) (Oct 27, 14 15:21) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(215) # (    i.n = 30) p n
+0 T (    i.fn = 2) N
+0 T (    i.setup\(\)) N
+0 T (  ) S
+(def) K
+( f1\(i, xlst\):) p n
+0 T (    ) S
+(return) K
+( xlst[0]) p n
+(220) # (  ) S
+(def) K
+( g\(i, xlst\):) p n
+0 T (    ) S
+(return) K
+( \(1 +  \(9/\(i.n-1\)\) * sum\(xlst[1:]\)\)) p n
+0 T (  ) S
+(def) K
+( h\(i,f1,g\):) p n
+0 T (    ) S
+(return) K
+( \(1 - sqrt\(f1/g\) - f1/g\) * sin\(10 * pi * f1\)) p n
+0 T (  ) S
+(def) K
+( f2\(i, xlst\):) p n
+(225) # (    ) S
+(return) K
+( i.g\(xlst\) * i.h\(i.f1\(xlst\),i.g\(xlst\)\) ) p n
+0 T () N
+0 T (''') S
+(Viennet3) str
+(''') p n
+0 T () S
+(class) K
+( Viennet3\(Model\):) p n
+0 T (  ) S
+(def) K
+( __init__\(i\):) p n
+(230) # (    i.lo = -3) N
+0 T (    i.hi = 3) N
+0 T (    i.n = 2) N
+0 T (    i.fn = 3) N
+0 T (    i.setup1\(\)) N
+(235) # (  ) S
+(def) K
+( setup1\(i\):) p n
+0 T (    i.min = 10**\(5\)) N
+0 T (    i.max = -10**\(5\)) N
+0 T (    i.xy = Options\(x = [i.generate_x\(\)], y = [i.f1, i.f2, i.f3]\)) N
+0 T (    i.log = Options\(x = [ Num\(\) ) S
+(for) K
+( _ ) p
+(in) K
+( range\(i.n\)], y = [ Num\(\) ) p
+(for) K
+( _ ) p
+(in) K
+( range) p n
+0 T (\(i.fn\)]\) ) S
+(# hardcode 2) c n
+(240) # () S
+(    i.history = {} ) p
+(# hold all logs for eras) c n
+0 T () S
+(  ) p
+(def) K
+( f1\(i, xlst\):) p n
+0 T (    xy2 = xlst[0]**2 + xlst[1]**2) N
+0 T (    ) S
+(return) K
+( 0.5* \(xy2\) + sin\(xy2\)) p n
+0 T (  ) S
+(def) K
+( f2\(i, xlst\):) p n
+(245) # (    x = xlst[0]) N
+0 T (    y = xlst[1]) N
+0 T (    ) S
+(return) K
+( \(\(3*x -2*y +4\)**2/8 + \(x-y+1\)**2/27 + 15\)) p n
+0 T (  ) S
+(def) K
+( f3\(i, xlst\):) p n
+0 T (    xy2 = xlst[0]**2 + xlst[1]**2) N
+(250) # (    ) S
+(return) K
+( \(1/\(xy2+1\) - 1.1* exp**\(-xy2\)\)) p n
+0 T () N
+0 T (  ''') S
+(DTLZ7) str
+(''') p n
+0 T () S
+(class) K
+( DTLZ7\(Model\):) p n
+0 T (  ) S
+(def) K
+( __init__\(i\):) p n
+(255) # (    i.M = 20) N
+0 T (    i.K = 20) N
+0 T (    i.lo = 0) N
+0 T (    i.hi = 1) N
+0 T (    i.n = i.M + i.K -1) N
+(260) # (    i.fn = i.M) N
+0 T (    i.setup\(\)) N
+0 T (  ) S
+(def) K
+( fi\(i, x\): ) p
+(# the frist one is x[0]) c n
+0 T () S
+(    ) p
+(return) K
+( x) p n
+0 T (  ) S
+(def) K
+( fm\(i, xh=0\):) p n
+(265) # (    ) S
+(return) K
+( \(1 + i.g\(\)\)*i.h\(\)) p n
+0 T (  ) S
+(def) K
+( g\(i\):) p n
+0 T (    ) S
+(return) K
+( 1 + \(9/i.K\) * sum\(i.xy.x[:i.M-1]\) ) p n
+0 T (  ) S
+(def) K
+( h\(i\):) p n
+0 T (    sumtemp = 0) N
+(270) # (    ) S
+(for) K
+( n,x ) p
+(in) K
+( enumerate\(i.xy.x\):) p n
+0 T (      ) S
+(if) K
+( n ) p
+(\272) sy
+(i.M-2:) p n
+0 T (        ) S
+(break) K n
+0 T () S
+(      sumtemp +=\(i.xy.y[n]\(x\)/\(1.0+i.g\(\)\)\)*\(1+sin\(3.0*pi*i.xy.y[n]\(x\)\)\)) p n
+0 T (    ) S
+(return) K
+( \(i.M - sumtemp\)) p
+(# k = 0,...., M-2) c n
+(275) # () S
+(  ) p
+(def) K
+( setup\(i\):) p n
+0 T (    tempx = i.generate_x\(\)) N
+0 T (    tempy = [i.fi ) S
+(for) K
+( k ) p
+(in) K
+( tempx[:-1]]) p n
+0 T (    tempy.append\(i.fm\)) N
+0 T (    i.xy = Options\(x = tempx, y = tempy\)) N
+(280) # (    i.log = Options\(x = [ Num\(\) ) S
+(for) K
+( _ ) p
+(in) K
+( range\(i.n\)], y = [ Num\(\) ) p
+(for) K
+( _ ) p
+(in) K
+( range) p n
+0 T (\(i.fn\)]\) ) N
+0 T (    i.history = {} ) S
+(# hold all logs for eras) c n
+0 T () S
+(    ) p
+(# i.min = 10**\(5\)) c n
+0 T () S
+(    ) p
+(# i.max = -10**\(5\)) c n
+0 T () S
+(  ) p
+(def) K
+( getDepen\(i, xlst\):) p n
+(285) # (    temp = i.fm\(\)) N
+(csc791sbse:hw7:Fu) (Page 4/6) (Oct 27, 14 15:21) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(models.py) (8/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (5-6) 9
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (    ) p
+(return) K
+( sum\(xlst[:i.M]\)+temp) p n
+0 T () N
+0 T (  ) S
+(def) K
+( getDepenlst\(i, xlst\):) p n
+0 T (    ) S
+(return) K
+( xlst[:i.M]+ [i.fm\(\)]) p n
+(290) # () N
+0 T (    ''') S
+(Schwefel) str
+('s''') p n
+0 T () S
+(class Schwefel\(Model\):) str n
+0 T (  def __init__\(i\):) N
+0 T (    i.lo = -pi) N
+(295) # (    i.hi = pi) N
+0 T (    i.n = [10,20, 40][0]) N
+0 T (    i.f_bias = -460) N
+0 T (    i.fn = 1) N
+0 T (    i.randI = lambda x: random.randint\(-x, x\)) N
+(300) # (    i.randF = lambda x: random.uniform\(-x, x\)) N
+0 T (    i.a = [[i.randI\(100\) for _ in xrange\(i.n\)] for _ in xrange\(i.n\)] # matrix for a) N
+0 T (    i.b = [[i.randI\(100\) for _ in xrange\(i.n\)] for _ in xrange\(i.n\)] # matrix for b) N
+0 T (    i.alpha = [i.randF\(pi\) for _ in xrange\(i.n\)] # alpha) N
+0 T (    i.setup\(\)) N
+(305) # (  def f\(i, x\):) N
+0 T (    F = sum\([\(i.A\(n\) - i.B\(x,n\)\)**2 for n in xrange\(i.n\)]\) + i.f_bias) N
+0 T (    return F) N
+0 T (  def A\(i,n\):) N
+0 T (    sumA = sum\([i.a[n][j]*sin\(i.alpha[j]\) + i.b[n][j] * cos\(i.alpha[j]\) for j in xrange\(i.n\)]\)) N
+(310) # (    return sumA) N
+0 T (  def B\(i, x,n\):) N
+0 T (    sumB = sum\([i.a[n][j]*sin\(s\) + i.b[n][j]* cos\(s\) for j,s in enumerate\(x\)]\)) N
+0 T (    return sumB) N
+0 T (  def setup\(i\):) N
+(315) # (    i.min = 10**\(5\)) N
+0 T (    i.max = -10**\(5\)) N
+0 T (    i.xy = Options\(x = [i.generate_x\(\)], y = [i.f]\)) N
+0 T (    i.log = Options\(x = [ Num\(\) for _ in range\(i.n\)], y = [ Num\(\) for _ in range\(i.fn\)]\) ) N
+0 T (    i.history = {} # hold all logs for eras) N
+(320) # () N
+0 T (  ) S
+('''Osyczka''') p n
+0 T () S
+(class Osyczka\(Model\):) str n
+0 T (  def __init__\(i\):) N
+0 T (    i.lo = [0, 0, -1, 0, 1, 0]) N
+(325) # (    i.hi = [10, 10, 5, 6, 5, 10]) N
+0 T (    i.fn = 2) N
+0 T (    i.n = 6) N
+0 T (    i.setup\(\)) N
+0 T () N
+(330) # (  def generate_x1x2\(i\):) N
+0 T (    def g1\(x\):) N
+0 T (      return x[0] + x[1] - 2 >= 0) N
+0 T (    def g2\(x\):) N
+0 T (      return 6 - x[0] - x[1] >= 0) N
+(335) # (    def g3\(x\):) N
+0 T (      return 2 - x[1] + x[0] >= 0) N
+0 T (    def g4\(x\):) N
+0 T (      return 2 - x[0] + 3* x[1] >= 0) N
+0 T (    while 1:) N
+(340) # (      x= [i.lo[n] + \(i.hi[n]-i.lo[n]\)*random.random\(\) for n in range\(2\)]) N
+0 T (      if g1\(x\) and g2\(x\) and g3\(x\) and g4\(x\):) N
+0 T (        return x) N
+0 T (      else:) N
+0 T (        continue) N
+(345) # () N
+0 T (  def generate_x3456\(i\):) N
+0 T (    def g5\(x\):) N
+0 T (      return 4 - \(x[0]- 3\)**2 - x[1] >= 0) N
+0 T (    def g6\(x\):) N
+(350) # (      return \(x[2] - 3\)**2 + x[3] - 4 >= 0) N
+0 T (    while 1:) N
+0 T (      x= [i.lo[n] + \(i.hi[n]-i.lo[n]\)*random.random\(\) for n in range\(2,6\)]) N
+0 T (      if g5\(x\) and g6\(x\):) N
+0 T (        return x) N
+(355) # (      else:) N
+0 T (        continue) N
+0 T () N
+0 T (  def generate_x\(i\):) N
+(csc791sbse:hw7:Fu) (Page 5/6) (Oct 27, 14 15:21) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (    x12 = i.generate_x1x2\(\)) str n
+(360) # (    x3456 = i.generate_x3456\(\)) N
+0 T (    x = x12 + x3456 ) N
+0 T (    return x) N
+0 T () N
+0 T (  def f1\(i, x\):) N
+(365) # (    result = -25*\(x[0] -2\) **2 - \(x[1] - 2\)**2 - \(x[2] - 1\)**2 - \(x[3] - 4\) **2 -\(x[4] -1\) **2) N
+0 T (    return result) N
+0 T () N
+0 T (  def f2\(i, x\):) N
+0 T (    result = sum\([i**2 for i in x]\)) N
+(370) # (    return result) N
+0 T (  def trim\(i, x, n\):) N
+0 T (    return max\(i.lo[n], min\(x, i.hi[n]\)\)) N
+0 T () N
+0 T () N
+(375) # () N
+(csc791sbse:hw7:Fu) (Page 6/6) (Oct 27, 14 15:21) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(models.py) (9/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 10
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (from) K
+( __future__ ) p
+(import) K
+( division) p n
+0 T () S
+(import) K
+( sys, random, math,pdb) p n
+0 T () S
+(from) K
+( base ) p
+(import) K
+( * ) p n
+0 T () S
+(from) K
+( a12 ) p
+(import) K
+( *) p n
+(5) # (sys.dont_write_bytecode = True) N
+0 T () N
+0 T () N
+0 T (''') S
+(All these are based on Dr.Menzies) str
+(' tricks ) p
+(\331) sy
+( sample codes''') p n
+0 T () N
+(10) # () S
+(class Log\(\):) str n
+0 T (  def __init__\(i, tolog = []\):) N
+0 T (    i._cache, i.n, i._report = [], 0, None) N
+0 T (    i.setup\(\)) N
+0 T (    map\(i.__iadd__, tolog\)) N
+(15) # (  def __iadd__\(i, tolog\):) N
+0 T (    if tolog == None: return tolog) N
+0 T (    i.n += 1) N
+0 T (    updated = False) N
+0 T (    if len\(i._cache\) < Settings.other.keep:) N
+(20) # (      i._cache +=[tolog] ) N
+0 T (      updated = True) N
+0 T (    else:) N
+0 T (      if rand\(\) <= Settings.other.keep/i.n:) N
+0 T (         i._cache[int\(rand\(\)*Settings.other.keep\)] = tolog) N
+(25) # (         updated = True) N
+0 T (    if updated:) N
+0 T (      i._report = None) N
+0 T (      i.updateLoHi\(tolog\)) N
+0 T (    return i) N
+(30) # (  def has\(i\):) N
+0 T (    if i._report == None:) N
+0 T (      i._report = i.report\(\)) N
+0 T (    return i._report) N
+0 T () N
+(35) # (class Num\(Log\):) N
+0 T (  def setup\(i\):) N
+0 T (    i.lo = 10**5) N
+0 T (    i.hi = -10**5) N
+0 T (  def updateLoHi\(i,x\):) N
+(40) # (    i.lo = min \(i.lo, x\)) N
+0 T (    i.hi = max\(i.hi, x\)) N
+0 T (  def median\(i\):) N
+0 T (    n = len\(i._cache\)) N
+0 T (    p = n//2) N
+(45) # (    if \(n % 2\) : return i._cache[p]) N
+0 T (    q = p +1) N
+0 T (    q = max\(0, min\(q,n\)\)) N
+0 T (    return \(i._cache[p] + i._cache[q]\)/2) N
+0 T (  def better\(new,old\):) N
+(50) # (    "better if \(1\)less median or \(2\)same and less iqr") N
+0 T (    t = Settings.other.a12) N
+0 T (    betterIqr = new.has\(\).iqr < old.has\(\).iqr) N
+0 T (    new.lessp = False) N
+0 T (    if new.lessp:) N
+(55) # (      betterMed = new.has\(\).median >= old.has\(\).median) N
+0 T (      same      = a12\(old._cache, new._cache\)  <= t) N
+0 T (    else:) N
+0 T (      betterMed = new.has\(\).median <= old.has\(\).median ) N
+0 T (      same      = a12\(new._cache, old._cache\) <= t) N
+(60) # (    return betterMed, same, betterIqr) N
+0 T (  def report\(i\):) N
+0 T (    sortedCache = sorted\(i._cache\)) N
+0 T (    n = len \(sortedCache\)) N
+0 T (    return Options\() N
+(65) # (           median = i.median\(\),) N
+0 T (           iqr = sortedCache[int\(n*0.75\)- int\(n*0.5\)],) N
+0 T (           lo = i.lo,) N
+0 T (           hi = i.hi\)) N
+0 T () N
+(70) # (@demo) N
+0 T (def demoNum\(\):) N
+0 T (  for size in [16,32, 64,128, 256]:) N
+0 T (    Settings.other.keep = size) N
+(csc791sbse:hw7:Fu) (Page 1/2) (Oct 23, 14 12:03) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (    log = Num\(\)) str n
+(75) # (    for x in xrange\(100000\): log +=x) N
+0 T (    print size, ":", log.has\(\).median) N
+0 T () N
+0 T (if __name__ == "__main__": eval\(cmd\(\)\)) N
+(csc791sbse:hw7:Fu) (Page 2/2) (Oct 23, 14 12:03) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(log.py) (10/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (1-2) 11
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (from) K
+( __future__ ) p
+(import) K
+( division) p n
+0 T () S
+(import) K
+( sys, random, math, datetime, time,re, pdb) p n
+0 T () S
+(from) K
+( xtile ) p
+(import) K
+( *) p n
+0 T (sys.dont_write_bytecode = True) N
+(5) # () N
+0 T (rand= random.random) N
+0 T () N
+0 T () N
+0 T () S
+(class) K
+( Options: ) p
+(#"Thanks for Peter Norvig's trick") c n
+(10) # () S
+(  ) p
+(def) K
+( __init__\(i, **d\): i.__dict__.update\(d\)) p n
+0 T () N
+0 T (Settings = Options\(sa = Options\(kmax = 1000, ) N
+0 T (                                cooling = 0.6\),) N
+0 T (                   mws = Options\(threshold = 0.0001,) N
+(15) # (                                max_tries = 20, ) N
+0 T (                                max_changes = 1000,) N
+0 T (                                prob = 0.25,) N
+0 T (                                \), ) N
+0 T (                   ga = Options\(pop = 50,) N
+(20) # (                                crossRate = 0.6,) N
+0 T (                                crossPoints = 2,) N
+0 T (                                genNum = [100, 200, 400, 800]) N
+0 T (                                \),) N
+0 T (                   de = Options\(np= 100, ) N
+(25) # (                                repeats = 100, ) N
+0 T (                                f = 0.75,) N
+0 T (                                cr = 0.3,) N
+0 T (                                threshold = 0.000001) N
+0 T (                                \),) N
+(30) # (                   pso = Options\(N = 30,) N
+0 T (                                 w = 1,) N
+0 T (                                 phi1 = 2.8,) N
+0 T (                                 phi2 = 1.3,) N
+0 T (                                 threshold = 0.000001,) N
+(35) # (                                 repeats = 1000,) N
+0 T (                                \),) N
+0 T (                   other = Options\(keep = 64, ) N
+0 T (                                   baseline = 1000,) N
+0 T (                                   era = 50,) N
+(40) # (                                   lives = 1,) N
+0 T (                                   show = False, ) N
+0 T (                                   xtile = False,) N
+0 T (                                   a12 = [0.56, 0.64, 0.71][0],) N
+0 T (                                   repeats = 30,) N
+(45) # (                                   reportrange =False\)\)) N
+0 T () S
+(def) K
+( atom\(x\):) p n
+0 T (  ) S
+(try) K
+( : ) p
+(return) K
+( int\(x\)) p n
+0 T (  ) S
+(except) K
+( ValueError:) p n
+0 T (    ) S
+(try) K
+( : ) p
+(return) K
+( float\(x\)) p n
+(50) # (    ) S
+(except) K
+( ValueError : ) p
+(return) K
+( x) p n
+0 T () N
+0 T () S
+(def) K
+( cmd\(com=") p
+(demo\('-h'\)) str
+("\):) p n
+0 T (  ") S
+(Convert command line to a function call.) str
+(") p n
+0 T (  ) S
+(if) K
+( len\(sys.argv\) < 2: ) p
+(return) K
+( com) p n
+(55) # (  ) S
+(def) K
+( strp\(x\): ) p
+(return) K
+( isinstance\(x,basestring\)) p n
+0 T (  ) S
+(def) K
+( wrap\(x\): ) p
+(return) K
+( ") p
+('%s') str
+("%x ) p
+(if) K
+( strp\(x\) ) p
+(else) K
+( str\(x\)  ) p n
+0 T (  words = map\(wrap,map\(atom,sys.argv[2:]\)\)) N
+0 T (  ) S
+(return) K
+( sys.argv[1] + ') p
+(\() str
+(' + ') p
+(,) str
+('.join\(words\) + ') p
+(\)) str
+(') p n
+0 T () N
+(60) # () S
+(def) K
+( demo\(f=None,cache=[]\):   ) p n
+0 T (  ) S
+(def) K
+( doc\(d\):) p n
+0 T (    ) S
+(return) K
+( ') p
+(# ) str
+('+d.__doc__ ) p
+(if) K
+( d.__doc__ ) p
+(else) K
+( ""  ) p n
+0 T (  ) S
+(if) K
+( f ) p
+(\272) sy
+( ') p
+(-h) str
+(':) p n
+0 T (    ) S
+(print) K
+( ') p
+(# sample demos) str
+(') p n
+(65) # (    ) S
+(for) K
+( n,d ) p
+(in) K
+( enumerate\(cache\): ) p n
+0 T (      ) S
+(print) K
+( ') p
+(%3s\) ) str
+(' %\(n+1\),d.func_name,doc\(d\)) p n
+0 T (  ) S
+(elif) K
+( f: ) p n
+0 T (    cache.append\(f\); ) N
+0 T (  ) S
+(else) K
+(:) p n
+(70) # (    s=') S
+(|) str
+('+') p
+(=) str
+('*40 +') p
+(\\n) str
+(') p n
+0 T (    ) S
+(for) K
+( d ) p
+(in) K
+( cache: ) p n
+0 T (      ) S
+(print) K
+( ') p
+(\\n==|) str
+(',d.func_name,s,doc\(d\),d\(\)) p n
+0 T (  ) S
+(return) K
+( f) p n
+(csc791sbse:hw7:Fu) (Page 1/3) (Oct 27, 14 11:49) title
+border
+/v 1 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T () p n
+(75) # () S
+(def) K
+( reseed\(\):) p n
+0 T () S 8 T (seed = 1) N
+0 T () S 8 T () S
+(return) K
+( random.seed\(seed\)) p n
+0 T () N
+0 T () S
+(def) K
+( say\(mark\):) p n
+(80) # (  sys.stdout.write\(mark\)) N
+0 T (  sys.stdout.flush\(\)) N
+0 T () N
+0 T () S
+(def) K
+( printlook\(f\):) p n
+0 T (  ) S
+(def) K
+( wrapper\(*lst\): ) p
+(#tricks from Dr.Menzies) c n
+(85) # () S
+(    ShowDate = datetime.datetime.now\(\).strftime) p n
+0 T (    ) S
+(print) K
+( ") p
+(\\n###) str
+(", f.__name__, ") p
+(#) str
+(" * 50) p n
+0 T (    ) S
+(print) K
+( ") p
+(#) str
+(", ShowDate\(") p
+(%Y-%m-%d %H:%M:%S) str
+("\)) p n
+0 T (    beginTime = time.time\(\)) N
+0 T (    x = f\(*lst\)) N
+(90) # (    endTime = time.time\(\)) N
+0 T (    ) S
+(print) K
+( ") p
+(\\n) str
+(" +\(") p
+(-) str
+("*60\)) p n
+0 T (    dump\(Settings, f.__name__\)) N
+0 T (    ) S
+(print) K
+( ") p
+(\\n# Runtime: %.3f secs) str
+(" % \(endTime-beginTime\)) p n
+0 T (    ) S
+(return) K
+( x ) p
+(# return the searcher name and the results) c n
+(95) # () S
+(  ) p
+(return) K
+( wrapper) p n
+0 T () N
+0 T () S
+(def) K
+( dump\(d, searchname=") p
+( ) str
+(", lvl = 0\): ) p
+(# tricks from Dr. Menzies) c n
+0 T () S
+(  d = d ) p
+(if) K
+( isinstance\(d, dict\) ) p
+(else) K
+( d.__dict__) p n
+0 T (  callableKey, line , gap = [], "", ") S
+(  ) str
+("*lvl) p n
+(100) # (  ) S
+(for) K
+( k ) p
+(in) K
+( sorted\(d.keys\(\)\):) p n
+0 T (    val= d[k]) N
+0 T (    ) S
+(if) K
+( isinstance\(val, \(dict, Options\)\):) p n
+0 T (      callableKey += [k]) N
+0 T (    ) S
+(else) K
+(:) p n
+(105) # (      ) S
+(#if callable\(val\):) c n
+0 T () S
+(      ) p
+(#) c 8 T (val = val.__name__) N
+0 T () S
+(      line +=\(") p
+(  {0} :{1}) str
+(".format\(k, val\)\)) p n
+0 T (  ) S
+(print) K
+( gap + line) p n
+0 T (  ) S
+(for) K
+( k ) p
+(in) K
+( callableKey:) p n
+(110) # (    ) S
+(print) K
+( gap + \(") p
+( :{0} {1}) str
+(".format\(k, ") p
+(options) str
+("\)\)) p n
+0 T (    dump\(d[k], lvl+1\)) N
+0 T () N
+0 T () S
+(def) K
+( printReport\(m, history\):) p n
+0 T (  ) S
+(for) K
+( i, f ) p
+(in) K
+( enumerate\(m.log.y\):) p n
+(115) # (    ) S
+(print) K
+( ") p
+(\\n <f%s) str
+(" %i) p n
+0 T (    ) S
+(for) K
+( era ) p
+(in) K
+( sorted\(history.keys\(\)\):) p n
+0 T (      ) S
+(# pdb.set_trace\(\)) c n
+0 T () S
+(      log = history[era].log.y[i]) p n
+0 T (      ) S
+(print) K
+( str\(era\).rjust\(7\), xtile\(log._cache, width = 33, show = ") p
+(%5.2f) str
+(", lo ) p n
+0 T (= 0, hi = 1\)) N
+(120) # () N
+0 T () N
+0 T () S
+(def) K
+( printSumReport\(m, history\):) p n
+0 T (  ) S
+(# for i, f in enumerate\(m.log.y\):) c n
+0 T () S
+(  ) p
+(print) K
+( ") p
+(\\n Objective Value) str
+(" ) p n
+(125) # (  ) S
+(for) K
+( era ) p
+(in) K
+( sorted\(history.keys\(\)\):) p n
+0 T (    ) S
+(# pdb.set_trace\(\)) c n
+0 T () S
+(    log = [history[era].log.y[k] ) p
+(for) K
+( k ) p
+(in) K
+( range \(len\(m.log.y\)\)]) p n
+0 T (    ss = []) N
+0 T (    ss.extend\([log[s]._cache ) S
+(for) K
+( s ) p
+(in) K
+( range\(len\(log\)\)]\)) p n
+(130) # (    logsum = map\(sum, zip\(*ss\)\)) N
+0 T (    minvalue = min\(logsum\)) N
+0 T (    maxvalue = max\(logsum\)) N
+0 T (    normlog = [\(x - minvalue\)/\(maxvalue - minvalue +0.00001\) ) S
+(for) K
+( x ) p
+(in) K
+( logsum]) p n
+0 T (    ) S
+(print) K
+( str\(era\).rjust\(7\), xtile\(normlog, width = 33, show = ") p
+(%5.2f) str
+(", lo = 0, ) p n
+0 T (hi = 1\)) N
+(135) # () N
+0 T () S
+(def) K
+( printRange\(m, history\):) p n
+0 T (  rrange = {}) N
+0 T (  ) S
+(# print sorted\(m.history.keys\(\)\)) c n
+0 T () S
+(  ) p
+(for) K
+( i, f ) p
+(in) K
+( enumerate\(m.log.y\):) p n
+(140) # (    tlo=10**5) N
+0 T (    thi=-10**5) N
+0 T (    ) S
+(for) K
+( era ) p
+(in) K
+( sorted\(history.keys\(\)\):) p n
+0 T (      ) S
+(# pdb.set_trace\(\)) c n
+0 T () S
+(      ) p
+(if) K
+( history[era].log.y[i].lo < tlo:) p n
+(csc791sbse:hw7:Fu) (Page 2/3) (Oct 27, 14 11:49) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(base.py) (11/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3) 12
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 2.965278 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(145) # (        tlo= history[era].log.y[i].lo) p n
+0 T (      ) S
+(if) K
+( history[era].log.y[i].hi > tlo:) p n
+0 T (        thi= history[era].log.y[i].hi) N
+0 T (    temp = \(round\(tlo, 3\), round\(thi, 3\)\)) N
+0 T (    rrange[temp] =rrange.get\(temp, ') S
+(f) str
+('\) +str\(i\) ) p
+(#{\(0.0, 24.826\): 'f0'}) c n
+(150) # () S
+(  ) p
+(return) K
+(  rrange) p n
+(csc791sbse:hw7:Fu) (Page 3/3) (Oct 27, 14 11:49) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(base.py) (12/12) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+
+%%Trailer
+end
+%%EOF

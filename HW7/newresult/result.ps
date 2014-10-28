@@ -1,0 +1,791 @@
+%!PS-Adobe-3.0
+%%Title: Result.txt
+%%For: Wei Fu
+%%Creator: a2ps version 4.14
+%%CreationDate: Mon Oct 27 21:49:56 2014
+%%BoundingBox: 24 24 588 768
+%%DocumentData: Clean7Bit
+%%Orientation: Landscape
+%%Pages: 1
+%%PageOrder: Ascend
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: font Courier
+%%+ font Courier-Bold
+%%+ font Courier-BoldOblique
+%%+ font Courier-Oblique
+%%+ font Helvetica
+%%+ font Helvetica-Bold
+%%+ font Symbol
+%%+ font Times-Bold
+%%+ font Times-Roman
+%%DocumentProcessColors: Black 
+%%DocumentSuppliedResources: procset a2ps-a2ps-hdr
+%%+ procset a2ps-black+white-Prolog
+%%+ encoding ISO-8859-1Encoding
+%%EndComments
+/a2psdict 200 dict def
+a2psdict begin
+%%BeginProlog
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+
+% EPSF import as in the Red Book
+/BeginInclude {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack 
+  userdict begin
+    0 setgray 0 setlinecap
+    1 setlinewidth 0 setlinejoin
+    10 setmiterlimit [ ] 0 setdash newpath
+    gs_languagelevel 1 ne {
+      false setstrokeadjust false setoverprint 
+    } if
+} bind def
+
+/EndInclude {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+/BeginEPSF {
+  BeginInclude
+  /showpage { } def
+} bind def
+
+/EndEPSF {
+  EndInclude
+} bind def
+
+% Page prefeed
+/page_prefeed {         % bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} bind def
+
+/deffont {
+  findfont exch scalefont def
+} bind def
+
+/reencode_font {
+  findfont reencode 2 copy definefont pop def
+} bind def
+
+% Function c-show (str => -)
+% centers text only according to x axis.
+/c-show { 
+  dup stringwidth pop
+  2 div neg 0 rmoveto
+  show
+} bind def
+
+% Function l-show (str => -)
+% prints texts so that it ends at currentpoint
+/l-show {
+  dup stringwidth pop neg 
+  0 
+  rmoveto show
+} bind def
+
+% center-fit show (str w => -)
+% show centered, and scale currentfont so that the width is less than w
+/cfshow {
+  exch dup stringwidth pop
+  % If the title is too big, try to make it smaller
+  3 2 roll 2 copy
+  gt
+  { % if, i.e. too big
+    exch div
+    currentfont exch scalefont setfont
+  } { % ifelse
+    pop pop 
+  }
+  ifelse
+  c-show			% center title
+} bind def
+
+% Return the y size of the current font
+% - => fontsize
+/currentfontsize {
+  currentfont /FontMatrix get 3 get 1000 mul
+} bind def
+
+% reencode the font
+% <encoding-vector> <fontdict> -> <newfontdict>
+/reencode { %def
+  dup length 5 add dict begin
+    { %forall
+      % <vector> <key> <val>
+      1 index /FID ne 
+      { def }{ pop pop } ifelse
+    } forall
+    /Encoding exch def % -
+
+    % Use the font's bounding box to determine the ascent, descent,
+    % and overall height; don't forget that these values have to be
+    % transformed using the font's matrix.
+    % We use `load' because sometimes BBox is executable, sometimes not.
+    % Since we need 4 numbers an not an array avoid BBox from being executed
+    /FontBBox load aload pop
+    FontMatrix transform /Ascent exch def pop
+    FontMatrix transform /Descent exch def pop
+    /FontHeight Ascent Descent sub def
+
+    % Get the underline position and thickness if they're defined.
+    % Use 1 if they are not defined.
+    currentdict /FontInfo 2 copy known
+    { get
+      /UnderlinePosition 2 copy % <FontInfo> /UP <FontInfo> /UP
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+
+      /UnderlineThickness 2 copy % <FontInfo> /UT <FontInfo> /UT
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+      pop % -
+    }{ pop pop
+    } ifelse
+
+    currentdict
+  end 
+} bind def
+
+% Function print line number (<string> # -)
+/# {
+  gsave
+    sx cw mul neg 2 div 0 rmoveto
+    f# setfont
+    c-show
+  grestore
+} bind def
+
+% -------- Some routines to enlight plain b/w printings ---------
+
+% Underline
+% width --
+/dounderline {
+  currentpoint
+  gsave
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    0 rlineto
+    stroke
+  grestore
+} bind def
+
+% Underline a string
+% string --
+/dounderlinestring {
+  stringwidth pop
+  dounderline
+} bind def
+
+/UL {
+  /ul exch store
+} bind def
+
+% Draw a box of WIDTH wrt current font
+% width --
+/dobox {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    stroke
+  grestore
+} bind def
+
+/BX {
+  /bx exch store
+} bind def
+
+% Box a string
+% string --
+/doboxstring {
+  stringwidth pop
+  dobox
+} bind def
+
+%
+% ------------- Color routines ---------------
+%
+/FG /setrgbcolor load def
+
+% Draw the background
+% width --
+/dobackground {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    bgcolor aload pop setrgbcolor
+    fill
+  grestore
+} bind def
+
+% Draw bg for a string
+% string --
+/dobackgroundstring {
+  stringwidth pop
+  dobackground
+} bind def
+
+
+/BG {
+  dup /bg exch store
+  { mark 4 1 roll ] /bgcolor exch store } if
+} bind def
+
+
+/Show {
+  bg { dup dobackgroundstring } if
+  ul { dup dounderlinestring } if
+  bx { dup doboxstring } if
+  show
+} bind def
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T {
+  cw mul x0 add
+  bg { dup currentpoint pop sub dobackground } if
+  ul { dup currentpoint pop sub dounderline } if
+  bx { dup currentpoint pop sub dobox } if
+  y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n {
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+/S {
+  Show
+} bind def
+
+%%BeginResource: procset a2ps-a2ps-hdr 2.0 2
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Function title: prints page header.
+% <ct> <rt> <lt> are passed as argument
+/title { 
+  % 1. Draw the background
+  x v get y v get moveto
+  gsave
+    0 th 2 div neg rmoveto 
+    th setlinewidth
+    0.95 setgray
+    pw 0 rlineto stroke
+  grestore
+  % 2. Border it
+  gsave
+    0.7 setlinewidth
+    pw 0 rlineto
+    0 th neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+  % stk: ct rt lt
+  x v get y v get th sub 1 add moveto
+%%IncludeResource: font Helvetica
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  % 3. The left title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    fnfs 0.8 mul hm rmoveto
+    show			% left title
+  grestore
+  exch
+  % stk: ct ltw rt
+  % 4. the right title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    dup
+    pw exch stringwidth pop fnfs 0.8 mul add sub
+    hm
+    rmoveto
+    show			% right title
+  grestore
+  % stk: ct ltw rtw
+  % 5. the center title
+  gsave
+    pw 3 1 roll
+    % stk: ct pw ltw rtw
+    3 copy 
+    % Move to the center of the left room
+    sub add 2 div hm rmoveto
+    % What is the available space in here?
+    add sub fnfs 0.8 mul sub fnfs 0.8 mul sub
+    % stk: ct space_left
+%%IncludeResource: font Helvetica-Bold
+  fHelvetica-Bold fnfs scalefont setfont
+    cfshow
+  grestore
+} bind def
+
+% Function border: prints virtual page border
+/border { %def
+  gsave				% print four sides
+    0 setgray
+    x v get y v get moveto
+    0.7 setlinewidth		% of the square
+    pw 0 rlineto
+    0 ph neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+} bind def
+
+% Function water: prints a water mark in background
+/water { %def
+  gsave
+    scx scy moveto rotate
+%%IncludeResource: font Times-Bold
+  fTimes-Bold 100 scalefont setfont
+    .97 setgray
+    dup stringwidth pop 2 div neg -50 rmoveto
+    show
+  grestore
+} bind def
+
+% Function rhead: prints the right header
+/rhead {  %def
+  lx ly moveto
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  l-show
+} bind def
+
+% Function footer (cf rf lf -> -)
+/footer {
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  dx dy moveto
+  show
+
+  snx sny moveto
+  l-show
+  
+  fnx fny moveto
+  c-show
+} bind def
+%%EndResource
+%%BeginResource: procset a2ps-black+white-Prolog 2.0 1
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T { 
+  cw mul x0 add y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n { %def
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+}  bind def
+
+/S {
+  Show
+} bind def
+
+/p {
+  false UL
+  false BX
+  fCourier bfs scalefont setfont
+  Show
+} bind def
+
+/sy {
+  false UL
+  false BX
+  fSymbol bfs scalefont setfont
+  Show
+} bind def
+
+/k {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/K {
+  false UL
+  false BX
+  fCourier-Bold bfs scalefont setfont
+  Show
+} bind def
+
+/c {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/C {
+  false UL
+  false BX
+  fCourier-BoldOblique bfs scalefont setfont
+  Show 
+} bind def
+
+/l {
+  false UL
+  false BX
+  fHelvetica bfs scalefont setfont
+  Show
+} bind def
+
+/L {
+  false UL
+  false BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show 
+} bind def
+
+/str{
+  false UL
+  false BX
+  fTimes-Roman bfs scalefont setfont
+  Show
+} bind def
+
+/e{
+  false UL
+  true BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show
+} bind def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier
+%%IncludeResource: font Courier-Oblique
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Times-Roman
+%%IncludeResource: font Symbol
+%%IncludeResource: font Courier-BoldOblique
+%%BeginResource: encoding ISO-8859-1Encoding
+/ISO-8859-1Encoding [
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quoteright 
+/parenleft /parenright /asterisk /plus /comma /minus /period /slash 
+/zero /one /two /three /four /five /six /seven 
+/eight /nine /colon /semicolon /less /equal /greater /question 
+/at /A /B /C /D /E /F /G 
+/H /I /J /K /L /M /N /O 
+/P /Q /R /S /T /U /V /W 
+/X /Y /Z /bracketleft /backslash /bracketright /asciicircum /underscore 
+/quoteleft /a /b /c /d /e /f /g 
+/h /i /j /k /l /m /n /o 
+/p /q /r /s /t /u /v /w 
+/x /y /z /braceleft /bar /braceright /asciitilde /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclamdown /cent /sterling /currency /yen /brokenbar /section 
+/dieresis /copyright /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron 
+/degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph /bullet 
+/cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf /threequarters /questiondown 
+/Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla 
+/Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis 
+/Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply 
+/Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls 
+/agrave /aacute /acircumflex /atilde /adieresis /aring /ae /ccedilla 
+/egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis 
+/eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide 
+/oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis 
+] def
+%%EndResource
+% Initialize page description variables.
+/sh 612 def
+/sw 792 def
+/llx 24 def
+/urx 768 def
+/ury 588 def
+/lly 24 def
+/#copies 1 def
+/th 15.000000 def
+/fnfs 11 def
+/bfs 4.000000 def
+/cw 2.400000 def
+
+% Dictionary for ISO-8859-1 support
+/iso1dict 8 dict begin
+  /fCourier ISO-8859-1Encoding /Courier reencode_font
+  /fCourier-Bold ISO-8859-1Encoding /Courier-Bold reencode_font
+  /fCourier-BoldOblique ISO-8859-1Encoding /Courier-BoldOblique reencode_font
+  /fCourier-Oblique ISO-8859-1Encoding /Courier-Oblique reencode_font
+  /fHelvetica ISO-8859-1Encoding /Helvetica reencode_font
+  /fHelvetica-Bold ISO-8859-1Encoding /Helvetica-Bold reencode_font
+  /fTimes-Bold ISO-8859-1Encoding /Times-Bold reencode_font
+  /fTimes-Roman ISO-8859-1Encoding /Times-Roman reencode_font
+currentdict end def
+/bgcolor [ 0 0 0 ] def
+/bg false def
+/ul false def
+/bx false def
+% The font for line numbering
+/f# /Helvetica findfont bfs .6 mul scalefont def
+/fSymbol /Symbol findfont def
+/hm fnfs 0.25 mul def
+/pw
+   cw 152.400000 mul
+def
+/ph
+   522.800000 th add
+def
+/pmw urx llx sub pw 2 mul sub 1 div def
+/pmh 0 def
+/v 0 def
+/x [
+  0
+  dup pmw add pw add
+] def
+/y [
+  pmh ph add 0 mul ph add
+  dup
+] def
+/scx sw 2 div def
+/scy sh 2 div def
+/snx urx def
+/sny lly 2 add def
+/dx llx def
+/dy sny def
+/fnx scx def
+/fny dy def
+/lx snx def
+/ly ury fnfs 0.8 mul sub def
+/sx 5 def
+/tab 8 def
+/x0 0 def
+/y0 0 def
+%%EndSetup
+
+%%Page: (1-2) 1
+%%BeginPageSetup
+/pagesave save def
+sh 0 translate 90 rotate
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 1.680000 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T () p n
+0 T ( !!!! Schaffer) N
+0 T (#mws Runtime: 0.419 secs) N
+0 T (#sa Runtime: 0.134 secs) N
+(5) # (#de Runtime: 0.332 secs) N
+0 T (#pso Runtime: 0.184 secs) N
+0 T (#ga Runtime: 62.561 secs) N
+0 T () N
+0 T (rank ,         name ,    med   ,  iqr ) N
+(10) # (----------------------------------------------------) N
+0 T (   1 ,           de ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,          pso ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,           sa ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,           ga ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+(15) # (   2 ,          mws ,       6  ,    23 \(   *        ---|-----------   \), 0.00,  0.01,  0.06,  0.19,  0.43) N
+0 T () N
+0 T () N
+0 T ( !!!! Fonseca) N
+0 T (#mws Runtime: 0.424 secs) N
+(20) # (#sa Runtime: 0.253 secs) N
+0 T (#de Runtime: 0.502 secs) N
+0 T (#pso Runtime: 0.290 secs) N
+0 T (#ga Runtime: 114.326 secs) N
+0 T () N
+(25) # (rank ,         name ,    med   ,  iqr ) N
+0 T (----------------------------------------------------) N
+0 T (   1 ,           de ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,          pso ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   2 ,           ga ,       6  ,    11 \( *-            |              \), 0.00,  0.00,  0.06,  0.10,  0.13) N
+(30) # (   3 ,           sa ,      21  ,    36 \(--    * -------|-             \), 0.00,  0.07,  0.21,  0.29,  0.58) N
+0 T (   4 ,          mws ,     100  ,     0 \(               |             *\), 1.00,  1.00,  1.00,  1.00,  1.00) N
+0 T () N
+0 T () N
+0 T ( !!!! Kursawe) N
+(35) # (#mws Runtime: 0.355 secs) N
+0 T (#sa Runtime: 0.215 secs) N
+0 T (#de Runtime: 0.824 secs) N
+0 T (#pso Runtime: 0.852 secs) N
+0 T (#ga Runtime: 146.949 secs) N
+(40) # () N
+0 T (rank ,         name ,    med   ,  iqr ) N
+0 T (----------------------------------------------------) N
+0 T (   1 ,           de ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,          pso ,       0  ,     0 \(*--            |              \), 0.00,  0.00,  0.00,  0.00,  0.07) N
+(45) # (   1 ,           ga ,       0  ,     1 \(*----          |              \), 0.00,  0.00,  0.00,  0.01,  0.12) N
+0 T (   2 ,           sa ,       8  ,     8 \(-  *--         |              \), 0.00,  0.04,  0.08,  0.11,  0.14) N
+0 T (   3 ,          mws ,      48  ,    15 \(               |---  *   ---- \), 0.36,  0.43,  0.48,  0.56,  0.64) N
+0 T () N
+0 T () N
+(50) # ( !!!! ZDT1) N
+0 T (#mws Runtime: 0.286 secs) N
+0 T (#sa Runtime: 0.149 secs) N
+0 T (#de Runtime: 0.638 secs) N
+0 T (#pso Runtime: 5.836 secs) N
+(55) # (#ga Runtime: 120.549 secs) N
+0 T () N
+0 T (rank ,         name ,    med   ,  iqr ) N
+0 T (----------------------------------------------------) N
+0 T (   1 ,          mws ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+(60) # (   1 ,           de ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,           ga ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   2 ,           sa ,      19  ,    20 \(---    * ----- |              \), 0.02,  0.08,  0.19,  0.24,  0.34) N
+0 T (   3 ,          pso ,      48  ,    15 \(            ---|-- *  ------  \), 0.29,  0.46,  0.48,  0.55,  0.69) N
+0 T () N
+(65) # () N
+0 T ( !!!! ZDT3) N
+0 T (#mws Runtime: 0.299 secs) N
+0 T (#sa Runtime: 0.170 secs) N
+0 T (#de Runtime: 0.913 secs) N
+(70) # (#pso Runtime: 0.412 secs) N
+0 T (#ga Runtime: 153.445 secs) N
+0 T () N
+0 T (rank ,         name ,    med   ,  iqr ) N
+0 T (----------------------------------------------------) N
+(75) # (   1 ,           de ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,          pso ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,           ga ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   2 ,           sa ,      28  ,    20 \(         --- * |   -------    \), 0.18,  0.24,  0.28,  0.38,  0.52) N
+0 T (   2 ,          mws ,      45  ,    14 \(             --|--    *       \), 0.27,  0.36,  0.45,  0.49,  0.49) N
+(80) # () N
+0 T () N
+0 T ( !!!! Viennet3) N
+0 T (#mws Runtime: 0.228 secs) N
+0 T (#sa Runtime: 0.181 secs) N
+(85) # (#de Runtime: 0.584 secs) N
+0 T (#pso Runtime: 0.238 secs) N
+0 T (#ga Runtime: 94.887 secs) N
+0 T () N
+0 T (rank ,         name ,    med   ,  iqr ) N
+(90) # (----------------------------------------------------) N
+0 T (   1 ,           de ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,          pso ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,           sa ,       0  ,     1 \(*              |              \), 0.00,  0.00,  0.00,  0.01,  0.01) N
+0 T (   2 ,           ga ,       2  ,     2 \(*----          |              \), 0.01,  0.01,  0.02,  0.03,  0.17) N
+(95) # (   3 ,          mws ,      10  ,    26 \(   *      -----|--            \), 0.07,  0.08,  0.10,  0.33,  0.56) N
+0 T () N
+0 T () N
+0 T ( !!!! DTLZ7) N
+0 T (#mws Runtime: 0.759 secs) N
+(100) # (#sa Runtime: 0.418 secs) N
+0 T (#de Runtime: 0.781 secs) N
+0 T (#pso Runtime: 17.423 secs) N
+0 T (#ga Runtime: 501.989 secs) N
+0 T () N
+(105) # (rank ,         name ,    med   ,  iqr ) N
+0 T (----------------------------------------------------) N
+0 T (   1 ,          mws ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,           de ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,           ga ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+(110) # (   2 ,           sa ,      11  ,    23 \(    *   ------ |              \), 0.00,  0.00,  0.11,  0.21,  0.37) N
+0 T (   3 ,          pso ,      56  ,    27 \(               |---- *   ---  \), 0.40,  0.53,  0.56,  0.66,  0.74) N
+0 T () N
+0 T () N
+0 T ( !!!! Schwefel) N
+(115) # (#mws Runtime: 1.181 secs) N
+0 T (#sa Runtime: 0.607 secs) N
+0 T (#de Runtime: 1.732 secs) N
+0 T (#pso Runtime: 20.593 secs) N
+0 T (#ga Runtime: 10185.145 secs) N
+(120) # () N
+0 T (rank ,         name ,    med   ,  iqr ) N
+0 T (----------------------------------------------------) N
+0 T (   1 ,           de ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   1 ,           ga ,       0  ,     1 \(*              |              \), 0.00,  0.00,  0.00,  0.01,  0.02) N
+(125) # (   1 ,          pso ,       1  ,     4 \(*--            |              \), 0.00,  0.00,  0.01,  0.03,  0.06) N
+0 T (   2 ,           sa ,       8  ,     8 \(--  *--        |              \), 0.01,  0.04,  0.08,  0.11,  0.14) N
+0 T (   3 ,          mws ,      20  ,    13 \(    --     * --|-----         \), 0.08,  0.11,  0.20,  0.24,  0.38) N
+0 T () N
+0 T () N
+(130) # ( !!!! Osyczka) N
+(csc791sbse:hw7:Fu) (Page 1/2) (Oct 27, 14 21:39) title
+border
+/v 1 store
+/x0 x v get 1.680000 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+0 T (#mws Runtime: 0.384 secs) p n
+0 T (#sa Runtime: 0.197 secs) N
+0 T (#de Runtime: 0.339 secs) N
+0 T (#pso Runtime: 2.918 secs) N
+(135) # (#ga Runtime: 110.811 secs) N
+0 T () N
+0 T (rank ,         name ,    med   ,  iqr ) N
+0 T (----------------------------------------------------) N
+0 T (   1 ,           sa ,       0  ,     0 \(*------        |              \), 0.00,  0.00,  0.00,  0.00,  0.22) N
+(140) # (   1 ,           de ,       0  ,     0 \(*              |              \), 0.00,  0.00,  0.00,  0.00,  0.00) N
+0 T (   2 ,           ga ,       8  ,    19 \(  *  ---       |              \), 0.00,  0.00,  0.08,  0.17,  0.25) N
+0 T (   3 ,          mws ,      42  ,    14 \(   --------- * |-             \), 0.11,  0.38,  0.42,  0.50,  0.56) N
+0 T (   4 ,          pso ,      65  ,    28 \(          -----|-   *    ---  \), 0.34,  0.56,  0.65,  0.79,  0.90) N
+0 T () N
+(145) # ( :de options) N
+0 T (  cr :0.3  f :0.75  np :100  repeats :100  threshold :1e-06) N
+0 T ( :ga options) N
+0 T (  crossPoints :2  crossRate :0.6  genNum :[100, 200, 400, 800]  pop :50) N
+0 T ( :mws options) N
+(150) # (  max_changes :1000  max_tries :20  prob :0.25  threshold :0.0001) N
+0 T ( :other options) N
+0 T (  a12 :0.56  baseline :1000  era :50  keep :64  lives :1  repeats :1  reportrange :False  show :False  xtile :False) N
+0 T ( :pso options) N
+0 T (  N :30  phi1 :2.8  phi2 :1.3  repeats :1000  threshold :1e-06  w :1) N
+(155) # ( :sa options) N
+0 T (  cooling :0.6  kmax :1000) N
+(csc791sbse:hw7:Fu) (Page 2/2) (Oct 27, 14 21:39) title
+border
+grestore
+(Printed by Wei Fu) rhead
+(Result.txt) (1/1) (Monday October 27, 2014) footer
+end % of iso1dict
+pagesave restore
+showpage
+
+%%Trailer
+end
+%%EOF
